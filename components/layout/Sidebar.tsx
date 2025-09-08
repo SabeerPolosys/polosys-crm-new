@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useState } from "react";
 import {
@@ -17,10 +17,12 @@ import {
   FaBell,
   FaChevronLeft,
   FaChevronRight,
-  FaRegQuestionCircle
+  FaRegQuestionCircle,
 } from "react-icons/fa";
-import {RiMenuAddLine} from "react-icons/ri";
+import { RiMenuAddLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
+import { MdOutlineDarkMode } from "react-icons/md";
+import { RiLogoutCircleLine } from "react-icons/ri";
 
 const menuItems = [
   { label: "Dashboard", icon: <FaHome />, link: "/" },
@@ -37,15 +39,14 @@ const settingsItems = [
   { label: "Help Center", icon: <FaQuestionCircle /> },
 ];
 
-type SidebarPropsType ={
-  collapsed: boolean,
-  setCollapsed: Dispatch<SetStateAction<boolean>>
-}
+type SidebarPropsType = {
+  collapsed: boolean;
+  setCollapsed: Dispatch<SetStateAction<boolean>>;
+};
 
-export default function Sidebar({collapsed, setCollapsed}: SidebarPropsType) {
+export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
   const [darkMode, setDarkMode] = useState(false);
   const pathname = usePathname();
-
 
   return (
     <>
@@ -58,8 +59,11 @@ export default function Sidebar({collapsed, setCollapsed}: SidebarPropsType) {
               Polosys
               <span className="text-gray-800 rounded-full p-1">🌳</span>
             </div>
-            <button onClick={() => setCollapsed(true)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600">
-              <FaChevronLeft className="w-4 h-4"/>
+            <button
+              onClick={() => setCollapsed(true)}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600"
+            >
+              <FaChevronLeft className="w-4 h-4" />
             </button>
           </div>
 
@@ -113,10 +117,12 @@ export default function Sidebar({collapsed, setCollapsed}: SidebarPropsType) {
                   checked={darkMode}
                   onChange={() => setDarkMode(!darkMode)}
                 />
-                <div className="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:bg-blue-500 
+                <div
+                  className="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:bg-blue-500 
                                 after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
                                 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all 
-                                peer-checked:after:translate-x-4" />
+                                peer-checked:after:translate-x-4"
+                />
               </label>
             </div>
 
@@ -134,19 +140,32 @@ export default function Sidebar({collapsed, setCollapsed}: SidebarPropsType) {
 
       {/* Collapsed Sidebar */}
       {collapsed && (
-        <div className="h-screen w-16 text-gray-800 flex flex-col items-center py-4 gap-4 transition-all duration-300">
-          <button
-            onClick={() => setCollapsed(false)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-600 border-[1px]"
-          >
-            <FaChevronRight />
-          </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
-            <RiMenuAddLine />
-          </button>
-          <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
-            <FaRegQuestionCircle />
-          </button>
+        <div className="min-h-screen w-16 text-gray-800 flex flex-col justify-between items-center py-4 transition-all duration-300 bg-white">
+          {/* Top Buttons */}
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-600 border-[1px]"
+            >
+              <FaChevronRight />
+            </button>
+            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
+              <RiMenuAddLine />
+            </button>
+            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
+              <FaRegQuestionCircle />
+            </button>
+          </div>
+
+          {/* Bottom Button */}
+          <div>
+            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
+              <MdOutlineDarkMode />
+            </button>
+            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px] mt-4">
+              <RiLogoutCircleLine />
+            </button>
+          </div>
         </div>
       )}
 

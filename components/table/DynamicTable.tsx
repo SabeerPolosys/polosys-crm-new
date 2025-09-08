@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import styles from "./DynamicTable.module.css";
+import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 
 interface Column {
   header: string;
@@ -13,13 +14,21 @@ interface DynamicTableProps<T> {
   data: T[];
   initialRowsPerPage?: number;
   onRowClick?: (rowData: T) => void;
+  isEditAllowed?: boolean;
+  isDeleteAllowed?: boolean;
+  onEditClick?: (rowData: T) => void;
+  onDeleteClick?: (rowData: T) => void;
 }
 
 const DynamicTable = <T extends Record<string, any>>({
   columns,
   data,
   initialRowsPerPage = 10,
-  onRowClick
+  onRowClick,
+  isEditAllowed,
+  isDeleteAllowed,
+  onEditClick,
+  onDeleteClick,
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
@@ -45,84 +54,114 @@ const DynamicTable = <T extends Record<string, any>>({
 
   return (
     <div className="px-4 py-6">
-        <div className={styles.tableWrapper}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th key={col.accessor}>{col.header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              className={`${rowIndex % 2 === 0 ? styles.evenRow : styles.oddRow} ${onRowClick ? "cursor-pointer" : ""}`}
-              onClick={() => onRowClick?.(row)}
-            >
-              {columns.map((col) => {
-                let value = row[col.accessor];
-
-                if (col.accessor.toLowerCase() === "status") {
-                  value = (
-                    <span
-                      className={`${styles.status} ${
-                        row[col.accessor] === "Pending"
-                          ? styles.pending
-                          : row[col.accessor] === "Paid"
-                          ? styles.paid
-                          : styles.overdue
-                      }`}
-                    >
-                      {row[col.accessor]}
-                    </span>
-                  );
-                }
-
-                return <td key={col.accessor}>{value}</td>;
-              })}
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              {columns.map((col) => (
+                <th key={col.accessor}>{col.header}</th>
+              ))}
+              {isEditAllowed && <th></th>}
+              {isDeleteAllowed && <th></th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedData.map((row, rowIndex) => (
+              <tr
+                key={rowIndex}
+                className={`${
+                  rowIndex % 2 === 0 ? styles.evenRow : styles.oddRow
+                } ${onRowClick ? "cursor-pointer" : ""}`}
+                onClick={() => onRowClick?.(row)}
+              >
+                {columns.map((col) => {
+                  let value = row[col.accessor];
 
-      {/* Pagination and Rows per page */}
-      <div className={styles.pagination}>
-        <div className={styles.rowsPerPage}>
-          <label htmlFor="rowsPerPage">Rows per page:</label>
-          <select
-            id="rowsPerPage"
-            value={rowsPerPage}
-            onChange={handleRowsPerPageChange}
-          >
-            {[10, 20, 30, 40].map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
+                  if (col.accessor.toLowerCase() === "status") {
+                    value = (
+                      <span
+                        className={`${styles.status} ${
+                          row[col.accessor] === "Pending"
+                            ? styles.pending
+                            : row[col.accessor] === "Paid"
+                            ? styles.paid
+                            : styles.overdue
+                        }`}
+                      >
+                        {row[col.accessor]}
+                      </span>
+                    );
+                  }
+
+                  return <td key={col.accessor}>{value}</td>;
+                })}
+                {isEditAllowed && (
+                  <td>
+                    <button
+                      className={styles.editBtn}
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent row click
+                        onEditClick?.(row);
+                      }}
+                    >
+                      <MdOutlineEdit className="text-blue-500"/>
+                    </button>
+                  </td>
+                )}
+                {isDeleteAllowed && (
+                  <td>
+                    <button
+                      className={styles.editBtn}
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent row click
+                        onDeleteClick?.(row);
+                      }}
+                    >
+                      <MdDeleteOutline className="text-red-500"/>
+                    </button>
+                  </td>
+                )}
+              </tr>
             ))}
-          </select>
-        </div>
+          </tbody>
+        </table>
 
-        <div className={styles.pageControls}>
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
+        {/* Pagination and Rows per page */}
+        <div className={styles.pagination}>
+          <div className={styles.rowsPerPage}>
+            <label htmlFor="rowsPerPage">Rows per page:</label>
+            <select
+              id="rowsPerPage"
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              {[10, 20, 30, 40].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.pageControls}>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

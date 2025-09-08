@@ -1,6 +1,7 @@
 "use client";
 import DynamicTable from "@/components/table/DynamicTable";
 import { useRouter } from "next/navigation";
+import { FaRegFileAlt } from "react-icons/fa";
 
 export default function page() {
   const router = useRouter();
@@ -112,7 +113,15 @@ export default function page() {
 
   return (
     <div className="rounded-lg py-10 bg-white">
-      <h2 className="text-xl font-bold px-6">Customers</h2>
+      <div className="px-6 flex flex-row items-center justify-between">
+        <h2 className="text-lg font-bold">Customers</h2>
+        <div>
+          <button className="border-[1px] border-gray-400 px-2 py-1 rounded text-xs flex flex-row items-center gap-1 text-gray-400">
+            {" "}
+            <FaRegFileAlt /> Export Details
+          </button>
+        </div>
+      </div>
       <DynamicTable columns={columns} data={data} onRowClick={handleRowClick} />
     </div>
   );

@@ -1,7 +1,10 @@
+"use client"
 import DynamicTable from "@/components/table/DynamicTable";
+import { useRouter } from "next/navigation";
 
 
 export default function page() {
+  const router = useRouter();
   const columns = [
   { header: 'Invoice Number', accessor: 'invoiceNumber' },
   { header: 'Date', accessor: 'date' },
@@ -132,10 +135,13 @@ const data = [
   },
 ];
 
+const handleRowClick = (rowData: any) => {
+    router.push(`/accounts/1`);
+  };
   return (
     <div className="rounded-lg py-10 bg-white">
-      <h2 className="text-xl font-bold px-6">All Account Details</h2>
-      <DynamicTable columns={columns} data={data} />
+      <h2 className="text-lg font-bold px-6">All Account Details</h2>
+      <DynamicTable columns={columns} data={data} onRowClick={handleRowClick}/>
     </div>
   );
 }
