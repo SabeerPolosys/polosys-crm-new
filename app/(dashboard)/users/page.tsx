@@ -1,4 +1,5 @@
 import DynamicTable from "@/components/table/DynamicTable";
+import UserRoleList from "@/components/users/UserRoleList";
 import { FaRegUser } from "react-icons/fa";
 import { LuUserRoundCog } from "react-icons/lu";
 
@@ -8,7 +9,7 @@ export default function page() {
     { header: "Name", accessor: "name" },
     { header: "Contact", accessor: "contact" },
     { header: "Role", accessor: "role" },
-    { header: "Email", accessor: "email" },
+    // { header: "Email", accessor: "email" },
   ];
 
   const data = [
@@ -95,30 +96,44 @@ export default function page() {
   ];
 
   return (
-    <div className="rounded-lg py-10 bg-white">
-      <div className="flex flex-row items-center justify-between">
-        <h2 className="text-lg font-bold px-6">Users & Roles</h2>
-        <div className="flex flex-row gap-2 items-center">
-          <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
-            {" "}
-            <FaRegUser /> Users
-          </button>
-          <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
-            {" "}
-            <LuUserRoundCog /> Manage Users
-          </button>
-          <button className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
-            {" "}
-            + &nbsp; Add User
-          </button>
+    <div className="grid grid-cols-3 border-[1px] border-gray-300 rounded-lg">
+      <div className="rounded-lg p-4 m-4 bg-gray-50 col-span-2">
+        <div className="flex flex-row items-center justify-between">
+          <h2 className="text-lg font-bold px-6">All Users</h2>
+          <div className="flex flex-row gap-2 items-center">
+            <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
+              {" "}
+              <FaRegUser /> Users
+            </button>
+            <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
+              {" "}
+              <LuUserRoundCog /> Manage Users
+            </button>
+            <button className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
+              {" "}
+              + &nbsp; Add User
+            </button>
+          </div>
         </div>
+        <DynamicTable
+          columns={columns}
+          data={data}
+          isEditAllowed={true}
+          isDeleteAllowed={true}
+        />
       </div>
-      <DynamicTable
-        columns={columns}
-        data={data}
-        isEditAllowed={true}
-        isDeleteAllowed={true}
-      />
+      <div className="col-span-1 rounded-lg p-4 my-4 mr-4 bg-gray-50">
+        <div className="flex flex-row items-center justify-between">
+          <h2 className="text-lg font-bold px-6">Manage The Roles</h2>
+          <div className="flex flex-row gap-2 items-center">
+            <button className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
+              {" "}
+              + &nbsp; Add Role
+            </button>
+          </div>
+        </div>
+        <UserRoleList />
+      </div>
     </div>
   );
 }

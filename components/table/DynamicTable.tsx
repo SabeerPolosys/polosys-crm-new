@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styles from "./DynamicTable.module.css";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { usePathname } from "next/navigation";
 
 interface Column {
   header: string;
@@ -32,6 +33,7 @@ const DynamicTable = <T extends Record<string, any>>({
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
+  const pathname = usePathname();
 
   const totalPages = Math.ceil(data.length / rowsPerPage);
 
@@ -54,7 +56,7 @@ const DynamicTable = <T extends Record<string, any>>({
 
   return (
     <div className="px-4 py-6">
-      <div className={styles.tableWrapper}>
+      <div className={pathname?.includes("/users") ? "" : styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
