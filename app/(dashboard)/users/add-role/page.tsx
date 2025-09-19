@@ -5,163 +5,112 @@ import api from "@/lib/axios";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { FaUserCog, FaSave, FaTimes } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-
-interface Permissions {
-  users: boolean;
-  products: boolean;
-  accounts: boolean;
-  customers: boolean;
-  reports: boolean;
-  settings: boolean;
-}
+import { formFieldconfig } from "@/config/formConfig";
+import { usePathname } from "next/navigation";
+import SbForm from "@/components/form/SbForm";
+import { IoMdArrowBack } from "react-icons/io";
 
 interface RoleFormData {
-  roleName: string;
+  typeName: string;
   description: string;
-  permissions: Permissions;
 }
-
-const initialPermissions: Permissions = {
-  users: false,
-  products: false,
-  accounts: false,
-  customers: false,
-  reports: false,
-  settings: false,
-};
 
 const CreateRoleForm: React.FC = () => {
   const [formData, setFormData] = useState<RoleFormData>({
-    roleName: "",
+    typeName: "",
     description: "",
-    permissions: initialPermissions,
   });
   const router = useRouter();
+  const pathname = usePathname();
+  const formField = formFieldconfig[pathname as keyof typeof formFieldconfig];
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [key]: value,
     }));
   };
 
-  const handlePermissionChange = (permission: keyof Permissions) => {
-    setFormData((prev) => ({
-      ...prev,
-      permissions: {
-        ...prev.permissions,
-        [permission]: !prev.permissions[permission],
-      },
-    }));
+  const handleClear = () => {
+    setFormData({ typeName: "", description: "" });
   };
-
   const handleSubmit = async (e: FormEvent) => {
     try {
-      e.preventDefault()
-      const res = await api.post(
-        `/api/v1/user-type`, formData
+      e.preventDefault();
+      const trimmedFormData = Object.fromEntries(
+        Object.entries(formData).map(([key, value]) => [
+          key,
+          typeof value === "string" ? value.trim() : value,
+        ])
       );
+      if (!trimmedFormData?.typeName || !trimmedFormData?.description) {
+        return showToast({
+          message: `Please fill required fields.`,
+          type: "error",
+        });
+      }
+      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
       if (res?.status == 200) {
         // ✅ Backend should set auth cookie via Set-Cookie
         showToast({
           message: `Role created successfully.`,
           type: "success",
         });
-        router.push("/");
+        router.push("/users");
       } else {
         throw new Error("Failed to create role.");
       }
     } catch (err: any) {
-      showToast({
-          message: `Failed to create role.`,
+      if (
+        err?.response?.data?.message ===
+        "Violation of UNIQUE KEY constraint \u0027UQ__user_typ__D4E7DFA8649C4C50\u0027. Cannot insert duplicate key in object \u0027dbo.user_types\u0027. The duplicate key value is (test).\r\nThe statement has been terminated."
+      ) {
+        return showToast({
+          message: `Already exist same role.`,
           type: "error",
         });
+      }
+      showToast({
+        message: `Failed to create role.`,
+        type: "error",
+      });
     }
-  };
-
-  const handleCancel = () => {
-    setFormData({
-      roleName: "",
-      description: "",
-      permissions: initialPermissions,
-    });
   };
 
   return (
     <div>
-      <h2 className="font-semibold text-xl mb-2">User & Role</h2>
+      {formField?.Category && (
+        <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
+      )}
       <div className="bg-gray-50 rounded-xl shadow-md p-6 mb-8">
         <div className="flex items-center mb-6">
-          <div className="bg-blue-100 p-3 rounded-full mr-4">
-            <FaUserCog className="text-blue-600 text-xl" />
+          <div
+            className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
+            onClick={() => router.push("/users")}
+          >
+            <IoMdArrowBack className="w-6 h-6" />
           </div>
+          {/* {formField?.icon && (
+            <div className="bg-blue-100 p-3 rounded-full mr-4">
+              {formField?.icon}
+            </div>
+          )} */}
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
-              Create New Role
+              Create {formField?.title}
             </h2>
-            <p className="text-gray-500">Define access levels for user roles</p>
+            {formField?.formLabel && (
+              <p className="text-gray-500">{formField?.formLabel}</p>
+            )}
           </div>
         </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label
-                htmlFor="roleName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Role Name
-              </label>
-              <input
-                type="text"
-                id="roleName"
-                name="roleName"
-                value={formData.roleName}
-                onChange={handleInputChange}
-                className="w-full px-4 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                placeholder="e.g., Admin, Super Admin"
-                required
-              />
-            </div>
-            <div></div>
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <input
-                type="text"
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full px-4 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                placeholder="Brief description of this role"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-            >
-              <FaTimes className="inline mr-2" />
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-            >
-              <FaSave className="inline mr-2" />
-              Create Role
-            </button>
-          </div>
-        </form>
+        <SbForm
+          formField={formField}
+          handleSubmit={handleSubmit}
+          handleClear={handleClear}
+          formData={formData}
+          handleFormDataChange={handleFormDataChange}
+        />
       </div>
     </div>
   );
