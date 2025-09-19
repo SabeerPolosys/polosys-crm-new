@@ -8,3 +8,8 @@ export interface LoginResponse {
   message: string;
   token?: string;
 }
+
+export interface ResetRequest {
+  confirmPassword: string;
+  password: string;
+}

@@ -3,7 +3,7 @@ import DynamicTable from "@/components/table/DynamicTable";
 import { useRouter } from "next/navigation";
 import { FaRegFileAlt } from "react-icons/fa";
 
-export default function page() {
+export default function Customer() {
   const router = useRouter();
   const columns = [
     { header: "Customer", accessor: "name" },

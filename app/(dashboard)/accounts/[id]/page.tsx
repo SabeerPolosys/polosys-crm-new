@@ -2,7 +2,7 @@ import AccountMenuList from "@/components/accounts/AccountMenuList";
 import LineChart from "@/components/accounts/LineChart";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 
-export default function page() {
+export default function IndividualAccount() {
   return (
     <div>
       <div className="flex flex-row justify-between items-center">

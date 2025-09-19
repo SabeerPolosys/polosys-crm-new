@@ -6,14 +6,18 @@ import Image from "next/image";
 import { LoginRequest, LoginResponse } from "@/types/auth";
 import api from "@/lib/axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ForgotPassword from "@/components/auth/ForgotPassword";
+import { showToast } from "@/components/common/ShowToast";
+import LoginRightSide from "@/components/auth/LoginRightSide";
 
-export default function page() {
+export default function Login() {
   const router = useRouter();
   const [user, setUser] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,6 +38,10 @@ export default function page() {
       );
       if (res?.status == 200 && res?.data?.message === "Login successful") {
         // ✅ Backend should set auth cookie via Set-Cookie
+        showToast({
+          message: `Login successfully.`,
+          type: "success",
+        });
         router.push("/");
       } else {
         throw new Error("Login failed");
@@ -51,24 +59,7 @@ export default function page() {
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Left Side */}
-      <div className="w-full md:w-1/2 bg-gray-800 text-white p-10 flex flex-col justify-between">
-        <h1 className="text-2xl font-semibold">Polosys</h1>
-        <div className="mb-6 flex items-center justify-center min-h-fit">
-          {/* Vector Shape */}
-          <Image
-            src="/images/vector-image-no-bg.png"
-            alt="Polosys"
-            width={300}
-            height={200}
-            priority
-          />
-        </div>
-        <p className="mt-6 text-4xl leading-relaxed pb-8">
-          Join now and manage <br />
-          your customers from <br />
-          anywhere
-        </p>
-      </div>
+      <LoginRightSide />
 
       {/* Right Side */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
@@ -88,14 +79,6 @@ export default function page() {
               className="w-full px-4 py-3 rounded-md bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
               required={true}
             />
-            {/* <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-md bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              required={true}
-            /> */}
             <div className="relative w-full">
               <input
                 type={showPassword ? "text" : "password"}
@@ -113,11 +96,14 @@ export default function page() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            <div>{error && <p className="text-red-500">{error}</p>}</div>
+            <div>{error && <p className="text-red-500 text-xs">{error}</p>}</div>
             <div className="text-right">
-              <a href="#" className="text-sm text-gray-500 hover:underline">
+              <div
+                className="text-sm text-gray-500 hover:underline cursor-pointer"
+                onClick={() => setIsOpen(true)}
+              >
                 Forgot password
-              </a>
+              </div>
             </div>
             {isLoading ? (
               <button
@@ -164,6 +150,7 @@ export default function page() {
             </a>
           </p>
         </div>
+        <ForgotPassword isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </div>
     </div>
   );

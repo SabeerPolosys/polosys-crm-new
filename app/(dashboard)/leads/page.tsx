@@ -2,7 +2,7 @@ import DynamicTable from "@/components/table/DynamicTable";
 import { SlCalender } from "react-icons/sl";
 import { FaRegFileAlt } from "react-icons/fa";
 
-export default function page() {
+export default function Leads() {
   const columns = [
     { header: "Name", accessor: "name" },
     { header: "Source", accessor: "source" },

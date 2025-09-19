@@ -13,7 +13,7 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { SlCalender } from "react-icons/sl";
 import { IoSettingsOutline } from "react-icons/io5";
 
-export default function page() {
+export default function Reports() {
   const metrics = [
     {
       title: "Total customers",

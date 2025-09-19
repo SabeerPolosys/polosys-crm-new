@@ -4,7 +4,7 @@ import { HiOutlineHome } from "react-icons/hi2";
 import { BsCart3 } from "react-icons/bs";
 import DynamicTableType2 from "@/components/table/DynamicTableType2";
 
-export default function page() {
+export default function IndividualCustomer() {
   const columns = [
     { header: "Invoice Number", accessor: "invoiceNumber" },
     { header: "Date", accessor: "date" },

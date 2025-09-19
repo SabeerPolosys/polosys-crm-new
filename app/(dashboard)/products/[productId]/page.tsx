@@ -1,6 +1,6 @@
 import ProductCard from "@/components/product/ProductCard";
 
-export default function page() {
+export default function IndividualProduct() {
   const addOnsList = [
     "User action report",
     "Schemes",

@@ -3,7 +3,7 @@ import DynamicTable from "@/components/table/DynamicTable";
 import { useRouter } from "next/navigation";
 
 
-export default function page() {
+export default function Accounts() {
   const router = useRouter();
   const columns = [
   { header: 'Invoice Number', accessor: 'invoiceNumber' },
