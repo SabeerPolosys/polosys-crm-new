@@ -139,7 +139,7 @@ export default function Users() {
           <div className="flex flex-row items-center justify-between">
             <h2 className="text-lg font-bold px-6">Manage The Roles</h2>
             <div className="flex flex-row gap-2 items-center">
-              <Link href="/users/add-role" className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
+              <Link href="/users/role/add-role" className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
                 {" "}
                 + &nbsp; Add Role
               </Link>

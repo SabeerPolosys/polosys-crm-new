@@ -1,7 +1,7 @@
 // import { FaUserCog } from 'react-icons/fa';
 
 export const formFieldconfig = {
-  "/users/add-role": {
+  "/users/role": {
     Category: "User & Role",
     title: "Role",
     formLabel: "Define access levels for user roles",
@@ -23,7 +23,7 @@ export const formFieldconfig = {
       },
     ],
     hasSubmitButton: true,
-    submitButtonLabel: "Create Role",
+    submitButtonLabel: "Role",
     hasClearButton: true,
     submitUrl: "/api/v1/user-type"
   },

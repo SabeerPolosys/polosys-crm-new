@@ -11,12 +11,14 @@ export default function SbForm({
   handleClear,
   formData,
   handleFormDataChange,
+  submitType,
 }: {
   formField: any;
   handleSubmit: (e: React.FormEvent<Element>) => Promise<void>;
   handleClear(): void;
   formData: any;
   handleFormDataChange(key:string, value:string): void;
+  submitType?: "Create" | "Update"
 }) {
   return (
     <div>
@@ -55,7 +57,11 @@ export default function SbForm({
               className="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             >
               <FaSave className="inline mr-2" />
-              {formField?.submitButtonLabel ?? "Save"}
+              {formField?.submitButtonLabel
+                ? submitType
+                  ? submitType + " " + formField?.submitButtonLabel
+                  : formField?.submitButtonLabel
+                : "Save"}
             </button>
           )}
         </div>

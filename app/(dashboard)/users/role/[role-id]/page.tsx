@@ -2,27 +2,59 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { FaUserCog, FaSave, FaTimes } from "react-icons/fa";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
+import { useParams } from "next/navigation";
+import { RoleType } from "@/types/auth";
 
 interface RoleFormData {
   typeName: string;
   description: string;
 }
+type GetRoleResponse = {
+  success: boolean;
+  message: string;
+  data: RoleType;
+};
 
-const CreateRoleForm: React.FC = () => {
+const EditRoleForm: React.FC = () => {
   const [formData, setFormData] = useState<RoleFormData>({
     typeName: "",
     description: "",
   });
   const router = useRouter();
   const pathname = usePathname();
-  const formField = formFieldconfig[pathname as keyof typeof formFieldconfig];
+  const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
+  const formField =
+    formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
+  const params = useParams();
+
+  const getRoleDetails = async () => {
+    try {
+      const res = await api.get<GetRoleResponse>(
+        `${formField?.submitUrl}/${params?.["role-id"]}`
+      );
+      if (res?.data?.message) {
+        const respose = res?.data?.data;
+        setFormData({
+          typeName: respose?.typeName,
+          description: respose?.description,
+        });
+      }
+    } catch {
+      showToast({
+        message: `Failed to fetch role.`,
+        type: "error",
+      });
+    }
+  };
+  useEffect(() => {
+    getRoleDetails();
+  },[]);
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -49,11 +81,10 @@ const CreateRoleForm: React.FC = () => {
           type: "error",
         });
       }
-      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
+      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, userTypeId: params?.["role-id"]});
       if (res?.status == 200) {
-        // ✅ Backend should set auth cookie via Set-Cookie
         showToast({
-          message: `Role created successfully.`,
+          message: `Role updated successfully.`,
           type: "success",
         });
         router.push("/users");
@@ -63,15 +94,15 @@ const CreateRoleForm: React.FC = () => {
     } catch (err: any) {
       if (
         err?.response?.data?.message ===
-        "Violation of UNIQUE KEY constraint \u0027UQ__user_typ__D4E7DFA8649C4C50\u0027. Cannot insert duplicate key in object \u0027dbo.user_types\u0027. The duplicate key value is (test).\r\nThe statement has been terminated."
+        "Violation of UNIQUE KEY constraint 'UQ__user_typ__D4E7DFA8649C4C50'. Cannot insert duplicate key in object 'dbo.user_types'. The duplicate key value is (New test three).\r\nThe statement has been terminated."
       ) {
         return showToast({
-          message: `Already exist same role.`,
+          message: `Already exist same role, please try different role.`,
           type: "error",
         });
       }
       showToast({
-        message: `Failed to create role.`,
+        message: `Failed to update role.`,
         type: "error",
       });
     }
@@ -90,14 +121,9 @@ const CreateRoleForm: React.FC = () => {
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>
-          {/* {formField?.icon && (
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              {formField?.icon}
-            </div>
-          )} */}
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
-              Create {formField?.title}
+              Update {formField?.title}
             </h2>
             {formField?.formLabel && (
               <p className="text-gray-500">{formField?.formLabel}</p>
@@ -110,10 +136,11 @@ const CreateRoleForm: React.FC = () => {
           handleClear={handleClear}
           formData={formData}
           handleFormDataChange={handleFormDataChange}
+          submitType="Update"
         />
       </div>
     </div>
   );
 };
 
-export default CreateRoleForm;
+export default EditRoleForm;

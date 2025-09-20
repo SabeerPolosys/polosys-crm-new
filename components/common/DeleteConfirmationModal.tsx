@@ -1,77 +1,62 @@
 "use client";
 
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { showToast } from "../common/ShowToast";
 import api from "@/lib/axios";
-// import toast from 'react-hot-toast'
+import { useRouter } from "next/navigation";
 
 type ForgotPasswordModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  deleteLabel?: string;
+  deleteId: string;
+  deleteUrl: string;
+  redirectUrl: string;
 };
-type ResetResponse = {};
+type DeleteResponse = {};
 
-export default function ForgotPassword({
+export default function DeleteConfirmationModal({
   isOpen,
   onClose,
+  deleteLabel,
+  deleteId,
+  deleteUrl,
+  redirectUrl,
 }: ForgotPasswordModalProps) {
-  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const emailRef = useRef<HTMLInputElement | null>(null);
-  function isValidEmail(email: string) {
-    if (!email || typeof email !== "string" || email.trim() === "") {
-      return false;
-    }
+  const router = useRouter();
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  const handleSubmit = async () => {
+  const handleDelete = async () => {
     try {
-      if (!isValidEmail(email)) {
-        if (emailRef?.current) emailRef?.current.focus();
-        return showToast({
-          message: "Please enter a valid email.",
-          type: "error",
-        });
-      }
       setIsLoading(true);
-      const res = await api.post<ResetResponse>(
-        `/api/v1/auth/forgot-password`,
-        { email },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
+      const res = await api.delete<DeleteResponse>(`${deleteUrl}${deleteId}`);
       if (res?.status == 200) {
         showToast({
-          message: `Password reset link sent to ${email}`,
+          message: `${deleteLabel} deleted successfuly`,
           type: "success",
         });
         onClose();
+        router.push(`${redirectUrl}`);
       } else {
-        throw new Error("Mail sending failed.");
+        throw new Error("Operation failed.");
       }
     } catch (err) {
-      showToast({ message: "Failed to reset password.", type: "error" });
+      showToast({
+        message: `Failed to to delete ${deleteLabel}.`,
+        type: "error",
+      });
     } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (!isOpen) setEmail("");
-  }, [isOpen]);
 
   return (
     <Dialog
       open={isOpen}
       onClose={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-end mr-30"
+      className="fixed inset-0 z-50 flex items-center justify-center"
     >
       {/* Backdrop */}
       {isOpen && (
@@ -93,23 +78,14 @@ export default function ForgotPassword({
         </button>
 
         {/* Modal Title */}
-        <h2 className="text-lg font-semibold mb-4">Forgot Password</h2>
+        <h2 className="text-lg font-semibold mb-4">Delete {deleteLabel}</h2>
 
         {/* Form */}
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            Enter your email address and we’ll send you a link to reset your
-            password.
+            Are you sure you want to delete ${deleteLabel}? You can't undo this
+            action !
           </p>
-
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            ref={emailRef}
-          />
         </div>
 
         {/* Action Buttons */}
@@ -146,14 +122,14 @@ export default function ForgotPassword({
                   d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                 ></path>
               </svg>
-              Verifying...
+              Deleting...
             </button>
           ) : (
             <button
-              onClick={handleSubmit}
-              className="px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-900 cursor-pointer"
+              onClick={handleDelete}
+              className="px-4 py-2 rounded-md bg-red-400 text-white hover:bg-red-500 cursor-pointer"
             >
-              Send Reset Link
+              Confirm
             </button>
           )}
         </div>
