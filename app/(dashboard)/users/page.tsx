@@ -120,10 +120,10 @@ export default function Users() {
                     {" "}
                     <LuUserRoundCog /> Manage Users
                   </button>
-                  <button className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
+                  <Link href={"/users/create-user"} className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
                     {" "}
                     + &nbsp; Add User
-                  </button>
+                  </Link>
                 </div>
               </div>
               <DynamicTable

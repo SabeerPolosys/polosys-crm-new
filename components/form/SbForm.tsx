@@ -4,6 +4,8 @@ import { showToast } from "../common/ShowToast";
 import { useRouter } from "next/navigation";
 import SbFormInputbox from "./SbFormInputbox";
 import { FaSave, FaTimes } from "react-icons/fa";
+import SbFormPassword from "./SbFormPassword";
+import SbFormSelectbox from "./SbFormSelectbox";
 
 export default function SbForm({
   formField,
@@ -23,12 +25,30 @@ export default function SbForm({
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {formField?.fields?.map((field: any, index: number) => {
             switch (field?.type) {
               case "input":
                 return (
                   <SbFormInputbox
+                    field={field}
+                    key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
+              case "password":
+                return (
+                  <SbFormPassword
+                    field={field}
+                    key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
+              case "select":
+                return (
+                  <SbFormSelectbox
                     field={field}
                     key={index}
                     value={formData[field?.key] ?? ""}
