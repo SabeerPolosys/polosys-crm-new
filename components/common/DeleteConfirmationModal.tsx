@@ -83,7 +83,7 @@ export default function DeleteConfirmationModal({
         {/* Form */}
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            Are you sure you want to delete ${deleteLabel}? You can't undo this
+            Are you sure you want to delete {deleteLabel}? You can't undo this
             action !
           </p>
         </div>

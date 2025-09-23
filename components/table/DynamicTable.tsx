@@ -78,8 +78,9 @@ const DynamicTable = <T extends Record<string, any>>({
               >
                 {columns.map((col) => {
                   let value = row[col.accessor];
-
-                  if (col.accessor.toLowerCase() === "status") {
+                  if (col.accessor.toLowerCase() === "slno") {
+                    value = rowIndex + 1;
+                  } else if (col.accessor.toLowerCase() === "status") {
                     value = (
                       <span
                         className={`${styles.status} ${
@@ -100,26 +101,26 @@ const DynamicTable = <T extends Record<string, any>>({
                 {isEditAllowed && (
                   <td>
                     <button
-                      className={styles.editBtn}
+                      className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
                       onClick={(e) => {
                         e.stopPropagation(); // prevent row click
                         onEditClick?.(row);
                       }}
                     >
-                      <MdOutlineEdit className="text-blue-500"/>
+                      <MdOutlineEdit className="text-blue-500" />
                     </button>
                   </td>
                 )}
                 {isDeleteAllowed && (
                   <td>
                     <button
-                      className={styles.editBtn}
+                      className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
                       onClick={(e) => {
                         e.stopPropagation(); // prevent row click
                         onDeleteClick?.(row);
                       }}
                     >
-                      <MdDeleteOutline className="text-red-500"/>
+                      <MdDeleteOutline className="text-red-500" />
                     </button>
                   </td>
                 )}

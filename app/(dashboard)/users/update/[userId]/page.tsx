@@ -2,12 +2,14 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
+import { useParams } from "next/navigation";
+import { UserType } from "@/types/auth";
 
 interface UserFormData {
   userName: string;
@@ -20,8 +22,13 @@ interface UserFormData {
   source: string;
   status: number | null;
 }
+type GetUserResponse = {
+  success: boolean;
+  messaage: string;
+  data: UserType;
+};
 
-const CreateUser: React.FC = () => {
+const UpdateUser: React.FC = () => {
   const [formData, setFormData] = useState<UserFormData>({
     userName: "",
     userEmail: "",
@@ -38,6 +45,37 @@ const CreateUser: React.FC = () => {
   const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
+  const params = useParams();
+
+  const getRoleDetails = async () => {
+    try {
+      const res = await api.get<GetUserResponse>(
+        `${formField?.submitUrl}/${params?.["userId"]}`
+      );
+      if (res?.data?.success) {
+        const respose = res?.data?.data;
+        setFormData({
+          userName: respose?.userName,
+          userEmail: respose?.email,
+          passwordHash: "",
+          userTypeId: respose?.userTypeId,
+          clientID: respose?.clientID,
+          isActive: respose?.isActive,
+          countryID: "",
+          source: "Plosys",
+          status: 1,
+        });
+      }
+    } catch {
+      showToast({
+        message: `Failed to fetch user.`,
+        type: "error",
+      });
+    }
+  };
+  useEffect(() => {
+    getRoleDetails();
+  }, []);
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -59,7 +97,7 @@ const CreateUser: React.FC = () => {
       status: 1,
     });
   };
-  const handleSubmit = async (e: FormEvent) => {
+  const handleUpdate = async (e: FormEvent) => {
     try {
       e.preventDefault();
       const trimmedFormData = Object.fromEntries(
@@ -68,17 +106,23 @@ const CreateUser: React.FC = () => {
           typeof value === "string" ? value.trim() : value,
         ])
       );
-      if (!trimmedFormData?.userName || !trimmedFormData?.userEmail || !trimmedFormData?.passwordHash || !trimmedFormData?.userTypeId || !trimmedFormData?.clientID || !trimmedFormData?.countryID ) {
+      if (
+        !trimmedFormData?.userName ||
+        !trimmedFormData?.userEmail ||
+        !trimmedFormData?.userTypeId ||
+        !trimmedFormData?.clientID ||
+        !trimmedFormData?.countryID
+      ) {
         return showToast({
           message: `Please fill required fields.`,
           type: "error",
         });
       }
-      
-      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
+
+      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, userId: params?.["userId"], email: trimmedFormData?.userEmail});
       if (res?.status == 200) {
         showToast({
-          message: `User created successfully.`,
+          message: `User updated successfully.`,
           type: "success",
         });
         router.push("/users");
@@ -87,12 +131,11 @@ const CreateUser: React.FC = () => {
       }
     } catch (err: any) {
       showToast({
-        message: `Failed to create user.`,
+        message: `Failed to update user.`,
         type: "error",
       });
     }
   };
-
   return (
     <div>
       {formField?.Category && (
@@ -113,7 +156,7 @@ const CreateUser: React.FC = () => {
           )} */}
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
-              Create {formField?.title}
+              Update {formField?.title}
             </h2>
             {formField?.formLabel && (
               <p className="text-gray-500">{formField?.formLabel}</p>
@@ -122,15 +165,15 @@ const CreateUser: React.FC = () => {
         </div>
         <SbForm
           formField={formField}
-          handleSubmit={handleSubmit}
+          handleSubmit={handleUpdate}
           handleClear={handleClear}
           formData={formData}
           handleFormDataChange={handleFormDataChange}
-          submitType="Create"
+          submitType="Update"
         />
       </div>
     </div>
   );
 };
 
-export default CreateUser;
+export default UpdateUser;

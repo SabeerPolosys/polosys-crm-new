@@ -21,3 +21,16 @@ export interface RoleType {
   createdAt: Date,
   modifiedAt: Date
 }
+
+export interface UserType {
+  userId: string,
+  userName: string,
+  email: string,
+  userTypeId: string,
+  typeName?: string,
+  clientID: string,
+  organizationName?: string,
+  isActive: boolean,
+  createdAt: Date,
+  modifiedAt: Date
+}
