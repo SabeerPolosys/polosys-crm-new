@@ -35,7 +35,7 @@ export default function SbFormSelectbox({
       } else {
         throw new Error("Password reset failed");
       }
-    } catch (err: any) {
+    } catch {
       return showToast({
         message: "Failed to fetch list.",
         type: "error",

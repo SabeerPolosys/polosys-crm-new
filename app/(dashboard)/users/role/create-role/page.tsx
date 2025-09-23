@@ -2,8 +2,7 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { FaUserCog, FaSave, FaTimes } from "react-icons/fa";
+import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";

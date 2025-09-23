@@ -13,8 +13,6 @@ import {
   FaQuestionCircle,
   FaMoon,
   FaSignOutAlt,
-  FaUserCog,
-  FaBell,
   FaChevronLeft,
   FaChevronRight,
   FaRegQuestionCircle,

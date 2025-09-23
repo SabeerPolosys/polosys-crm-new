@@ -4,9 +4,7 @@ import {
   FaUsers,
   FaEye,
   FaChartLine,
-  FaRupeeSign,
-  FaGlobeAsia,
-  FaPlus,
+  FaRupeeSign
 } from "react-icons/fa";
 import { HiFlag } from "react-icons/hi";
 import { HiOutlineDotsVertical } from "react-icons/hi";

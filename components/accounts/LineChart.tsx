@@ -10,12 +10,10 @@ import {
   Tooltip,
   ChartData,
   ChartOptions,
-  ChartArea,
   ScriptableContext,
   Color,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { useRef } from "react";
 
 ChartJS.register(
   LineElement,
@@ -25,11 +23,6 @@ ChartJS.register(
   Filler,
   Tooltip
 );
-
-// Helper type for chart area in gradient
-type GradientContext = ScriptableContext<"line"> & {
-  chart: ChartJS<"line"> & { chartArea: ChartArea };
-};
 
 const LineChart = () => {
   const labels: string[] = [

@@ -25,7 +25,7 @@ type GetRoleResponse = {
 
 export default function UserRoleList() {
   const [roles, setRoles] = useState<RoleType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<null | string>(null);
   const searchParams = useSearchParams();
@@ -38,7 +38,7 @@ export default function UserRoleList() {
       } else {
         throw new Error("Password reset failed");
       }
-    } catch (err: any) {
+    } catch {
       return showToast({
         message: "Failed to fetch roles.",
         type: "error",
@@ -120,7 +120,7 @@ export default function UserRoleList() {
                     <button
                       className="px-2 py-1 hover:bg-gray-100 text-blue-500 cursor-pointer"
                       onClick={() => {
-                        router.push(`/users/role/${role?.userTypeId}`);
+                        router.push(`/users/role/update/${role?.userTypeId}`);
                       }}
                     >
                       <MdOutlineEdit />

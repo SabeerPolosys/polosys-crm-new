@@ -15,7 +15,7 @@ type ForgotPasswordModalProps = {
   deleteUrl: string;
   redirectUrl: string;
 };
-type DeleteResponse = {};
+type DeleteResponse = {success: boolean};
 
 export default function DeleteConfirmationModal({
   isOpen,
@@ -42,7 +42,7 @@ export default function DeleteConfirmationModal({
       } else {
         throw new Error("Operation failed.");
       }
-    } catch (err) {
+    } catch {
       showToast({
         message: `Failed to to delete ${deleteLabel}.`,
         type: "error",
@@ -83,7 +83,7 @@ export default function DeleteConfirmationModal({
         {/* Form */}
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            Are you sure you want to delete {deleteLabel}? You can't undo this
+            Are you sure you want to delete {deleteLabel}? You can&apos;t undo this
             action !
           </p>
         </div>

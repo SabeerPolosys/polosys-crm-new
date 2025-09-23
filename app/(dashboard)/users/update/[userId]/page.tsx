@@ -47,7 +47,8 @@ const UpdateUser: React.FC = () => {
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
   const params = useParams();
 
-  const getRoleDetails = async () => {
+  useEffect(() => {
+    const getUserDetails = async () => {
     try {
       const res = await api.get<GetUserResponse>(
         `${formField?.submitUrl}/${params?.["userId"]}`
@@ -73,8 +74,7 @@ const UpdateUser: React.FC = () => {
       });
     }
   };
-  useEffect(() => {
-    getRoleDetails();
+    getUserDetails();
   }, []);
 
   const handleFormDataChange = (key: string, value: string) => {

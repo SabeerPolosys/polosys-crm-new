@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { showToast } from "../common/ShowToast";
 import api from "@/lib/axios";
@@ -11,7 +11,7 @@ type ForgotPasswordModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
-type ResetResponse = {};
+type ResetResponse = {success: boolean};
 
 export default function ForgotPassword({
   isOpen,
@@ -57,7 +57,7 @@ export default function ForgotPassword({
       } else {
         throw new Error("Mail sending failed.");
       }
-    } catch (err) {
+    } catch {
       showToast({ message: "Failed to reset password.", type: "error" });
     } finally {
       setIsLoading(false);

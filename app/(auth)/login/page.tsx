@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { LoginRequest, LoginResponse } from "@/types/auth";
 import api from "@/lib/axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -46,7 +45,7 @@ export default function Login() {
       } else {
         throw new Error("Login failed");
       }
-    } catch (err: any) {
+    } catch {
       setError("Invalid username or password.");
       errorTimeoutRef.current = setTimeout(() => {
         setError("");
@@ -144,7 +143,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-gray-600 text-sm">
-            Don't have a Polosys account?{" "}
+            Don&apos;t have a Polosys account?{" "}
             <a href="#" className="text-gray-900 font-medium hover:underline">
               Sign up
             </a>

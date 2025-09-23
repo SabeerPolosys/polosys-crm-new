@@ -2,7 +2,7 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
@@ -28,12 +28,13 @@ const EditRoleForm: React.FC = () => {
   });
   const router = useRouter();
   const pathname = usePathname();
-  const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
+  const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
   const params = useParams();
 
-  const getRoleDetails = async () => {
+  useEffect(() => {
+    const getRoleDetails = async () => {
     try {
       const res = await api.get<GetRoleResponse>(
         `${formField?.submitUrl}/${params?.["role-id"]}`
@@ -52,7 +53,6 @@ const EditRoleForm: React.FC = () => {
       });
     }
   };
-  useEffect(() => {
     getRoleDetails();
   },[]);
 

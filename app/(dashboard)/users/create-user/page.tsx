@@ -85,7 +85,7 @@ const CreateUser: React.FC = () => {
       } else {
         throw new Error("Failed to create user.");
       }
-    } catch (err: any) {
+    } catch {
       showToast({
         message: `Failed to create user.`,
         type: "error",

@@ -1,4 +1,3 @@
-import ProductCard from "@/components/product/ProductCard";
 
 export default function IndividualProduct() {
   const addOnsList = [
@@ -16,29 +15,7 @@ export default function IndividualProduct() {
     "Bank POS",
     "FAM",
   ];
-  const products = [
-    {
-      id: 1,
-      title: "Polosys ERP",
-      label: "Licensed product",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-    },
-    {
-      id: 2,
-      title: "EazyBiz",
-      label: "Licensed product",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-    },
-    {
-      id: 3,
-      title: "Books",
-      label: "Subscription product",
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
-    },
-  ];
+
   return (
     <div>
       <div className="flex flex-row items-center justify-between my-4">
@@ -56,7 +33,7 @@ export default function IndividualProduct() {
             <div className="bg-white m-4 p-6 min-h-screen">
               <p>
                 Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
+                industry. Lorem Ipsum has been the industry&apos;s standard dummy
                 text ever since the 1500s, when an unknown printer took a galley
                 of type and scrambled it to make a type specimen book. It has
                 survived not only five centuries, but also the leap into

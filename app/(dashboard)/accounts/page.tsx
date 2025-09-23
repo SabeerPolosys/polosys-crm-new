@@ -135,7 +135,7 @@ const data = [
   },
 ];
 
-const handleRowClick = (rowData: any) => {
+const handleRowClick = () => {
     router.push(`/accounts/1`);
   };
   return (

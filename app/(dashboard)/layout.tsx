@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter , Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "../globals.css";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import { Toaster } from 'react-hot-toast'
