@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import { Toaster } from 'react-hot-toast'
+import { PermissionsProvider } from "@/context/PermissionsContext";
+import { PermissionGate } from "@/components/permissions/PermissionGate";
 
 const geistSans = Inter({
   // variable: "--font-geist-sans",
@@ -27,13 +29,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} antialiased bg-white`}
       >
         <Toaster position="top-right" reverseOrder={false} />
+         <PermissionsProvider>
+          <PermissionGate>
          <LayoutWrapper>{children}</LayoutWrapper>
+         </PermissionGate>
+         </PermissionsProvider>
       </body>
     </html>
   );
