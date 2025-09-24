@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import styles from "./DynamicTable.module.css";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { usePathname } from "next/navigation";
+import { usePermissions } from "@/context/PermissionsContext";
+import useValidatePermission from "../permissions/PermissionCheckerNew";
 
 interface Column {
   header: string;
@@ -53,6 +55,9 @@ const DynamicTable = <T extends Record<string, any>>({
     setRowsPerPage(newLimit);
     setCurrentPage(1); // Reset to first page
   };
+  const { permissions } = usePermissions();
+  const canEdit = useValidatePermission(pathname, "edit", permissions || []);
+  const canDelete = useValidatePermission(pathname, "delete", permissions || []);
 
   return (
     <div className="px-4 py-6">
@@ -63,8 +68,8 @@ const DynamicTable = <T extends Record<string, any>>({
               {columns.map((col) => (
                 <th key={col.accessor}>{col.header}</th>
               ))}
-              {isEditAllowed && <th></th>}
-              {isDeleteAllowed && <th></th>}
+              {(isEditAllowed && canEdit) && <th></th>}
+              {(isDeleteAllowed && canDelete) &&<th></th>}
             </tr>
           </thead>
           <tbody>
@@ -98,7 +103,7 @@ const DynamicTable = <T extends Record<string, any>>({
 
                   return <td key={col.accessor}>{value}</td>;
                 })}
-                {isEditAllowed && (
+                {(isEditAllowed && canEdit) && (
                   <td>
                     <button
                       className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
@@ -111,7 +116,7 @@ const DynamicTable = <T extends Record<string, any>>({
                     </button>
                   </td>
                 )}
-                {isDeleteAllowed && (
+                {(isDeleteAllowed && canDelete) && (
                   <td>
                     <button
                       className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}

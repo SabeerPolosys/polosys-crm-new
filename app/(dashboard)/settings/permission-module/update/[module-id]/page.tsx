@@ -3,59 +3,34 @@
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
 import React, { useState, FormEvent, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { formFieldconfig } from "@/config/formConfig";
+import { useParams, useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
-import { useParams } from "next/navigation";
-import { RoleType } from "@/types/auth";
-import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import { rightsFormConfig } from "@/config/permissionsFormConfig";
+import { PermissionModuleType } from "@/types/auth";
 
-interface RoleFormData {
-  typeName: string;
+interface PermissionModuleFormData {
+  moduleName: string;
   description: string;
 }
-type GetRoleResponse = {
+type GetPermissionModuleResponse = {
   success: boolean;
   message: string;
-  data: RoleType;
+  data: PermissionModuleType;
 };
 
-const EditRoleForm: React.FC = () => {
-  const [formData, setFormData] = useState<RoleFormData>({
-    typeName: "",
+const UpdatePermissionModule: React.FC = () => {
+  const [formData, setFormData] = useState<PermissionModuleFormData>({
+    moduleName: "",
     description: "",
   });
   const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
   const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
-    formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
-  const params = useParams();
-
-  useEffect(() => {
-    const getRoleDetails = async () => {
-    try {
-      const res = await api.get<GetRoleResponse>(
-        `${formField?.submitUrl}/${params?.["role-id"]}`
-      );
-      if (res?.data?.message) {
-        const respose = res?.data?.data;
-        setFormData({
-          typeName: respose?.typeName,
-          description: respose?.description,
-        });
-      }
-    } catch {
-      showToast({
-        message: `Failed to fetch role.`,
-        type: "error",
-      });
-    }
-  };
-    getRoleDetails();
-  },[]);
+    rightsFormConfig[trimmedPath as keyof typeof rightsFormConfig];
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -65,8 +40,30 @@ const EditRoleForm: React.FC = () => {
   };
 
   const handleClear = () => {
-    setFormData({ typeName: "", description: "" });
+    setFormData({ moduleName: "", description: "" });
   };
+  useEffect(() => {
+    const getPermissionModuleDetails = async () => {
+      try {
+        const res = await api.get<GetPermissionModuleResponse>(
+          `${formField?.submitUrl}/${params?.["module-id"]}`
+        );
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setFormData({
+            moduleName: respose?.moduleName,
+            description: respose?.description,
+          });
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch permission module.`,
+          type: "error",
+        });
+      }
+    };
+    getPermissionModuleDetails();
+  }, []);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -76,41 +73,35 @@ const EditRoleForm: React.FC = () => {
           typeof value === "string" ? value.trim() : value,
         ])
       );
-      if (!trimmedFormData?.typeName || !trimmedFormData?.description) {
+      if (!trimmedFormData?.moduleName || !trimmedFormData?.description) {
         return showToast({
           message: `Please fill required fields.`,
           type: "error",
         });
       }
-      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, userTypeId: params?.["role-id"]});
+      const res = await api.put(`${formField?.submitUrl}`, {
+        ...trimmedFormData,
+        moduleId: params?.["module-id"],
+      });
       if (res?.status == 200) {
+        // ✅ Backend should set auth cookie via Set-Cookie
         showToast({
-          message: `Role updated successfully.`,
+          message: `Permission module created successfully.`,
           type: "success",
         });
-        router.push("/users");
+        router.push("/settings/permission-module");
       } else {
-        throw new Error("Failed to create role.");
+        throw new Error("Failed to create permission module.");
       }
     } catch (err: any) {
-      if (
-        err?.response?.data?.message ===
-        "Violation of UNIQUE KEY constraint 'UQ__user_typ__D4E7DFA8649C4C50'. Cannot insert duplicate key in object 'dbo.user_types'. The duplicate key value is (New test three).\r\nThe statement has been terminated."
-      ) {
-        return showToast({
-          message: `Already exist same role, please try different role.`,
-          type: "error",
-        });
-      }
       showToast({
-        message: `Failed to update role.`,
+        message: `Failed to create permission module.`,
         type: "error",
       });
     }
   };
 
   return (
-    <ValidatePermissions permissionType="edit">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -119,10 +110,15 @@ const EditRoleForm: React.FC = () => {
         <div className="flex items-center mb-6">
           <div
             className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-            onClick={() => router.push("/users")}
+            onClick={() => router.push("/settings/permission-module")}
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>
+          {/* {formField?.icon && (
+            <div className="bg-blue-100 p-3 rounded-full mr-4">
+              {formField?.icon}
+            </div>
+          )} */}
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
               Update {formField?.title}
@@ -142,8 +138,7 @@ const EditRoleForm: React.FC = () => {
         />
       </div>
     </div>
-    </ValidatePermissions>
   );
 };
 
-export default EditRoleForm;
+export default UpdatePermissionModule;

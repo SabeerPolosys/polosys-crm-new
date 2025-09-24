@@ -10,6 +10,7 @@ import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import { useParams } from "next/navigation";
 import { UserType } from "@/types/auth";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
 interface UserFormData {
   userName: string;
@@ -137,6 +138,7 @@ const UpdateUser: React.FC = () => {
     }
   };
   return (
+    <ValidatePermissions permissionType="edit">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -173,6 +175,7 @@ const UpdateUser: React.FC = () => {
         />
       </div>
     </div>
+    </ValidatePermissions>
   );
 };
 

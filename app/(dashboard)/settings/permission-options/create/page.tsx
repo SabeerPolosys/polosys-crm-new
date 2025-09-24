@@ -14,14 +14,14 @@ interface RoleFormData {
   description: string;
 }
 
-const CreatePermissionMenu: React.FC = () => {
+const CreatePermissionOption: React.FC = () => {
   const [formData, setFormData] = useState<RoleFormData>({
     typeName: "",
     description: "",
   });
   const router = useRouter();
   const pathname = usePathname();
-  const trimmedPath = pathname;
+  const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
   const formField = rightsFormConfig[trimmedPath as keyof typeof rightsFormConfig];
 
   const handleFormDataChange = (key: string, value: string) => {
@@ -34,6 +34,7 @@ const CreatePermissionMenu: React.FC = () => {
   const handleClear = () => {
     setFormData({ typeName: "", description: "" });
   };
+  
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -86,7 +87,7 @@ const CreatePermissionMenu: React.FC = () => {
         <div className="flex items-center mb-6">
           <div
             className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-            onClick={() => router.push("/users")}
+            onClick={() => router.push("/settings/permission-options")}
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>
@@ -117,4 +118,4 @@ const CreatePermissionMenu: React.FC = () => {
   );
 };
 
-export default CreatePermissionMenu;
+export default CreatePermissionOption;

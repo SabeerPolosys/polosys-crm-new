@@ -3,7 +3,7 @@ import DynamicTable from "@/components/table/DynamicTable";
 import UserRoleList from "@/components/users/UserRoleList";
 import { FaRegUser } from "react-icons/fa";
 import { LuUserRoundCog } from "react-icons/lu";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import RolePermissions from "@/components/users/RolePermissions";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,6 +12,9 @@ import { UserType } from "@/types/auth";
 import { showToast } from "@/components/common/ShowToast";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
+import useValidatePermission from "../permissions/PermissionCheckerNew";
+import { usePermissions } from "@/context/PermissionsContext";
+import ValidatePermissions from "../permissions/ValidatePermissions";
 type GetUsersResponse = {
   success: boolean;
   messaage: string;
@@ -54,7 +57,18 @@ export default function UsersList() {
     setIsDeleteOpen(true);
     setDeleteId(row?.userId);
   };
-
+  const pathname = usePathname();
+  const { permissions } = usePermissions();
+  const canCreate = useValidatePermission(
+    pathname,
+    "create",
+    permissions || []
+  );
+  const canCreateRole = useValidatePermission(
+    "/users/role",
+    "create",
+    permissions || []
+  );
   return (
     <div>
       <h2 className="font-semibold mb-4">Users & Roles</h2>
@@ -75,13 +89,15 @@ export default function UsersList() {
                     {" "}
                     <LuUserRoundCog /> Manage Users
                   </button>
-                  <Link
-                    href={"/users/create-user"}
-                    className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
-                  >
-                    {" "}
-                    + &nbsp; Add User
-                  </Link>
+                  {canCreate && (
+                    <Link
+                      href={"/users/create-user"}
+                      className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
+                    >
+                      {" "}
+                      + &nbsp; Add User
+                    </Link>
+                  )}
                 </div>
               </div>
               <DynamicTable
@@ -107,19 +123,23 @@ export default function UsersList() {
           />
         </div>
         <div className="col-span-2 rounded-lg p-4 my-4 mr-4 bg-gray-50">
-          <div className="flex flex-row items-center justify-between">
-            <h2 className="text-lg font-bold px-6">Manage The Roles</h2>
-            <div className="flex flex-row gap-2 items-center">
-              <Link
-                href="/users/role/create-role"
-                className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
-              >
-                {" "}
-                + &nbsp; Add Role
-              </Link>
+          <ValidatePermissions permissionType="view" path="/users/role">
+            <div className="flex flex-row items-center justify-between">
+              <h2 className="text-lg font-bold px-6">Manage The Roles</h2>
+              <div className="flex flex-row gap-2 items-center">
+                {canCreateRole && (
+                  <Link
+                    href="/users/role/create-role"
+                    className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
+                  >
+                    {" "}
+                    + &nbsp; Add Role
+                  </Link>
+                )}
+              </div>
             </div>
-          </div>
-          <UserRoleList />
+            <UserRoleList />
+          </ValidatePermissions>
         </div>
       </div>
     </div>

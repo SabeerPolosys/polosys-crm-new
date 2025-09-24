@@ -2,27 +2,19 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent, useEffect } from "react";
+import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
-import { useParams } from "next/navigation";
-import { RoleType } from "@/types/auth";
-import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import { rightsFormConfig } from "@/config/permissionsFormConfig";
 
 interface RoleFormData {
   typeName: string;
   description: string;
 }
-type GetRoleResponse = {
-  success: boolean;
-  message: string;
-  data: RoleType;
-};
 
-const EditRoleForm: React.FC = () => {
+const UpdatePermissionOption: React.FC = () => {
   const [formData, setFormData] = useState<RoleFormData>({
     typeName: "",
     description: "",
@@ -30,32 +22,7 @@ const EditRoleForm: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
-  const formField =
-    formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
-  const params = useParams();
-
-  useEffect(() => {
-    const getRoleDetails = async () => {
-    try {
-      const res = await api.get<GetRoleResponse>(
-        `${formField?.submitUrl}/${params?.["role-id"]}`
-      );
-      if (res?.data?.message) {
-        const respose = res?.data?.data;
-        setFormData({
-          typeName: respose?.typeName,
-          description: respose?.description,
-        });
-      }
-    } catch {
-      showToast({
-        message: `Failed to fetch role.`,
-        type: "error",
-      });
-    }
-  };
-    getRoleDetails();
-  },[]);
+  const formField = rightsFormConfig[trimmedPath as keyof typeof rightsFormConfig];
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -82,10 +49,11 @@ const EditRoleForm: React.FC = () => {
           type: "error",
         });
       }
-      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, userTypeId: params?.["role-id"]});
+      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
       if (res?.status == 200) {
+        // ✅ Backend should set auth cookie via Set-Cookie
         showToast({
-          message: `Role updated successfully.`,
+          message: `Role created successfully.`,
           type: "success",
         });
         router.push("/users");
@@ -95,22 +63,21 @@ const EditRoleForm: React.FC = () => {
     } catch (err: any) {
       if (
         err?.response?.data?.message ===
-        "Violation of UNIQUE KEY constraint 'UQ__user_typ__D4E7DFA8649C4C50'. Cannot insert duplicate key in object 'dbo.user_types'. The duplicate key value is (New test three).\r\nThe statement has been terminated."
+        "Violation of UNIQUE KEY constraint \u0027UQ__user_typ__D4E7DFA8649C4C50\u0027. Cannot insert duplicate key in object \u0027dbo.user_types\u0027. The duplicate key value is (test).\r\nThe statement has been terminated."
       ) {
         return showToast({
-          message: `Already exist same role, please try different role.`,
+          message: `Already exist same role.`,
           type: "error",
         });
       }
       showToast({
-        message: `Failed to update role.`,
+        message: `Failed to create role.`,
         type: "error",
       });
     }
   };
 
   return (
-    <ValidatePermissions permissionType="edit">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -119,10 +86,15 @@ const EditRoleForm: React.FC = () => {
         <div className="flex items-center mb-6">
           <div
             className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-            onClick={() => router.push("/users")}
+            onClick={() => router.push("/settings/permission-options")}
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>
+          {/* {formField?.icon && (
+            <div className="bg-blue-100 p-3 rounded-full mr-4">
+              {formField?.icon}
+            </div>
+          )} */}
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
               Update {formField?.title}
@@ -142,8 +114,7 @@ const EditRoleForm: React.FC = () => {
         />
       </div>
     </div>
-    </ValidatePermissions>
   );
 };
 
-export default EditRoleForm;
+export default UpdatePermissionOption;

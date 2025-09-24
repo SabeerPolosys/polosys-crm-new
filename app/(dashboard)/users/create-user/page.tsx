@@ -8,6 +8,7 @@ import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
 interface UserFormData {
   userName: string;
@@ -94,6 +95,7 @@ const CreateUser: React.FC = () => {
   };
 
   return (
+    <ValidatePermissions permissionType="create">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -130,6 +132,7 @@ const CreateUser: React.FC = () => {
         />
       </div>
     </div>
+    </ValidatePermissions>
   );
 };
 

@@ -1,5 +1,4 @@
 "use client"
-import { usePermissions } from "@/context/PermissionsContext";
 
 function getBasePath(path:string) {
     const parts = path.split('/').filter(Boolean);

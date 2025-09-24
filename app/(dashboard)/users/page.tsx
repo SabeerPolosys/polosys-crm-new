@@ -5,9 +5,9 @@ import { Suspense } from "react";
 export default function UsersPage() {
   return (
     <ValidatePermissions>
-    <Suspense fallback={<div>Loading users...</div>}>
-      <UsersList />
-    </Suspense>
+      <Suspense fallback={<div>Loading users...</div>}>
+        <UsersList />
+      </Suspense>
     </ValidatePermissions>
   );
 }

@@ -15,18 +15,82 @@ const PermissionsContext = createContext<PermissionsContextType>({
 
 const initialPermission = [
     {
+        Name: "Dashboard",
+        url: "/",
+        view: true,
+        create: true,
+        edit: true,
+        delete: true
+    },
+    {
         Name: "User",
         url: "/users",
         view: true,
         create: true,
-        edit: false,
-        delete: false
+        edit: true,
+        delete: true
     },
     {
         Name: "Role",
-        url: "/role",
+        url: "/users/role",
+        view: true,
+        create: false,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Leads",
+        url: "/leads",
+        view: true,
+        create: false,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Products",
+        url: "/products",
         view: true,
         create: true,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Accounts",
+        url: "/accounts",
+        view: true,
+        create: false,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Customers",
+        url: "/customers",
+        view: true,
+        create: false,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Reports",
+        url: "/reports",
+        view: true,
+        create: false,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Permission Modules",
+        url: "/settings/permission-module",
+        view: true,
+        create: false,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Permission Options",
+        url: "/settings/permission-options",
+        view: true,
+        create: false,
         edit: true,
         delete: true
     }

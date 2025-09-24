@@ -4,6 +4,7 @@ import { FaSave, FaTimes } from "react-icons/fa";
 import SbFormPassword from "./SbFormPassword";
 import SbFormSelectbox from "./SbFormSelectbox";
 import SbFormPermissionOptions from "./SbFormPermissionOptions";
+import SbFormTextArea from "./SbFormTextArea";
 
 export default function SbForm({
   formField,
@@ -58,6 +59,15 @@ export default function SbForm({
                   <SbFormPermissionOptions key={index} field={field} value={formData[field?.key] ?? ""}
                     handleFormDataChange={handleFormDataChange}/>
                 )
+              case "textArea":
+                return (
+                  <SbFormTextArea
+                    field={field}
+                    key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
               default:
                 break;
             }

@@ -62,8 +62,8 @@ export const formFieldconfig = {
         required: true,
         placeholder: "Role",
         getListUrl: "/api/v1/user-type",
-        valueKey:"userTypeId",
-        optionKey:"typeName"
+        valueKey: "userTypeId",
+        optionKey: "typeName",
       },
       {
         label: "Status",
@@ -75,8 +75,8 @@ export const formFieldconfig = {
           { value: true, option: "Active" },
           { value: false, option: "Invative" },
         ],
-        valueKey:"value",
-        optionKey:"option"
+        valueKey: "value",
+        optionKey: "option",
       },
       {
         label: "Country",
@@ -84,9 +84,9 @@ export const formFieldconfig = {
         type: "select",
         required: true,
         placeholder: "Country",
-        valueKey:"countryId",
-        optionKey:"countryName",
-        getListUrl: "/api/v1/common/countries"
+        valueKey: "countryId",
+        optionKey: "countryName",
+        getListUrl: "/api/v1/common/countries",
       },
     ],
     hasSubmitButton: true,
@@ -122,8 +122,8 @@ export const formFieldconfig = {
         required: true,
         placeholder: "Role",
         getListUrl: "/api/v1/user-type",
-        valueKey:"userTypeId",
-        optionKey:"typeName"
+        valueKey: "userTypeId",
+        optionKey: "typeName",
       },
       {
         label: "Status",
@@ -135,8 +135,8 @@ export const formFieldconfig = {
           { value: true, option: "Active" },
           { value: false, option: "Invative" },
         ],
-        valueKey:"value",
-        optionKey:"option"
+        valueKey: "value",
+        optionKey: "option",
       },
       {
         label: "Country",
@@ -144,14 +144,67 @@ export const formFieldconfig = {
         type: "select",
         required: true,
         placeholder: "Country",
-        valueKey:"countryId",
-        optionKey:"countryName",
-        getListUrl: "/api/v1/common/countries"
+        valueKey: "countryId",
+        optionKey: "countryName",
+        getListUrl: "/api/v1/common/countries",
       },
     ],
     hasSubmitButton: true,
     submitButtonLabel: "User",
     hasClearButton: true,
     submitUrl: "/api/v1/user",
+  },
+
+  "/products": {
+    Category: "Products",
+    title: "Product",
+    formLabel: "",
+    // icon: <FaUserCog className="text-blue-600 text-xl" />,
+    fields: [
+      {
+        label: "Product Name",
+        key: "name",
+        type: "input",
+        required: true,
+        placeholder: "Product Name",
+      },
+      {
+        label: "Product Type",
+        key: "productTypeID",
+        type: "select",
+        required: true,
+        defaultList: [
+          { value: 1, option: "Licensed" },
+          { value: 2, option: "Subscription" },
+        ],
+        valueKey: "value",
+        optionKey: "option",
+      },
+      {
+        label: "Status",
+        key: "isActive",
+        type: "select",
+        required: true,
+        placeholder: "Status",
+        defaultList: [
+          { value: true, option: "Active" },
+          { value: false, option: "Invative" },
+        ],
+        valueKey: "value",
+        optionKey: "option",
+      },
+      {
+        label: "Description",
+        key: "description",
+        type: "textArea",
+        required: true,
+        placeholder: "Description",
+        class: "w-32"
+      },
+    ],
+    hasSubmitButton: true,
+    submitButtonLabel: "Product",
+    hasClearButton: true,
+    submitUrl: "/api/v1/product",
   },
 };

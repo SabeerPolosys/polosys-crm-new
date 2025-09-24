@@ -3,33 +3,30 @@ import DynamicTable from "@/components/table/DynamicTable";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { showToast } from "@/components/common/ShowToast";
-import { PermissionOptions } from "@/types/auth";
+import { PermissionModuleType } from "@/types/auth";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
 type GetPermissionModuleResponse = {
   success: boolean;
   message: string;
-  data: PermissionOptions[];
+  data: PermissionModuleType[];
 };
 
 export default function PermissionModule() {
-  const [data, setData] = useState<PermissionOptions[]>([]);
+  const [data, setData] = useState<PermissionModuleType[]>([]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const columns = [
-    { header: "Option Name", accessor: "rightName" },
     { header: "Module Name", accessor: "moduleName" },
     { header: "Description", accessor: "description" },
-    { header: "Url", accessor: "url" },
-    { header: "Options", accessor: "option" },
   ];
   const router = useRouter();
   useEffect(() => {
     const getAllPermissionModules = async () => {
       try {
         const res = await api.get<GetPermissionModuleResponse>(
-          `/api/v1/user-rights-master`
+          `/api/v1/module`
         );
         if (res?.data?.success) {
           const respose = res?.data?.data;
@@ -45,7 +42,7 @@ export default function PermissionModule() {
     getAllPermissionModules();
   }, []);
   const onEditClick = (row: any) => {
-    router.push(`/settings/permission-options/update/${row?.moduleId}`);
+    router.push(`/settings/permission-module/update/${row?.moduleId}`);
   };
   const onDeleteClick = (row: any) => {
     setIsDeleteOpen(true);
@@ -55,14 +52,14 @@ export default function PermissionModule() {
   return (
     <div className="rounded-lg py-10 bg-white">
       <div className="flex flex-row justify-between items-center">
-        <h2 className="text-lg font-bold px-6">All Permission Option</h2>
+        <h2 className="text-lg font-bold px-6">All Permission Modules</h2>
         <div className="flex flex-row gap-2 items-center">
           <Link
-            href={"/settings/permission-options/create"}
+            href={"/settings/permission-module/create"}
             className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
           >
             {" "}
-            + &nbsp; Add Permission Options
+            + &nbsp; Add Permission Module
           </Link>
         </div>
       </div>
@@ -80,10 +77,10 @@ export default function PermissionModule() {
           setIsDeleteOpen(false);
           setDeleteId(null);
         }}
-        deleteLabel="Permission Option"
-        deleteId={`?userRightsMasterId=${deleteId}` as string}
-        deleteUrl={"/api/v1/user-rights-maste"}
-        redirectUrl={"/settings/permission-options"}
+        deleteLabel="Permission Module"
+        deleteId={`?moduleId=${deleteId}` as string}
+        deleteUrl={"/api/v1/module"}
+        redirectUrl={"/settings/permission-module"}
       />
     </div>
   );

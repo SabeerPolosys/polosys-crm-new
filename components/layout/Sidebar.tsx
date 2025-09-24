@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, JSX, SetStateAction, useEffect, useState } from "react";
 import {
   FaHome,
   FaUsers,
@@ -21,8 +21,15 @@ import { RiMenuAddLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { RiLogoutCircleLine } from "react-icons/ri";
+import useValidatePermission from "../permissions/PermissionCheckerNew";
+import { usePermissions } from "@/context/PermissionsContext";
+type MenuType = {
+  label: string,
+  icon: JSX.Element,
+  link: string
+}
 
-const menuItems = [
+const allMenuItems = [
   { label: "Dashboard", icon: <FaHome />, link: "/" },
   { label: "Users & Roles", icon: <FaUsers />, link: "/users" },
   { label: "Leads", icon: <FaUserTie />, link: "/leads" },
@@ -33,7 +40,14 @@ const menuItems = [
 ];
 
 const settingsItems = [
-  { label: "Settings", icon: <FaCog /> },
+  {
+    label: "Settings",
+    icon: <FaCog />,
+    children: [
+      { label: "Permission Module", link: "/settings/permission-module" },
+      { label: "Permission Options", link: "/settings/permission-options" }
+    ],
+  },
   { label: "Help Center", icon: <FaQuestionCircle /> },
 ];
 
@@ -44,7 +58,27 @@ type SidebarPropsType = {
 
 export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
   const [darkMode, setDarkMode] = useState(false);
+  const [openSubmenus, setOpenSubmenus] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [menuItems, setMenuItems] = useState<MenuType[]>([]);
   const pathname = usePathname();
+
+  const toggleSubmenu = (label: string) => {
+    setOpenSubmenus((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+  const { permissions } = usePermissions();
+  useEffect(()=>{
+      const menus = allMenuItems?.filter((menu)=>{
+        if(useValidatePermission(menu?.link, "view", permissions || [])){
+          return menu;
+        }
+      })
+      setMenuItems(menus);
+  }, [])
 
   return (
     <>
@@ -79,6 +113,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                   className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition ${
                     isActive ? "bg-gray-700" : ""
                   }`}
+                  onClick={()=>setOpenSubmenus({})}
                 >
                   {icon}
                   {label}
@@ -88,7 +123,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
 
             {/* Settings */}
             <p className="px-4 py-2 text-gray-400 text-xs mt-4">SETTINGS</p>
-            {settingsItems.map(({ label, icon }) => (
+            {/* {settingsItems.map(({ label, icon }) => (
               <button
                 key={label}
                 onClick={() => alert(`${label} clicked`)}
@@ -97,6 +132,45 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                 {icon}
                 {label}
               </button>
+            ))} */}
+            {settingsItems.map(({ label, icon, children }) => (
+              <div key={label}>
+                <button
+                  onClick={() => {
+                    if (children) {
+                      toggleSubmenu(label);
+                    }
+                  }}
+                  className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition justify-between`}
+                >
+                  <div className="flex items-center gap-3">
+                    {icon}
+                    {label}
+                  </div>
+                  {children && (
+                    <span className="ml-auto">
+                      {openSubmenus[label] ? (
+                        <FaChevronLeft />
+                      ) : (
+                        <FaChevronRight />
+                      )}
+                    </span>
+                  )}
+                </button>
+                {/* Submenu rendering */}
+                {children && openSubmenus[label] && (
+                  <div className="ml-8 mt-1 flex flex-col">
+                    {children.map((subItem) => (
+                      <Link href={subItem?.link}
+                        key={subItem.label}
+                        className="text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded"
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 

@@ -1,15 +1,15 @@
 // import { FaUserCog } from 'react-icons/fa';
 
 export const rightsFormConfig = {
-  "/settings/permission-menu": {
+  "/settings/permission-module": {
     Category: "User & Rights",
-    title: "Permission Menu",
+    title: "Permission Module",
     formLabel: "",
     // icon: <FaUserCog className="text-blue-600 text-xl" />,
     fields: [
       {
-        label: "Permission Menu",
-        key: "rightMenu",
+        label: "Permission Module",
+        key: "moduleName",
         type: "input",
         required: true,
         placeholder: "e.g., Accounts, Inventory etc...",
@@ -23,9 +23,9 @@ export const rightsFormConfig = {
       },
     ],
     hasSubmitButton: true,
-    submitButtonLabel: "Permission",
+    submitButtonLabel: "Permission Module",
     hasClearButton: true,
-    submitUrl: "/api/v1/user-type",
+    submitUrl: "/api/v1/module",
   },
 
   "/settings/permission-options": {
@@ -46,7 +46,9 @@ export const rightsFormConfig = {
         key: "rightMenu",
         type: "select",
         required: true,
-        placeholder: "e.g., Accounts, Inventory etc...",
+        getListUrl: "/api/v1/module",
+        valueKey:"moduleId",
+        optionKey:"moduleName"
       },
       {
         label: "Url",

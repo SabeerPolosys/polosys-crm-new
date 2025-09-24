@@ -34,3 +34,33 @@ export interface UserType {
   createdAt: Date,
   modifiedAt: Date
 }
+
+export interface PermissionModuleType {
+  moduleId: string,
+  moduleName: string,
+  description: string,
+  createdAt: Date,
+  modifiedAt: Date
+}
+
+export interface PermissionOptions {
+  userRightsMasterId: string,
+  moduleId: string,
+  rightName: string,
+  description: string,
+  url: string,
+  view: boolean,
+  create: boolean,
+  edit: boolean,
+  delete: boolean
+}
+
+export interface ProductTypes {
+  ProductID: string,
+  name: string,
+  description: string,
+  productTypeID: number,
+  isActive: boolean,
+  createdAt: Date,
+  modifiedAt: Date
+}
