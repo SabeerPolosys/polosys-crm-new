@@ -109,6 +109,14 @@ const initialPermission = [
         create: true,
         edit: true,
         delete: true
+    },
+    {
+        Name: "Add ons",
+        url: "/products/addons",
+        view: true,
+        create: true,
+        edit: true,
+        delete: true
     }
 ];
 

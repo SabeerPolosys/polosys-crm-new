@@ -13,12 +13,12 @@ export default function ProductCard({product}: {product:ProductTypes}) {
           <BsBox className="w-6 h-6" />
         </div>
         <p>
-          <span className="text-2xl font-bold">{product?.name}</span>
+          <span className="text-xl font-bold">{product?.name}</span>
           <br />
-          <span className="text-gray-400">{product?.productTypeID === 1 ? "Licensed product" : "Subscription product"}</span>
+          <span className="text-gray-400 text-sm">{product?.productTypeID === 1 ? "Licensed product" : "Subscription product"}</span>
         </p>
       </div>
-      <p className="text-gray-400">
+      <p className="text-gray-400 text-sm">
         {product?.description}
       </p>
       <button className="border-2 border-gray-300 px-4 py-2 rounded text-gray-500 font-xs cursor-pointer">

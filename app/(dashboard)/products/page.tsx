@@ -1,5 +1,6 @@
 "use client"
 import { showToast } from "@/components/common/ShowToast";
+import AddonsList from "@/components/product/AddonsList";
 import ProductCard from "@/components/product/ProductCard";
 import api from "@/lib/axios";
 import { ProductTypes } from "@/types/auth";
@@ -71,7 +72,7 @@ export default function Products() {
     <div>
       <div className="flex flex-row items-center justify-between my-4">
         <h2 className="font-semibold">Product Suite</h2>
-        <button className="bg-gray-800 text-white px-4 text-xs py-2 rounded">
+        <button className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
           + &nbsp; Add Lead
         </button>
       </div>
@@ -80,7 +81,7 @@ export default function Products() {
           <div className="col-span-2 bg-gray-50">
             <div className="flex flex-row items-center justify-between m-4">
               <h2 className="font-semibold text-xl">All Products</h2>
-              <Link href={"/products/create"} className="bg-gray-800 text-white px-4 text-xs py-2 rounded">
+              <Link href={"/products/create"} className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
                 + &nbsp; Add Products
               </Link>
             </div>
@@ -89,27 +90,8 @@ export default function Products() {
                     products?.map((product, idx)=><ProductCard key={idx} product={product}/>)
                 }
             </div>
-          </div>
-          <div className="col-span-1 bg-gray-50">
-            <div className="flex flex-row items-center justify-between m-4">
-              <h2 className="font-semibold text-xl">Add-ons</h2>
-              <button className="bg-gray-800 text-white px-4 text-xs py-2 rounded">
-                + &nbsp; Add Add-ons
-              </button>
-            </div>
-            <div className="flex flex-col gap-2 px-6">
-              {addOnsList?.map((ons, idx) => {
-                return (
-                  <div
-                    key={idx}
-                    className="p-2 border-1 rounded-lg border-gray-200 bg-white font-medium"
-                  >
-                    {ons}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          </div>       
+          <AddonsList addOnsList={addOnsList}/>
         </div>
       </div>
     </div>

@@ -316,4 +316,48 @@ export const formFieldconfig = {
     hasClearButton: true,
     submitUrl: "/api/v1/product-version",
   },
+  "/products/addons": {
+    Category: "Add-ons",
+    title: "Add-ons",
+    formLabel: "",
+    // icon: <FaUserCog className="text-blue-600 text-xl" />,
+    fields: [
+      {
+        label: "Add-ons Name",
+        key: "name",
+        type: "input",
+        required: true,
+        placeholder: "Add-ons Name",
+      },
+      {
+        label: "Add-ons price",
+        key: "addonPrice",
+        type: "number",
+        required: true,
+        placeholder: "Add-ons price",
+      },
+      {
+        label: "Currency",
+        key: "currencyID",
+        type: "select",
+        required: true,
+        defaultList: [
+          { value: "8358cf62-245a-33b9-dafa-e275cc1a5318", option: "SAR" },
+        ],
+        valueKey: "value",
+        optionKey: "option",
+      },
+      {
+        label: "Description",
+        key: "description",
+        type: "textArea",
+        required: true,
+        placeholder: "Description",
+      },
+    ],
+    hasSubmitButton: true,
+    submitButtonLabel: "Add-ons",
+    hasClearButton: true,
+    submitUrl: "/api/v1/product-addon",
+  },
 };

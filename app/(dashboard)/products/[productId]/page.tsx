@@ -9,6 +9,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
 import Link from "next/link";
+import AddonsList from "@/components/product/AddonsList";
 type GetProductResponse = {
   success: boolean;
   message: string;
@@ -70,7 +71,7 @@ export default function IndividualProduct() {
     >
       <div className="flex flex-row items-center justify-between my-4">
         <h2 className="font-semibold">Product Suite</h2>
-        <button className="bg-gray-800 text-white px-4 text-xs py-2 rounded">
+        <button className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
           + &nbsp; Add Lead
         </button>
       </div>
@@ -79,42 +80,6 @@ export default function IndividualProduct() {
           <div className="col-span-2 bg-gray-50">
             <div className="flex flex-row items-center justify-between m-4">
               <h2 className="font-semibold text-xl">{productDetails?.name}</h2>
-              {/* <div className="relative">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleDropdown(0);
-                  }}
-                  className="p-2 rounded-full hover:bg-gray-400 transition"
-                >
-                  <FiMoreVertical className="text-lg" />
-                </button>
-
-                {openDropdownIndex === 0 && (
-                  <div
-                    className="absolute right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50"
-                    onClick={(e) => e.stopPropagation()} // prevent closing on parent click
-                  >
-                    <button
-                      className="px-2 py-1 hover:bg-gray-100 text-blue-500 cursor-pointer"
-                      onClick={() => {
-                        router.push(`/products/update/${params?.productId}`);
-                      }}
-                    >
-                      <MdOutlineEdit />
-                    </button>
-                    <button
-                      className="px-2 py-1 hover:bg-gray-100 text-red-500 cursor-pointer"
-                      onClick={() => {
-                        setIsDeleteOpen(true);
-                        setDeleteId(params?.productId);
-                      }}
-                    >
-                      <MdDeleteOutline />
-                    </button>
-                  </div>
-                )}
-              </div> */}
               <div className="relative">
                 <FiMoreVertical
                   className="text-lg cursor-pointer hover:text-white hover:rounded-full p-0.5 hover:bg-gray-800 hover:scale-105 transition-all duration-150 ease-in-out w-6 h-6"
@@ -342,26 +307,7 @@ export default function IndividualProduct() {
               )}
             </div>
           </div>
-          <div className="col-span-1 bg-gray-50">
-            <div className="flex flex-row items-center justify-between m-4">
-              <h2 className="font-semibold text-xl">Add-ons</h2>
-              <button className="bg-gray-800 text-white px-4 text-xs py-2 rounded">
-                + &nbsp; Add Add-ons
-              </button>
-            </div>
-            <div className="flex flex-col gap-2 px-6">
-              {addOnsList?.map((ons, idx) => {
-                return (
-                  <div
-                    key={idx}
-                    className="p-2 border-1 rounded-lg border-gray-200 bg-white font-medium"
-                  >
-                    {ons}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <AddonsList addOnsList={addOnsList}/>
         </div>
       </div>
       <DeleteConfirmationModal
