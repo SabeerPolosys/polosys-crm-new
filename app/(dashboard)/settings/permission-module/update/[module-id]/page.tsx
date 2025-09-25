@@ -63,7 +63,7 @@ const UpdatePermissionModule: React.FC = () => {
       }
     };
     getPermissionModuleDetails();
-  }, []);
+  }, [params, formField?.submitUrl]);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -93,7 +93,7 @@ const UpdatePermissionModule: React.FC = () => {
       } else {
         throw new Error("Failed to create permission module.");
       }
-    } catch (err: any) {
+    } catch {
       showToast({
         message: `Failed to create permission module.`,
         type: "error",

@@ -47,7 +47,7 @@ export default function IndividualProduct() {
       }
     };
     getProductDetails();
-  }, []);
+  }, [params]);
   const addOnsList = [
     "User action report",
     "Schemes",

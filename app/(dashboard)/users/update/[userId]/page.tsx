@@ -76,7 +76,7 @@ const UpdateUser: React.FC = () => {
     }
   };
     getUserDetails();
-  }, []);
+  }, [params, formField?.submitUrl]);
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -130,7 +130,7 @@ const UpdateUser: React.FC = () => {
       } else {
         throw new Error("Failed to create user.");
       }
-    } catch (err: any) {
+    } catch {
       showToast({
         message: `Failed to update user.`,
         type: "error",

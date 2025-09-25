@@ -5,7 +5,7 @@ import styles from "./DynamicTable.module.css";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { usePermissions } from "@/context/PermissionsContext";
-import useValidatePermission from "../permissions/PermissionCheckerNew";
+import validatePermission from "../permissions/PermissionCheckerNew";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -60,8 +60,8 @@ const DynamicTable = <T extends Record<string, any>>({
     setCurrentPage(1); // Reset to first page
   };
   const { permissions } = usePermissions();
-  const canEdit = useValidatePermission(pathname, "edit", permissions || []);
-  const canDelete = useValidatePermission(
+  const canEdit = validatePermission(pathname, "edit", permissions || []);
+  const canDelete = validatePermission(
     pathname,
     "delete",
     permissions || []

@@ -55,7 +55,7 @@ const EditRoleForm: React.FC = () => {
     }
   };
     getRoleDetails();
-  },[]);
+  },[params, formField?.submitUrl]);
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({

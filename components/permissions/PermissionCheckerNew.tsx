@@ -20,7 +20,7 @@ function getBasePath(path:string) {
 }
 
 // ✅ Valid custom hook
-const useValidatePermission = (pathname: string, type: string, permissions: any[]) => {
+const validatePermission = (pathname: string, type: string, permissions: any[]) => {
   
     const basePath = getBasePath(pathname);
     const permission = permissions?.find((p: any) => p.url === basePath);
@@ -28,4 +28,4 @@ const useValidatePermission = (pathname: string, type: string, permissions: any[
 };
 
 
-export default useValidatePermission;
+export default validatePermission;

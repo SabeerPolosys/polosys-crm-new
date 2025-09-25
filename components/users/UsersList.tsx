@@ -12,7 +12,7 @@ import { UserType } from "@/types/auth";
 import { showToast } from "@/components/common/ShowToast";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
-import useValidatePermission from "../permissions/PermissionCheckerNew";
+import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
 import ValidatePermissions from "../permissions/ValidatePermissions";
 type GetUsersResponse = {
@@ -63,12 +63,12 @@ export default function UsersList() {
   };
   const pathname = usePathname();
   const { permissions } = usePermissions();
-  const canCreate = useValidatePermission(
+  const canCreate = validatePermission(
     pathname,
     "create",
     permissions || []
   );
-  const canCreateRole = useValidatePermission(
+  const canCreateRole = validatePermission(
     "/users/role",
     "create",
     permissions || []

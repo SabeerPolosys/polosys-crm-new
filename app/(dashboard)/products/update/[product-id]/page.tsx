@@ -75,7 +75,7 @@ const UpdateProduct: React.FC = () => {
       }
     };
     getProductDetails();
-  }, []);
+  }, [params]);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();

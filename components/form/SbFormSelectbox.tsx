@@ -50,7 +50,7 @@ export default function SbFormSelectbox({
     } else if (field?.getListUrl) {
       getAllRoles(field?.getListUrl);
     }
-  }, [field?.getListUrl]);
+  }, [field?.getListUrl, field?.defaultList]);
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     handleFormDataChange(field?.key, e.target.value);
   };

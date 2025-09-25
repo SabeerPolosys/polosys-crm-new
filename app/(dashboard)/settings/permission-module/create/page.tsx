@@ -61,7 +61,7 @@ const CreatePermissionModule: React.FC = () => {
       } else {
         throw new Error("Failed to create permission module.");
       }
-    } catch (err: any) {
+    } catch {
       showToast({
         message: `Failed to create permission module.`,
         type: "error",

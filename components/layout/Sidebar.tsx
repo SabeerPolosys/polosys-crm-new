@@ -21,7 +21,7 @@ import { RiMenuAddLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import useValidatePermission from "../permissions/PermissionCheckerNew";
+import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
 type MenuType = {
   label: string,
@@ -73,12 +73,12 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
   const { permissions } = usePermissions();
   useEffect(()=>{
       const menus = allMenuItems?.filter((menu)=>{
-        if(useValidatePermission(menu?.link, "view", permissions || [])){
+        if(validatePermission(menu?.link, "view", permissions || [])){
           return menu;
         }
       })
       setMenuItems(menus);
-  }, [])
+  }, [permissions])
 
   return (
     <>
