@@ -6,6 +6,8 @@ import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { usePermissions } from "@/context/PermissionsContext";
 import useValidatePermission from "../permissions/PermissionCheckerNew";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 interface Column {
   header: string;
@@ -21,6 +23,7 @@ interface DynamicTableProps<T> {
   isDeleteAllowed?: boolean;
   onEditClick?: (rowData: T) => void;
   onDeleteClick?: (rowData: T) => void;
+  isDataLoading?: boolean;
 }
 
 const DynamicTable = <T extends Record<string, any>>({
@@ -32,6 +35,7 @@ const DynamicTable = <T extends Record<string, any>>({
   isDeleteAllowed,
   onEditClick,
   onDeleteClick,
+  isDataLoading,
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
@@ -57,7 +61,11 @@ const DynamicTable = <T extends Record<string, any>>({
   };
   const { permissions } = usePermissions();
   const canEdit = useValidatePermission(pathname, "edit", permissions || []);
-  const canDelete = useValidatePermission(pathname, "delete", permissions || []);
+  const canDelete = useValidatePermission(
+    pathname,
+    "delete",
+    permissions || []
+  );
 
   return (
     <div className="px-4 py-6">
@@ -68,69 +76,97 @@ const DynamicTable = <T extends Record<string, any>>({
               {columns.map((col) => (
                 <th key={col.accessor}>{col.header}</th>
               ))}
-              {(isEditAllowed && canEdit) && <th></th>}
-              {(isDeleteAllowed && canDelete) &&<th></th>}
+              {isEditAllowed && canEdit && <th></th>}
+              {isDeleteAllowed && canDelete && <th></th>}
             </tr>
           </thead>
           <tbody>
-            {paginatedData.map((row, rowIndex) => (
-              <tr
-                key={rowIndex}
-                className={`${
-                  rowIndex % 2 === 0 ? styles.evenRow : styles.oddRow
-                } ${onRowClick ? "cursor-pointer" : ""}`}
-                onClick={() => onRowClick?.(row)}
-              >
-                {columns.map((col) => {
-                  let value = row[col.accessor];
-                  if (col.accessor.toLowerCase() === "slno") {
-                    value = rowIndex + 1;
-                  } else if (col.accessor.toLowerCase() === "status") {
-                    value = (
-                      <span
-                        className={`${styles.status} ${
-                          row[col.accessor] === "Pending"
-                            ? styles.pending
-                            : row[col.accessor] === "Paid"
-                            ? styles.paid
-                            : styles.overdue
-                        }`}
-                      >
-                        {row[col.accessor]}
-                      </span>
-                    );
-                  }
+            {isDataLoading ? (
+              Array.from({ length: rowsPerPage }).map((_, i) => (
+                <tr key={i}>
+                  <td
+                    colSpan={
+                      columns.length +
+                      (isEditAllowed && canEdit ? 1 : 0) +
+                      (isDeleteAllowed && canDelete ? 1 : 0)
+                    }
+                  >
+                    <Skeleton height={20} />
+                  </td>
+                </tr>
+              ))
+            ) : paginatedData?.length > 0 ? (
+              paginatedData.map((row, rowIndex) => (
+                <tr
+                  key={rowIndex}
+                  className={`${
+                    rowIndex % 2 === 0 ? styles.evenRow : styles.oddRow
+                  } ${onRowClick ? "cursor-pointer" : ""}`}
+                  onClick={() => onRowClick?.(row)}
+                >
+                  {columns.map((col) => {
+                    let value = row[col.accessor];
+                    if (col.accessor.toLowerCase() === "slno") {
+                      value = rowIndex + 1;
+                    } else if (col.accessor.toLowerCase() === "status") {
+                      value = (
+                        <span
+                          className={`${styles.status} ${
+                            row[col.accessor] === "Pending"
+                              ? styles.pending
+                              : row[col.accessor] === "Paid"
+                              ? styles.paid
+                              : styles.overdue
+                          }`}
+                        >
+                          {row[col.accessor]}
+                        </span>
+                      );
+                    }
 
-                  return <td key={col.accessor}>{value}</td>;
-                })}
-                {(isEditAllowed && canEdit) && (
-                  <td>
-                    <button
-                      className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
-                      onClick={(e) => {
-                        e.stopPropagation(); // prevent row click
-                        onEditClick?.(row);
-                      }}
-                    >
-                      <MdOutlineEdit className="text-blue-500" />
-                    </button>
-                  </td>
-                )}
-                {(isDeleteAllowed && canDelete) && (
-                  <td>
-                    <button
-                      className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
-                      onClick={(e) => {
-                        e.stopPropagation(); // prevent row click
-                        onDeleteClick?.(row);
-                      }}
-                    >
-                      <MdDeleteOutline className="text-red-500" />
-                    </button>
-                  </td>
-                )}
+                    return <td key={col.accessor}>{value}</td>;
+                  })}
+                  {isEditAllowed && canEdit && (
+                    <td>
+                      <button
+                        className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent row click
+                          onEditClick?.(row);
+                        }}
+                      >
+                        <MdOutlineEdit className="text-blue-500" />
+                      </button>
+                    </td>
+                  )}
+                  {isDeleteAllowed && canDelete && (
+                    <td>
+                      <button
+                        className={`${styles.editBtn} cursor-pointer transition-transform transform hover:scale-150 duration-200`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent row click
+                          onDeleteClick?.(row);
+                        }}
+                      >
+                        <MdDeleteOutline className="text-red-500" />
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={
+                    columns.length +
+                    (isEditAllowed && canEdit ? 1 : 0) +
+                    (isDeleteAllowed && canDelete ? 1 : 0)
+                  }
+                >
+                  <span>No Record Found</span>
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
 

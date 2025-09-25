@@ -56,7 +56,7 @@ export interface PermissionOptions {
 }
 
 export interface ProductTypes {
-  ProductID: string,
+  productID: string,
   name: string,
   description: string,
   productTypeID: number,

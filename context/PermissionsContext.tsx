@@ -93,6 +93,22 @@ const initialPermission = [
         create: false,
         edit: true,
         delete: true
+    },
+    {
+        Name: "Plan",
+        url: "/products/plan",
+        view: true,
+        create: true,
+        edit: true,
+        delete: true
+    },
+    {
+        Name: "Version",
+        url: "/products/version",
+        view: true,
+        create: true,
+        edit: true,
+        delete: true
     }
 ];
 

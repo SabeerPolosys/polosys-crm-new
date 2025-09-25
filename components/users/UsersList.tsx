@@ -25,9 +25,11 @@ export default function UsersList() {
   const [data, setData] = useState<UserType[]>([]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const router = useRouter();
   const getAllUsers = async () => {
     try {
+      setIsDataLoading(true);
       const res = await api.get<GetUsersResponse>(`/api/v1/user`);
       if (res?.data?.success) {
         setData(res?.data?.data ?? []);
@@ -37,6 +39,8 @@ export default function UsersList() {
         message: `Failed to fetch role.`,
         type: "error",
       });
+    }finally{
+      setIsDataLoading(false);
     }
   };
   useEffect(() => {
@@ -107,6 +111,7 @@ export default function UsersList() {
                 isDeleteAllowed={true}
                 onEditClick={onEditClick}
                 onDeleteClick={onDeleteClick}
+                isDataLoading={isDataLoading}
               />
             </>
           )}

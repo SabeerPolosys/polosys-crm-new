@@ -102,20 +102,18 @@ export default function UserRoleList() {
 
               {/* 3 Dots and Dropdown */}
               <div className="relative">
-                <button
+
+                <FiMoreVertical
+                  className="text-lg cursor-pointer hover:text-white hover:rounded-full p-0.5 hover:bg-gray-800 hover:scale-105 transition-all duration-150 ease-in-out w-6 h-6"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleDropdown(index);
                   }}
-                  className="p-2 rounded-full hover:bg-gray-400 transition"
-                >
-                  <FiMoreVertical className="text-lg" />
-                </button>
-
+                />
                 {openDropdownIndex === index && (
                   <div
-                    className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-50"
-                    onClick={(e) => e.stopPropagation()} // prevent closing on parent click
+                    className="absolute right-full top-1/2 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-2"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <button
                       className="px-2 py-1 hover:bg-gray-100 text-blue-500 cursor-pointer"
@@ -168,7 +166,10 @@ export default function UserRoleList() {
       ))}
       <DeleteConfirmationModal
         isOpen={isDeleteOpen}
-        onClose={() => {setIsDeleteOpen(false); setDeleteId(null);}}
+        onClose={() => {
+          setIsDeleteOpen(false);
+          setDeleteId(null);
+        }}
         deleteLabel="Role"
         deleteId={`?userTypeId=${deleteId}` as string}
         deleteUrl={"/api/v1/user-type"}

@@ -5,6 +5,8 @@ import SbFormPassword from "./SbFormPassword";
 import SbFormSelectbox from "./SbFormSelectbox";
 import SbFormPermissionOptions from "./SbFormPermissionOptions";
 import SbFormTextArea from "./SbFormTextArea";
+import SbFormNumber from "./SbFormNumber";
+import SbFormDatepicker from "./SbFormDatepicker";
 
 export default function SbForm({
   formField,
@@ -18,8 +20,8 @@ export default function SbForm({
   handleSubmit: (e: React.FormEvent<Element>) => Promise<void>;
   handleClear(): void;
   formData: any;
-  handleFormDataChange(key:string, value:string): void;
-  submitType?: "Create" | "Update"
+  handleFormDataChange(key: string, value: string): void;
+  submitType?: "Create" | "Update";
 }) {
   return (
     <div>
@@ -55,13 +57,35 @@ export default function SbForm({
                   />
                 );
               case "permissionOptions":
-                return(
-                  <SbFormPermissionOptions key={index} field={field} value={formData[field?.key] ?? ""}
-                    handleFormDataChange={handleFormDataChange}/>
-                )
+                return (
+                  <SbFormPermissionOptions
+                    key={index}
+                    field={field}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
               case "textArea":
                 return (
                   <SbFormTextArea
+                    field={field}
+                    key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
+              case "number":
+                return (
+                  <SbFormNumber
+                    field={field}
+                    key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
+              case "dateTime":
+                return (
+                  <SbFormDatepicker
                     field={field}
                     key={index}
                     value={formData[field?.key] ?? ""}
