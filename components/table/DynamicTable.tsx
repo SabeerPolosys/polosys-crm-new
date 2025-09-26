@@ -70,7 +70,8 @@ const DynamicTable = <T extends Record<string, any>>({
   return (
     <div className="px-4 py-6">
       <div className={pathname?.includes("/users") ? "" : styles.tableWrapper}>
-        <table className={styles.table}>
+        <div className="min-h-[400px]">
+          <table className={styles.table}>
           <thead>
             <tr>
               {columns.map((col) => (
@@ -169,6 +170,7 @@ const DynamicTable = <T extends Record<string, any>>({
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Pagination and Rows per page */}
         <div className={styles.pagination}>
