@@ -77,14 +77,14 @@ export default function UsersList() {
     <div>
       <h2 className="font-semibold mb-4">Users & Roles</h2>
       <div className="grid grid-cols-5 border-[1px] border-gray-300 rounded-lg">
-        <div className="rounded-lg p-4 m-4 bg-gray-50 col-span-3">
+        <div className="rounded-lg p-4 m-4 bg-gray-50 md:col-span-3 col-span-5 md:overflow-x-auto overflow-x-scroll">
           {searchParams?.get("role") ? (
             <RolePermissions role={searchParams?.get("role")} />
           ) : (
             <>
-              <div className="flex flex-row items-center justify-between">
+              <div className="flex md:flex-row flex-col items-center md:justify-between justify-center">
                 <h2 className="text-lg font-bold px-6">All Users</h2>
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex md:flex-row flex-col gap-2 items-center">
                   <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
                     {" "}
                     <FaRegUser /> Users
@@ -127,7 +127,7 @@ export default function UsersList() {
             redirectUrl={"/users"}
           />
         </div>
-        <div className="col-span-2 rounded-lg p-4 my-4 mr-4 bg-gray-50">
+        <div className="md:col-span-2 col-span-5 rounded-lg p-4 my-4 mr-4 bg-gray-50">
           <ValidatePermissions permissionType="view" path="/users/role">
             <div className="flex flex-row items-center justify-between">
               <h2 className="text-lg font-bold px-6">Manage The Roles</h2>

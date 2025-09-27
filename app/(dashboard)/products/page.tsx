@@ -78,7 +78,7 @@ export default function Products() {
       </div>
       <div className="p-4 rounded-lg border-[1px] border-gray-300">
         <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 bg-gray-50">
+          <div className="md:col-span-2 col-span-3 bg-gray-50">
             <div className="flex flex-row items-center justify-between m-4">
               <h2 className="font-semibold text-xl">All Products</h2>
               <Link href={"/products/create"} className="bg-gray-800 text-white px-2 text-xs py-1 rounded">

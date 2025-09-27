@@ -102,7 +102,7 @@ export default function SbForm({
             <button
               type="button"
               onClick={handleClear}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              className="px-4 py-2 border border-gray-300 rounded-md md:text-sm text-[10px] font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             >
               <FaTimes className="inline mr-2" />
               Clear
@@ -111,7 +111,7 @@ export default function SbForm({
           {formField?.hasSubmitButton && (
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              className="px-4 py-2 bg-blue-600 border border-transparent rounded-md md:text-sm text-[10px] font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             >
               <FaSave className="inline mr-2" />
               {formField?.submitButtonLabel

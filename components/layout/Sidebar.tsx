@@ -23,11 +23,12 @@ import { MdOutlineDarkMode } from "react-icons/md";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
+import useIsMobile from "@/helpers/useIsMobile";
 type MenuType = {
-  label: string,
-  icon: JSX.Element,
-  link: string
-}
+  label: string;
+  icon: JSX.Element;
+  link: string;
+};
 
 const allMenuItems = [
   { label: "Dashboard", icon: <FaHome />, link: "/" },
@@ -45,7 +46,7 @@ const settingsItems = [
     icon: <FaCog />,
     children: [
       { label: "Permission Module", link: "/settings/permission-module" },
-      { label: "Permission Options", link: "/settings/permission-options" }
+      { label: "Permission Options", link: "/settings/permission-options" },
     ],
   },
   { label: "Help Center", icon: <FaQuestionCircle /> },
@@ -63,6 +64,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
   );
   const [menuItems, setMenuItems] = useState<MenuType[]>([]);
   const pathname = usePathname();
+  const isMobile = useIsMobile();
 
   const toggleSubmenu = (label: string) => {
     setOpenSubmenus((prev) => ({
@@ -71,14 +73,14 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
     }));
   };
   const { permissions } = usePermissions();
-  useEffect(()=>{
-      const menus = allMenuItems?.filter((menu)=>{
-        if(validatePermission(menu?.link, "view", permissions || [])){
-          return menu;
-        }
-      })
-      setMenuItems(menus);
-  }, [permissions])
+  useEffect(() => {
+    const menus = allMenuItems?.filter((menu) => {
+      if (validatePermission(menu?.link, "view", permissions || [])) {
+        return menu;
+      }
+    });
+    setMenuItems(menus);
+  }, [permissions]);
 
   return (
     <>
@@ -110,10 +112,13 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                 <Link
                   href={link}
                   key={label}
-                  className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition ${
+                  className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition cursor-pointer ${
                     isActive ? "bg-gray-700" : ""
                   }`}
-                  onClick={()=>setOpenSubmenus({})}
+                  onClick={() => {
+                    setOpenSubmenus({});
+                    isMobile && setCollapsed(true);
+                  }}
                 >
                   {icon}
                   {label}
@@ -161,7 +166,8 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                 {children && openSubmenus[label] && (
                   <div className="ml-8 mt-1 flex flex-col">
                     {children.map((subItem) => (
-                      <Link href={subItem?.link}
+                      <Link
+                        href={subItem?.link}
                         key={subItem.label}
                         className="text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded"
                       >

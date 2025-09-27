@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function AddonsList({ addOnsList }: { addOnsList: string[] }) {
   return (
-    <div className="col-span-1 bg-gray-50">
+    <div className="md:col-span-1 col-span-3 bg-gray-50">
       <div className="flex flex-row items-center justify-between m-4">
         <h2 className="font-semibold text-xl">Add-ons</h2>
         <Link href={`/products/addons/create`} className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
