@@ -8,6 +8,8 @@ import { usePermissions } from "@/context/PermissionsContext";
 import validatePermission from "../permissions/PermissionCheckerNew";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { FaRegCircleXmark } from "react-icons/fa6";
+import { IoCheckmarkCircleOutline } from "react-icons/io5";
 
 interface Column {
   header: string;
@@ -60,8 +62,8 @@ const DynamicTable = <T extends Record<string, any>>({
     setCurrentPage(1); // Reset to first page
   };
   const { permissions } = usePermissions();
-  const canEdit = validatePermission(pathname, "edit", permissions || []);
-  const canDelete = validatePermission(pathname, "delete", permissions || []);
+  const canEdit = validatePermission(pathname, "canUpdate", permissions || []);
+  const canDelete = validatePermission(pathname, "canDelete", permissions || []);
 
   return (
     <div className="px-4 py-6">
@@ -119,6 +121,8 @@ const DynamicTable = <T extends Record<string, any>>({
                             {row[col.accessor]}
                           </span>
                         );
+                      }else if(["haveRead", "haveCreate", "haveUpdate", "haveDelete"]?.includes(col.accessor)){
+                          value = row[col.accessor] ? <IoCheckmarkCircleOutline className="w-5 h-5 text-green-500"/> : <FaRegCircleXmark className="w-4 h-4 text-red-400"/>; 
                       }
 
                       return <td key={col.accessor}>{value}</td>;

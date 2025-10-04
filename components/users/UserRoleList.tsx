@@ -17,6 +17,8 @@ import { showToast } from "../common/ShowToast";
 import { FiMoreVertical } from "react-icons/fi";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
+import validatePermission from "../permissions/PermissionCheckerNew";
+import { usePermissions } from "@/context/PermissionsContext";
 type GetRoleResponse = {
   success: boolean;
   message: string;
@@ -67,6 +69,13 @@ export default function UserRoleList() {
   const router = useRouter();
 
   const handleCardClick = (id: string, name: string) => {
+    const canCreateUserRole = validatePermission("/users/role", "canCreate", permissions || []);
+    if(!canCreateUserRole){
+      return showToast({
+        message: "You do not have the necessary permissions to modify user access rights.",
+        type: "error",
+      });
+    }
     const params = new URLSearchParams(searchParams.toString());
     params.set("val", id);
     params.set("role", name);
@@ -79,6 +88,9 @@ export default function UserRoleList() {
   const toggleDropdown = (index: number) => {
     setOpenDropdownIndex(openDropdownIndex === index ? null : index);
   };
+  const { permissions } = usePermissions();
+  const canEdit = validatePermission("/users/role", "canUpdate", permissions || []);
+  const canDelete = validatePermission("/users/role", "canDelete", permissions || []);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
       {roles?.map((role, index) => (
@@ -103,27 +115,27 @@ export default function UserRoleList() {
               {/* 3 Dots and Dropdown */}
               <div className="relative">
 
-                <FiMoreVertical
+                {(canEdit || canDelete) && <FiMoreVertical
                   className="text-lg cursor-pointer hover:text-white hover:rounded-full p-0.5 hover:bg-gray-800 hover:scale-105 transition-all duration-150 ease-in-out w-6 h-6"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleDropdown(index);
                   }}
-                />
+                />}
                 {openDropdownIndex === index && (
                   <div
                     className="absolute right-full top-1/2 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button
+                    {canEdit && <button
                       className="px-2 py-1 hover:bg-gray-100 text-blue-500 cursor-pointer"
                       onClick={() => {
                         router.push(`/users/role/update/${role?.userTypeId}`);
                       }}
                     >
                       <MdOutlineEdit />
-                    </button>
-                    <button
+                    </button>}
+                    {canDelete && <button
                       className="px-2 py-1 hover:bg-gray-100 text-red-500 cursor-pointer"
                       onClick={() => {
                         setIsDeleteOpen(true);
@@ -131,7 +143,7 @@ export default function UserRoleList() {
                       }}
                     >
                       <MdDeleteOutline />
-                    </button>
+                    </button>}
                   </div>
                 )}
               </div>

@@ -84,7 +84,7 @@ const CreateProduct: React.FC = () => {
   };
 
   return (
-    <ValidatePermissions permissionType="create">
+    <ValidatePermissions permissionType="canCreate">
       <div>
         {formField?.Category && (
           <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>

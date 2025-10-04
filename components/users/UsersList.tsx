@@ -65,12 +65,12 @@ export default function UsersList() {
   const { permissions } = usePermissions();
   const canCreate = validatePermission(
     pathname,
-    "create",
+    "canCreate",
     permissions || []
   );
   const canCreateRole = validatePermission(
     "/users/role",
-    "create",
+    "canCreate",
     permissions || []
   );
   return (
@@ -79,7 +79,7 @@ export default function UsersList() {
       <div className="grid grid-cols-5 border-[1px] border-gray-300 rounded-lg">
         <div className="rounded-lg p-4 m-4 bg-gray-50 md:col-span-3 col-span-5 md:overflow-x-auto overflow-x-scroll">
           {searchParams?.get("role") ? (
-            <RolePermissions role={searchParams?.get("role")} />
+            <RolePermissions role={searchParams?.get("role")} roleId={searchParams?.get("val")}/>
           ) : (
             <>
               <div className="flex md:flex-row flex-col items-center md:justify-between justify-center">
@@ -128,7 +128,7 @@ export default function UsersList() {
           />
         </div>
         <div className="md:col-span-2 col-span-5 rounded-lg p-4 my-4 mr-4 bg-gray-50">
-          <ValidatePermissions permissionType="view" path="/users/role">
+          <ValidatePermissions permissionType="canRead" path="/users/role">
             <div className="flex flex-row items-center justify-between">
               <h2 className="text-lg font-bold px-6">Manage The Roles</h2>
               <div className="flex flex-row gap-2 items-center">

@@ -6,14 +6,14 @@ import NoPermission from "../common/NoPermission";
 import validatePermission from "./PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
 
-export default function ValidatePermissions({ children, path, permissionType }: { children: ReactNode, path?: string, permissionType?: "create"|"edit"|"view"|"delete" }) {
+export default function ValidatePermissions({ children, path, permissionType }: { children: ReactNode, path?: string, permissionType?: "canCreate"|"canUpdate"|"canRead"|"canDelete" }) {
     const pathname = usePathname();
     const router = useRouter();
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const { permissions } = usePermissions();
 
     useEffect(() => {
-        const canView = validatePermission(path ?? pathname, permissionType ?? "view", permissions || []);
+        const canView = validatePermission(path ?? pathname, permissionType ?? "canRead", permissions || []);
         if(canView){
          setHasPermission(true);    
         }

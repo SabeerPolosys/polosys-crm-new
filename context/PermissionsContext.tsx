@@ -1,5 +1,6 @@
 "use client";
 
+import api from "@/lib/axios";
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
@@ -16,107 +17,107 @@ const PermissionsContext = createContext<PermissionsContextType>({
 const initialPermission = [
     {
         Name: "Dashboard",
-        url: "/",
-        view: true,
-        create: true,
-        edit: true,
-        delete: true
+        endPoint: "/",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "User",
-        url: "/users",
-        view: true,
-        create: true,
-        edit: true,
-        delete: true
+        endPoint: "/users",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Role",
-        url: "/users/role",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/users/role",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Leads",
-        url: "/leads",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/leads",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Products",
-        url: "/products",
-        view: true,
-        create: true,
-        edit: true,
-        delete: true
+        endPoint: "/products",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Accounts",
-        url: "/accounts",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/accounts",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Customers",
-        url: "/customers",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/customers",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Reports",
-        url: "/reports",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/reports",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Permission Modules",
-        url: "/settings/permission-module",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/settings/permission-module",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Permission Options",
-        url: "/settings/permission-options",
-        view: true,
-        create: false,
-        edit: true,
-        delete: true
+        endPoint: "/settings/permission-options",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Plan",
-        url: "/products/plan",
-        view: true,
-        create: true,
-        edit: true,
-        delete: true
+        endPoint: "/products/plan",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Version",
-        url: "/products/version",
-        view: true,
-        create: true,
-        edit: true,
-        delete: true
+        endPoint: "/products/version",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     },
     {
         Name: "Add ons",
-        url: "/products/addons",
-        view: true,
-        create: true,
-        edit: true,
-        delete: true
+        endPoint: "/products/addons",
+        canRead: true,
+        canCreate: true,
+        canUpdate: true,
+        canDelete: true
     }
 ];
 
@@ -129,10 +130,11 @@ export function PermissionsProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     async function fetchPermissions() {
       try {
-        // 👇 Replace with your real API endpoint
-        const res = await axios.get("https://jsonplaceholder.typicode.com/todos/1");
-
-        setPermissions(initialPermission || []);
+        const res = await api.get(`/api/v1/user-rights?utypeid=${localStorage.getItem("rid")}`);
+        if(res?.data?.success){
+          setPermissions(res?.data?.data || []);
+          // setPermissions(initialPermission || []);
+        }
       } catch (error) {
         setPermissions([]);
       } finally {

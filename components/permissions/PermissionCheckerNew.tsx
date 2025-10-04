@@ -23,7 +23,7 @@ function getBasePath(path:string) {
 const validatePermission = (pathname: string, type: string, permissions: any[]) => {
   
     const basePath = getBasePath(pathname);
-    const permission = permissions?.find((p: any) => p.url === basePath);
+    const permission = permissions?.find((p: any) => p.endPoint === basePath);
     return permission?.[type] || null;
 };
 

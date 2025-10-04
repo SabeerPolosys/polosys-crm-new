@@ -9,6 +9,7 @@ import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import { rightsFormConfig } from "@/config/permissionsFormConfig";
 import { PermissionModuleType } from "@/types/auth";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
 interface PermissionModuleFormData {
   moduleName: string;
@@ -102,6 +103,7 @@ const UpdatePermissionModule: React.FC = () => {
   };
 
   return (
+    <ValidatePermissions permissionType="canUpdate">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -138,6 +140,7 @@ const UpdatePermissionModule: React.FC = () => {
         />
       </div>
     </div>
+    </ValidatePermissions>
   );
 };
 

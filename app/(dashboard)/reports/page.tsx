@@ -10,6 +10,7 @@ import { HiFlag } from "react-icons/hi";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { SlCalender } from "react-icons/sl";
 import { IoSettingsOutline } from "react-icons/io5";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
 export default function Reports() {
   const metrics = [
@@ -47,6 +48,7 @@ export default function Reports() {
     { country: "Libya", value: 15 },
   ];
   return (
+    <ValidatePermissions>
     <div>
       <h2 className="font-semibold mb-4">Reports & Analytics</h2>
       <div className="border-[1px] border-gray-300 rounded-lg">
@@ -201,5 +203,6 @@ export default function Reports() {
         </div>
       </div>
     </div>
+    </ValidatePermissions>
   );
 }

@@ -1,6 +1,13 @@
 "use client";
 import Link from "next/link";
-import { Dispatch, JSX, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  JSX,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import {
   FaHome,
   FaUsers,
@@ -28,6 +35,12 @@ type MenuType = {
   label: string;
   icon: JSX.Element;
   link: string;
+};
+type SettingsItem = {
+  label: string;
+  icon?: ReactElement;
+  link?: string;
+  children?: SettingsItem[];
 };
 
 const allMenuItems = [
@@ -63,6 +76,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
     {}
   );
   const [menuItems, setMenuItems] = useState<MenuType[]>([]);
+  const [settingsMenu, setSettingsMenu] = useState<SettingsItem[]>([]);
   const pathname = usePathname();
   const isMobile = useIsMobile();
 
@@ -73,13 +87,43 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
     }));
   };
   const { permissions } = usePermissions();
+  const filterSettingsByPermission = (
+    items: SettingsItem[],
+    permissions: any[]
+  ): SettingsItem[] => {
+    return items
+      .map((item): SettingsItem | null => {
+        const filteredChildren = item.children
+          ? filterSettingsByPermission(item.children, permissions)
+          : [];
+
+        const hasPermission =
+          item.link && validatePermission(item.link, "canRead", permissions);
+
+        if (hasPermission || filteredChildren.length > 0) {
+          return {
+            ...item,
+            children:
+              filteredChildren.length > 0 ? filteredChildren : undefined,
+          };
+        }
+
+        return null;
+      })
+      .filter((item): item is SettingsItem => item !== null);
+  };
   useEffect(() => {
     const menus = allMenuItems?.filter((menu) => {
-      if (validatePermission(menu?.link, "view", permissions || [])) {
+      if (validatePermission(menu?.link, "canRead", permissions || [])) {
         return menu;
       }
     });
     setMenuItems(menus);
+    const filteredSettings = filterSettingsByPermission(
+      settingsItems,
+      permissions || []
+    );
+    setSettingsMenu(filteredSettings);
   }, [permissions]);
 
   return (
@@ -128,17 +172,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
 
             {/* Settings */}
             <p className="px-4 py-2 text-gray-400 text-xs mt-4">SETTINGS</p>
-            {/* {settingsItems.map(({ label, icon }) => (
-              <button
-                key={label}
-                onClick={() => alert(`${label} clicked`)}
-                className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition`}
-              >
-                {icon}
-                {label}
-              </button>
-            ))} */}
-            {settingsItems.map(({ label, icon, children }) => (
+            {settingsMenu?.map(({ label, icon, children }) => (
               <div key={label}>
                 <button
                   onClick={() => {
@@ -167,7 +201,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                   <div className="ml-8 mt-1 flex flex-col">
                     {children.map((subItem) => (
                       <Link
-                        href={subItem?.link}
+                        href={subItem?.link ?? ""}
                         key={subItem.label}
                         className="text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded"
                       >

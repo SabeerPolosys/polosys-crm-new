@@ -1,4 +1,5 @@
 "use client";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import DynamicTable from "@/components/table/DynamicTable";
 import { useRouter } from "next/navigation";
 import { FaRegFileAlt } from "react-icons/fa";
@@ -112,6 +113,7 @@ export default function Customer() {
   };
 
   return (
+    <ValidatePermissions>
     <div className="rounded-lg py-10 bg-white">
       <div className="px-6 flex flex-row items-center justify-between">
         <h2 className="text-lg font-bold">Customers</h2>
@@ -124,5 +126,6 @@ export default function Customer() {
       </div>
       <DynamicTable columns={columns} data={data} onRowClick={handleRowClick} />
     </div>
+    </ValidatePermissions>
   );
 }

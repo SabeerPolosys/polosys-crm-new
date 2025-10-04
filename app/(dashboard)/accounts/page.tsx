@@ -1,4 +1,5 @@
 "use client"
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import DynamicTable from "@/components/table/DynamicTable";
 import { useRouter } from "next/navigation";
 
@@ -139,9 +140,11 @@ const handleRowClick = () => {
     router.push(`/accounts/1`);
   };
   return (
+    <ValidatePermissions>
     <div className="rounded-lg py-10 bg-white">
       <h2 className="text-lg font-bold px-6">All Account Details</h2>
       <DynamicTable columns={columns} data={data} onRowClick={handleRowClick}/>
     </div>
+    </ValidatePermissions>
   );
 }

@@ -10,6 +10,9 @@ import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
 import Link from "next/link";
 import AddonsList from "@/components/product/AddonsList";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import { usePermissions } from "@/context/PermissionsContext";
+import validatePermission from "@/components/permissions/PermissionCheckerNew";
 type GetProductResponse = {
   success: boolean;
   message: string;
@@ -64,8 +67,13 @@ export default function IndividualProduct() {
     "Bank POS",
     "FAM",
   ];
-
+  const { permissions } = usePermissions();
+const canCreatePlan = validatePermission("/products/plan", "canCreate", permissions || []);
+const canCreateVersion = validatePermission("/products/version", "canCreate", permissions || []);
+const canEditProduct = validatePermission("/products", "canUpdate", permissions || []);
+const canDeleteProduct = validatePermission("/products", "canDelete", permissions || []);
   return (
+    <ValidatePermissions path="/products">
     <div
       onClick={() => openDropdownIndex !== null && setOpenDropdownIndex(null)}
     >
@@ -81,20 +89,20 @@ export default function IndividualProduct() {
             <div className="flex flex-row items-center justify-between m-4">
               <h2 className="font-semibold text-xl">{productDetails?.name}</h2>
               <div className="relative">
-                <FiMoreVertical
+                {(canEditProduct || canDeleteProduct) && <FiMoreVertical
                   className="text-lg cursor-pointer hover:text-white hover:rounded-full p-0.5 hover:bg-gray-800 hover:scale-105 transition-all duration-150 ease-in-out w-6 h-6"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleDropdown(0);
                   }}
-                />
+                />}
 
                 {openDropdownIndex === 0 && (
                   <div
                     className="absolute right-full top-1/2 bg-white border border-gray-200 rounded-md shadow-lg z-50"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button
+                    {canEditProduct && <button
                       className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-blue-500 cursor-pointer"
                       onClick={() => {
                         router.push(`/products/update/${params?.productId}`);
@@ -102,8 +110,8 @@ export default function IndividualProduct() {
                     >
                       <MdOutlineEdit />
                       Edit
-                    </button>
-                    <button
+                    </button>}
+                    {canDeleteProduct && <button
                       className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-red-500 cursor-pointer"
                       onClick={() => {
                         setIsDeleteOpen(true);
@@ -112,7 +120,7 @@ export default function IndividualProduct() {
                     >
                       <MdDeleteOutline />
                       Delete
-                    </button>
+                    </button>}
                   </div>
                 )}
               </div>
@@ -124,18 +132,18 @@ export default function IndividualProduct() {
                   <h3 className="my-6 text-xl font-semibold">
                     Version Of Products
                   </h3>
-                  <Link href={`/products/version/create?productId=${params?.productId}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">
+                  {canCreateVersion && <Link href={`/products/version/create?productId=${params?.productId}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">
                     + &nbsp;Create Version
-                  </Link>
+                  </Link>}
                 </div>
               ) : (
                 <div className="flex flex-row items-center justify-between">
                   <h3 className="my-6 text-xl font-semibold">
                     Plans Of Products
                   </h3>
-                  <Link href={`/products/plan/create?productId=${params?.productId}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">
+                  {canCreatePlan && <Link href={`/products/plan/create?productId=${params?.productId}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">
                     + &nbsp;Create Plan
-                  </Link>
+                  </Link>}
                 </div>
               )}
               {productDetails?.productTypeID === 1 ? (
@@ -322,5 +330,6 @@ export default function IndividualProduct() {
         redirectUrl={"/products"}
       />
     </div>
+    </ValidatePermissions>
   );
 }

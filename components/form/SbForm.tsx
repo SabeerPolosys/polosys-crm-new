@@ -61,7 +61,7 @@ export default function SbForm({
                   <SbFormPermissionOptions
                     key={index}
                     field={field}
-                    value={formData[field?.key] ?? ""}
+                    value={formData}
                     handleFormDataChange={handleFormDataChange}
                   />
                 );

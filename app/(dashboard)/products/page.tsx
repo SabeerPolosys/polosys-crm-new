@@ -1,10 +1,14 @@
 "use client"
 import { showToast } from "@/components/common/ShowToast";
+import validatePermission from "@/components/permissions/PermissionCheckerNew";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import AddonsList from "@/components/product/AddonsList";
 import ProductCard from "@/components/product/ProductCard";
+import { usePermissions } from "@/context/PermissionsContext";
 import api from "@/lib/axios";
 import { ProductTypes } from "@/types/auth";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 type ProductResponseType = {
   success: boolean,
@@ -68,7 +72,11 @@ export default function Products() {
 //         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
 //     }
 // ]
+const pathname = usePathname();
+  const { permissions } = usePermissions();
+const canCreate = validatePermission(pathname, "canCreate", permissions || []);
   return (
+    <ValidatePermissions>
     <div>
       <div className="flex flex-row items-center justify-between my-4">
         <h2 className="font-semibold">Product Suite</h2>
@@ -81,9 +89,9 @@ export default function Products() {
           <div className="md:col-span-2 col-span-3 bg-gray-50">
             <div className="flex flex-row items-center justify-between m-4">
               <h2 className="font-semibold text-xl">All Products</h2>
-              <Link href={"/products/create"} className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
+              {canCreate && <Link href={"/products/create"} className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
                 + &nbsp; Add Products
-              </Link>
+              </Link>}
             </div>
             <div className="flex flex-col gap-4 px-4">
                 {
@@ -95,5 +103,6 @@ export default function Products() {
         </div>
       </div>
     </div>
+    </ValidatePermissions>
   );
 }

@@ -2,27 +2,47 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import { rightsFormConfig } from "@/config/permissionsFormConfig";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
 interface RoleFormData {
-  typeName: string;
+  rightName: string;
   description: string;
+  endpoint: string;
+  moduleId: string;
+  haveRead: boolean;
+  haveCreate: boolean;
+  haveUpdate: boolean;
+  haveDelete: boolean;
 }
+
+type GetPermissionOptionResponse = {
+  success: boolean;
+  data: RoleFormData;
+};
 
 const UpdatePermissionOption: React.FC = () => {
   const [formData, setFormData] = useState<RoleFormData>({
-    typeName: "",
+    rightName: "",
     description: "",
+    endpoint: "",
+    moduleId: "",
+    haveRead: false,
+    haveCreate: false,
+    haveUpdate: false,
+    haveDelete: false,
   });
   const router = useRouter();
   const pathname = usePathname();
   const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
-  const formField = rightsFormConfig[trimmedPath as keyof typeof rightsFormConfig];
+  const formField =
+    rightsFormConfig[trimmedPath as keyof typeof rightsFormConfig];
+  const params = useParams();
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -32,8 +52,46 @@ const UpdatePermissionOption: React.FC = () => {
   };
 
   const handleClear = () => {
-    setFormData({ typeName: "", description: "" });
+    setFormData({
+      rightName: "",
+      description: "",
+      endpoint: "",
+      moduleId: "",
+      haveRead: false,
+      haveCreate: false,
+      haveUpdate: false,
+      haveDelete: false,
+    });
   };
+
+  useEffect(() => {
+    const getOptionPermission = async () => {
+      try {
+        const res = await api.get<GetPermissionOptionResponse>(
+          `${formField?.submitUrl}/${params?.["option-id"]}`
+        );
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setFormData({
+      rightName: respose?.rightName,
+      description: respose?.description,
+      endpoint: respose?.endpoint,
+      moduleId: respose?.moduleId,
+      haveRead: respose?.haveRead ?? false,
+      haveCreate: respose?.haveCreate ?? false,
+      haveUpdate: respose?.haveUpdate ?? false,
+      haveDelete: respose?.haveDelete ?? false,
+    });
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch permission options.`,
+          type: "error",
+        });
+      }
+    };
+    getOptionPermission();
+  }, [params]);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -43,20 +101,24 @@ const UpdatePermissionOption: React.FC = () => {
           typeof value === "string" ? value.trim() : value,
         ])
       );
-      if (!trimmedFormData?.typeName || !trimmedFormData?.description) {
+      if (
+        !trimmedFormData?.rightName ||
+        !trimmedFormData?.description ||
+        !trimmedFormData?.endpoint ||
+        !trimmedFormData?.moduleId
+      ) {
         return showToast({
           message: `Please fill required fields.`,
           type: "error",
         });
       }
-      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
+      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, userRightsMasterId: params?.["option-id"]});
       if (res?.status == 200) {
-        // ✅ Backend should set auth cookie via Set-Cookie
         showToast({
-          message: `Role created successfully.`,
+          message: `Permition option updated successfully.`,
           type: "success",
         });
-        router.push("/users");
+        router.push("/settings/permission-options");
       } else {
         throw new Error("Failed to create role.");
       }
@@ -78,6 +140,7 @@ const UpdatePermissionOption: React.FC = () => {
   };
 
   return (
+    <ValidatePermissions permissionType="canUpdate">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -114,6 +177,7 @@ const UpdatePermissionOption: React.FC = () => {
         />
       </div>
     </div>
+    </ValidatePermissions>
   );
 };
 

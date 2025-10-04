@@ -5,8 +5,11 @@ import { useEffect, useState } from "react";
 import { showToast } from "@/components/common/ShowToast";
 import { PermissionModuleType } from "@/types/auth";
 import api from "@/lib/axios";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import validatePermission from "@/components/permissions/PermissionCheckerNew";
+import { usePermissions } from "@/context/PermissionsContext";
 type GetPermissionModuleResponse = {
   success: boolean;
   message: string;
@@ -48,19 +51,23 @@ export default function PermissionModule() {
     setIsDeleteOpen(true);
     setDeleteId(row?.moduleId);
   };
+  const pathname = usePathname();
+    const { permissions } = usePermissions();
+  const canCreate = validatePermission(pathname, "canCreate", permissions || []);
 
   return (
+    <ValidatePermissions>
     <div className="rounded-lg py-10 bg-white">
       <div className="flex flex-row justify-between items-center">
         <h2 className="text-lg font-bold px-6">All Permission Modules</h2>
         <div className="flex flex-row gap-2 items-center">
-          <Link
+          {canCreate && <Link
             href={"/settings/permission-module/create"}
             className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
           >
             {" "}
             + &nbsp; Add Permission Module
-          </Link>
+          </Link>}
         </div>
       </div>
       <DynamicTable
@@ -83,5 +90,6 @@ export default function PermissionModule() {
         redirectUrl={"/settings/permission-module"}
       />
     </div>
+    </ValidatePermissions>
   );
 }

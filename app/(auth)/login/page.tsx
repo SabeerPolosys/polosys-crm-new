@@ -35,8 +35,9 @@ export default function Login() {
       const res = await api.post<LoginResponse>(
         `/api/v1/auth?username=${payload?.username}&pass=${payload.password}`
       );
-      if (res?.status == 200 && res?.data?.message === "Login successful") {
+      if (res?.status == 200 && res?.data?.message === "Login successful" && res?.data?.usertypeid) {
         // ✅ Backend should set auth cookie via Set-Cookie
+        localStorage.setItem("rid", res?.data?.usertypeid);
         showToast({
           message: `Login successfully.`,
           type: "success",

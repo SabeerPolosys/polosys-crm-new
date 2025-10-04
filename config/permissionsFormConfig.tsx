@@ -36,14 +36,14 @@ export const rightsFormConfig = {
     fields: [
       {
         label: "Permission Option",
-        key: "rightOption",
+        key: "rightName",
         type: "input",
         required: true,
         placeholder: "e.g., Ledger, Sales Order, etc..",
       },
       {
         label: "Permission Menu",
-        key: "rightMenu",
+        key: "moduleId",
         type: "select",
         required: true,
         getListUrl: "/api/v1/module",
@@ -51,11 +51,11 @@ export const rightsFormConfig = {
         optionKey:"moduleName"
       },
       {
-        label: "Url",
-        key: "url",
+        label: "Endpoint Url",
+        key: "endpoint",
         type: "input",
         required: true,
-        placeholder: "Description",
+        placeholder: "Endpoint Url",
       },
       {
         label: "Have Options For",
@@ -64,10 +64,17 @@ export const rightsFormConfig = {
         required: true,
         placeholder: "Description",
       },
+      {
+        label: "Description",
+        key: "description",
+        type: "textArea",
+        required: true,
+        placeholder: "Description",
+      },
     ],
     hasSubmitButton: true,
     submitButtonLabel: "Permission Options",
     hasClearButton: true,
-    submitUrl: "/api/v1/user-type",
+    submitUrl: "/api/v1/user-rights-master",
   },
 };

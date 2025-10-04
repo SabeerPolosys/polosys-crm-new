@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import { rightsFormConfig } from "@/config/permissionsFormConfig";
+import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
 interface PermissionModuleFormData {
   moduleName: string;
@@ -70,6 +71,7 @@ const CreatePermissionModule: React.FC = () => {
   };
 
   return (
+    <ValidatePermissions permissionType="canCreate">
     <div>
       {formField?.Category && (
         <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -106,6 +108,7 @@ const CreatePermissionModule: React.FC = () => {
         />
       </div>
     </div>
+    </ValidatePermissions>
   );
 };
 
