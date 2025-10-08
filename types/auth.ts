@@ -65,3 +65,19 @@ export interface ProductTypes {
   createdAt: Date,
   modifiedAt: Date
 }
+
+export interface CustomerDetails {
+  clientServerID: string;
+  clientID: string;
+  client: string;
+  serverID: string;
+  serverName: string;
+  databaseID: string;
+  databaseName: string;
+  productID: string;
+  product: string;
+  alias: string;
+  isActive: boolean;
+  createdAt: Date;  
+  modifiedAt: Date; 
+}

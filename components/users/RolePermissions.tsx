@@ -14,7 +14,7 @@ interface UserRight {
   haveCreate: boolean;
   haveUpdate: boolean;
   haveDelete: boolean;
-  right: any; // or use a specific type if known
+  right: any; 
 }
 
 // Define a module with its associated rights
@@ -72,7 +72,6 @@ export default function RolePermissions({
                 : right.right;
               delete rightsData[right.userRightsMasterId]?.userTypeId;
             });
-            console.log("pppppppppppppppp", rightsData);
             setRightObject(rightsData);
           });
         }
@@ -85,11 +84,10 @@ export default function RolePermissions({
     };
     getPermissionDetails();
   }, [roleId]);
-  console.log("rrrrrrrrr", rightObject);
   const permissions = ["Full Access", "View", "Create", "Edit", "Delete"];
-  const entities = ["Customers", "Vendors"];
-  const itemEntities = ["Inventory Adjustments", "Item"];
-  const bankingEntities = ["Payments"];
+  // const entities = ["Customers", "Vendors"];
+  // const itemEntities = ["Inventory Adjustments", "Item"];
+  // const bankingEntities = ["Payments"];
   const updateFullAccess = (isChecked: boolean, rightMaster: any) => {
     const updateValues: any = {};
 

@@ -52,44 +52,50 @@ export default function PermissionModule() {
     setDeleteId(row?.moduleId);
   };
   const pathname = usePathname();
-    const { permissions } = usePermissions();
-  const canCreate = validatePermission(pathname, "canCreate", permissions || []);
+  const { permissions } = usePermissions();
+  const canCreate = validatePermission(
+    pathname,
+    "canCreate",
+    permissions || []
+  );
 
   return (
     <ValidatePermissions>
-    <div className="rounded-lg py-10 bg-white">
-      <div className="flex flex-row justify-between items-center">
-        <h2 className="text-lg font-bold px-6">All Permission Modules</h2>
-        <div className="flex flex-row gap-2 items-center">
-          {canCreate && <Link
-            href={"/settings/permission-module/create"}
-            className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
-          >
-            {" "}
-            + &nbsp; Add Permission Module
-          </Link>}
+      <div className="rounded-lg py-10 bg-white">
+        <div className="flex flex-row justify-between items-center">
+          <h2 className="text-lg font-bold px-6">All Permission Modules</h2>
+          <div className="flex flex-row gap-2 items-center">
+            {canCreate && (
+              <Link
+                href={"/settings/permission-module/create"}
+                className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
+              >
+                {" "}
+                + &nbsp; Add Permission Module
+              </Link>
+            )}
+          </div>
         </div>
+        <DynamicTable
+          columns={columns}
+          data={data}
+          isEditAllowed={true}
+          isDeleteAllowed={true}
+          onEditClick={onEditClick}
+          onDeleteClick={onDeleteClick}
+        />
+        <DeleteConfirmationModal
+          isOpen={isDeleteOpen}
+          onClose={() => {
+            setIsDeleteOpen(false);
+            setDeleteId(null);
+          }}
+          deleteLabel="Permission Module"
+          deleteId={`?moduleId=${deleteId}` as string}
+          deleteUrl={"/api/v1/module"}
+          redirectUrl={"/settings/permission-module"}
+        />
       </div>
-      <DynamicTable
-        columns={columns}
-        data={data}
-        isEditAllowed={true}
-        isDeleteAllowed={true}
-        onEditClick={onEditClick}
-        onDeleteClick={onDeleteClick}
-      />
-      <DeleteConfirmationModal
-        isOpen={isDeleteOpen}
-        onClose={() => {
-          setIsDeleteOpen(false);
-          setDeleteId(null);
-        }}
-        deleteLabel="Permission Module"
-        deleteId={`?moduleId=${deleteId}` as string}
-        deleteUrl={"/api/v1/module"}
-        redirectUrl={"/settings/permission-module"}
-      />
-    </div>
     </ValidatePermissions>
   );
 }

@@ -29,7 +29,6 @@ export default function ResetPassword() {
   });
   const searchParams = useSearchParams();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("hangle    ");
     e.preventDefault();
     if (!isPasswordMatch) {
       return showToast({

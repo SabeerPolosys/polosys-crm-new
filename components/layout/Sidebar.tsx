@@ -217,7 +217,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
           {/* Footer */}
           <div className="border-t border-gray-700 p-2">
             {/* Dark Mode */}
-            <div className="flex items-center justify-between px-4 py-2 text-sm">
+            {/* <div className="flex items-center justify-between px-4 py-2 text-sm">
               <div className="flex items-center gap-3">
                 <FaMoon />
                 Dark Mode
@@ -236,7 +236,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                                 peer-checked:after:translate-x-4"
                 />
               </label>
-            </div>
+            </div> */}
 
             {/* Logout */}
             <button

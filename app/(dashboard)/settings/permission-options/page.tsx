@@ -61,7 +61,7 @@ export default function PermissionModule() {
   };
   const pathname = usePathname();
   const { permissions } = usePermissions();
-  const canCreatePlan = validatePermission(
+  const canCreate = validatePermission(
     pathname,
     "canCreate",
     permissions || []
@@ -73,7 +73,7 @@ export default function PermissionModule() {
         <div className="flex flex-row justify-between items-center">
           <h2 className="text-lg font-bold px-6">All Permission Option</h2>
           <div className="flex flex-row gap-2 items-center">
-            {canCreatePlan && (
+            {canCreate && (
               <Link
                 href={"/settings/permission-options/create"}
                 className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
