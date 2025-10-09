@@ -81,3 +81,26 @@ export interface CustomerDetails {
   createdAt: Date;  
   modifiedAt: Date; 
 }
+
+export interface Addons {
+  addonID: string;
+  name: string;
+  description: string;
+  addonPrice: number;
+  currencyID: string;
+  currencyCode: string;
+  createdAt: Date;  
+  modifiedAt: Date;
+  isActive: boolean;
+}
+
+export interface PaymentGateway {
+  gatewayID: string;
+  providerName: string;
+  apiKey: string;
+  endpointURL: string;
+  supportedModes: string; 
+  isActive: boolean;
+  createdAt: Date; 
+  modifiedAt: Date;
+}

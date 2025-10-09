@@ -115,7 +115,7 @@ export default function Products() {
                     ))}
               </div>
             </div>
-            <AddonsList addOnsList={addOnsList} />
+            <AddonsList />
           </div>
         </div>
       </div>

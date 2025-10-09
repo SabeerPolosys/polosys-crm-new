@@ -53,12 +53,12 @@ export default function Navbar() {
     setMenuItems(menus);
   }, [permissions]);
   const canViewPermissionModule = validatePermission(
-    "/settings/permission-module",
+    "/permission/permission-module",
     "canRead",
     permissions || []
   );
   const canViewPermissionOption = validatePermission(
-    "/settings/permission-options",
+    "/permission/permission-options",
     "canRead",
     permissions || []
   );
@@ -107,7 +107,7 @@ export default function Navbar() {
           <div className="absolute top-full left-0 w-48 bg-white border-[1px] border-gray-300 rounded-md shadow-md z-10 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transform -translate-y-2 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto">
             {canViewPermissionModule && (
               <Link
-                href="/settings/permission-module"
+                href="/permission/permission-module"
                 className="block px-4 py-2 text-sm hover:bg-gray-100 rounded-md"
               >
                 Permission Module
@@ -115,7 +115,7 @@ export default function Navbar() {
             )}
             {canViewPermissionOption && (
               <Link
-                href="/settings/permission-options"
+                href="/permission/permission-options"
                 className="block px-4 py-2 text-sm hover:bg-gray-100"
               >
                 Permission Options

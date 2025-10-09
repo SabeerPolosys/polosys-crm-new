@@ -23,6 +23,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaRegQuestionCircle,
+  FaUserLock 
 } from "react-icons/fa";
 import { RiMenuAddLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
@@ -48,7 +49,7 @@ const allMenuItems = [
   { label: "Users & Roles", icon: <FaUsers />, link: "/users" },
   { label: "Leads", icon: <FaUserTie />, link: "/leads" },
   { label: "Products suite", icon: <FaBoxOpen />, link: "/products" },
-  { label: "Accounts", icon: <FaFileInvoice />, link: "/accounts" },
+  { label: "Payments", icon: <FaFileInvoice />, link: "/accounts" },
   { label: "Customers", icon: <FaUserFriends />, link: "/customers" },
   { label: "Reports & Analytics", icon: <FaChartBar />, link: "/reports" },
 ];
@@ -58,8 +59,17 @@ const settingsItems = [
     label: "Settings",
     icon: <FaCog />,
     children: [
-      { label: "Permission Module", link: "/settings/permission-module" },
-      { label: "Permission Options", link: "/settings/permission-options" },
+      { label: "Add-ons", link: "/products/addons" },
+      { label: "Plans", link: "/products/plan" },
+      { label: "Payment Gateways", link: "/settings/payment-gateways" },
+    ],
+  },
+  {
+    label: "Permissions",
+    icon: <FaUserLock />,
+    children: [
+      { label: "Permission Module", link: "/permission/permission-module" },
+      { label: "Permission Options", link: "/permission/permission-options" },
     ],
   },
   { label: "Help Center", icon: <FaQuestionCircle /> },

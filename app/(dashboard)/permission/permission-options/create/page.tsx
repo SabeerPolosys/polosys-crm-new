@@ -10,15 +10,27 @@ import { IoMdArrowBack } from "react-icons/io";
 import { rightsFormConfig } from "@/config/permissionsFormConfig";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
-interface PermissionModuleFormData {
-  moduleName: string;
+interface RoleFormData {
+  rightName: string;
   description: string;
+  endpoint: string;
+  moduleId: string;
+  haveRead: boolean;
+  haveCreate: boolean;
+  haveUpdate: boolean;
+  haveDelete: boolean;
 }
 
-const CreatePermissionModule: React.FC = () => {
-  const [formData, setFormData] = useState<PermissionModuleFormData>({
-    moduleName: "",
+const CreatePermissionOption: React.FC = () => {
+  const [formData, setFormData] = useState<RoleFormData>({
+    rightName: "",
     description: "",
+    endpoint: "",
+    moduleId: "",
+    haveRead: false,
+    haveCreate: false,
+    haveUpdate: false,
+    haveDelete: false,
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -34,8 +46,18 @@ const CreatePermissionModule: React.FC = () => {
   };
 
   const handleClear = () => {
-    setFormData({ moduleName: "", description: "" });
+    setFormData({
+      rightName: "",
+      description: "",
+      endpoint: "",
+      moduleId: "",
+      haveRead: false,
+      haveCreate: false,
+      haveUpdate: false,
+      haveDelete: false,
+    });
   };
+
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -45,7 +67,12 @@ const CreatePermissionModule: React.FC = () => {
           typeof value === "string" ? value.trim() : value,
         ])
       );
-      if (!trimmedFormData?.moduleName || !trimmedFormData?.description) {
+      if (
+        !trimmedFormData?.rightName ||
+        !trimmedFormData?.description ||
+        !trimmedFormData?.endpoint ||
+        !trimmedFormData?.moduleId
+      ) {
         return showToast({
           message: `Please fill required fields.`,
           type: "error",
@@ -53,18 +80,26 @@ const CreatePermissionModule: React.FC = () => {
       }
       const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
       if (res?.status == 200) {
-        // ✅ Backend should set auth cookie via Set-Cookie
         showToast({
-          message: `Permission module created successfully.`,
+          message: `Permission option created successfully.`,
           type: "success",
         });
-        router.push("/settings/permission-module");
+        router.push("/permission/permission-options");
       } else {
-        throw new Error("Failed to create permission module.");
+        throw new Error("Failed to create role.");
       }
-    } catch {
+    } catch (err: any) {
+      if (
+        err?.response?.data?.message ===
+        "Violation of UNIQUE KEY constraint \u0027UQ__user_typ__D4E7DFA8649C4C50\u0027. Cannot insert duplicate key in object \u0027dbo.user_types\u0027. The duplicate key value is (test).\r\nThe statement has been terminated."
+      ) {
+        return showToast({
+          message: `Already exist same role.`,
+          type: "error",
+        });
+      }
       showToast({
-        message: `Failed to create permission module.`,
+        message: `Failed to create role.`,
         type: "error",
       });
     }
@@ -80,7 +115,7 @@ const CreatePermissionModule: React.FC = () => {
         <div className="flex items-center mb-6">
           <div
             className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-            onClick={() => router.push("/settings/permission-module")}
+            onClick={() => router.push("/permission/permission-options")}
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>
@@ -112,4 +147,4 @@ const CreatePermissionModule: React.FC = () => {
   );
 };
 
-export default CreatePermissionModule;
+export default CreatePermissionOption;

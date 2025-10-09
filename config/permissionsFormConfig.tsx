@@ -1,7 +1,7 @@
 // import { FaUserCog } from 'react-icons/fa';
 
 export const rightsFormConfig = {
-  "/settings/permission-module": {
+  "/permission/permission-module": {
     Category: "User & Rights",
     title: "Permission Module",
     formLabel: "",
@@ -28,7 +28,7 @@ export const rightsFormConfig = {
     submitUrl: "/api/v1/module",
   },
 
-  "/settings/permission-options": {
+  "/permission/permission-options": {
     Category: "User & Rights",
     title: "Permission Options",
     formLabel: "",

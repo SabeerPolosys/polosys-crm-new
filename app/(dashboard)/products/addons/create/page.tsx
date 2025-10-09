@@ -94,7 +94,7 @@ const CreateAdons: React.FC = () => {
           <div className="flex items-center mb-6">
             <div
               className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-              onClick={() => router.push("/products")}
+              onClick={() => router.back()}
             >
               <IoMdArrowBack className="w-6 h-6" />
             </div>

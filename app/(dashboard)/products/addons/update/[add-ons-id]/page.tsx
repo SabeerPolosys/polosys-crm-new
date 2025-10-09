@@ -2,36 +2,40 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import { Addons } from "@/types/auth";
 
-interface PlanFormData {
-  planName: string;
-  planPrice: number|null;
-  currencyID: string;
-  billingCycle: string;
-  isActive: boolean;
+interface AddonsFormData {
+  name: string;
+  description: string;
+  addonPrice: number | null;
+  currencyID: string | null;
 }
+type GetAddonsResponse = {
+  success: boolean;
+  message: string;
+  data: Addons;
+};
 
-const CreatePlan: React.FC = () => {
-  const [formData, setFormData] = useState<PlanFormData>({
-    planName: "",
-    planPrice: null,
-    currencyID: "",
-    billingCycle:"",
-    isActive: true,
+const UpdateAddons: React.FC = () => {
+  const [formData, setFormData] = useState<AddonsFormData>({
+    name: "",
+    description: "",
+    addonPrice: null,
+    currencyID: null,
   });
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
+  const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
+  const params = useParams();
 
   const handleFormDataChange = (key: string, value: string) => {
     setFormData((prev) => ({
@@ -42,13 +46,36 @@ const CreatePlan: React.FC = () => {
 
   const handleClear = () => {
     setFormData({
-    planName: "",
-    planPrice: null,
-    currencyID: "",
-    billingCycle:"",
-    isActive: true,
-  });
+      name: "",
+      description: "",
+      addonPrice: null,
+      currencyID: null,
+    });
   };
+  useEffect(() => {
+    const getAddOnsDetails = async () => {
+      try {
+        const res = await api.get<GetAddonsResponse>(
+          `/api/v1/product-addon/${params?.["add-ons-id"]}`
+        );
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setFormData({
+            name: response?.name,
+            description: response?.description,
+            addonPrice: response?.addonPrice,
+            currencyID: response?.currencyID,
+          });
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch addons details.`,
+          type: "error",
+        });
+      }
+    };
+    getAddOnsDetails();
+  }, [params]);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -59,10 +86,10 @@ const CreatePlan: React.FC = () => {
         ])
       );
       if (
-        !trimmedFormData?.planName ||
-        !trimmedFormData?.planPrice ||
-        !trimmedFormData?.currencyID ||
-        !trimmedFormData?.billingCycle
+        !trimmedFormData?.name ||
+        !trimmedFormData?.description ||
+        !trimmedFormData?.addonPrice ||
+        !trimmedFormData?.currencyID
       ) {
         return showToast({
           message: `Please fill required fields.`,
@@ -70,26 +97,26 @@ const CreatePlan: React.FC = () => {
         });
       }
 
-      const res = await api.post(`${formField?.submitUrl}`, {...trimmedFormData});
+      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, addonID: params?.["add-ons-id"]});
       if (res?.status == 200) {
         showToast({
-          message: `Plan created successfully.`,
+          message: `Add-ons update successfully.`,
           type: "success",
         });
-        router.push(`/products/plans`);
+        router.push("/products");
       } else {
-        throw new Error("Failed to create Plan.");
+        throw new Error("Failed to update add-ons.");
       }
     } catch {
       showToast({
-        message: `Failed to create plan.`,
+        message: `Failed to create add-ons.`,
         type: "error",
       });
     }
   };
 
   return (
-    <ValidatePermissions permissionType="canCreate">
+    <ValidatePermissions permissionType="canUpdate">
       <div>
         {formField?.Category && (
           <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
@@ -102,14 +129,9 @@ const CreatePlan: React.FC = () => {
             >
               <IoMdArrowBack className="w-6 h-6" />
             </div>
-            {/* {formField?.icon && (
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              {formField?.icon}
-            </div>
-          )} */}
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
-                Create {formField?.title}
+                Update {formField?.title}
               </h2>
               {formField?.formLabel && (
                 <p className="text-gray-500">{formField?.formLabel}</p>
@@ -122,7 +144,7 @@ const CreatePlan: React.FC = () => {
             handleClear={handleClear}
             formData={formData}
             handleFormDataChange={handleFormDataChange}
-            submitType="Create"
+            submitType="Update"
           />
         </div>
       </div>
@@ -130,4 +152,4 @@ const CreatePlan: React.FC = () => {
   );
 };
 
-export default CreatePlan;
+export default UpdateAddons;

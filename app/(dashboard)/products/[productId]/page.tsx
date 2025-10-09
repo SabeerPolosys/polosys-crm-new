@@ -52,21 +52,21 @@ export default function IndividualProduct() {
     };
     getProductDetails();
   }, [params]);
-  const addOnsList = [
-    "User action report",
-    "Schemes",
-    "RPOS Sync service",
-    "Biometric",
-    "Additional database",
-    "Report data sync",
-    "RPOS Theme",
-    "Vansales",
-    "Weigh scale",
-    "Web report",
-    "Polosys live",
-    "Bank POS",
-    "FAM",
-  ];
+  // const addOnsList = [
+  //   "User action report",
+  //   "Schemes",
+  //   "RPOS Sync service",
+  //   "Biometric",
+  //   "Additional database",
+  //   "Report data sync",
+  //   "RPOS Theme",
+  //   "Vansales",
+  //   "Weigh scale",
+  //   "Web report",
+  //   "Polosys live",
+  //   "Bank POS",
+  //   "FAM",
+  // ];
   const { permissions } = usePermissions();
 const canCreatePlan = validatePermission("/products/plan", "canCreate", permissions || []);
 const canCreateVersion = validatePermission("/products/version", "canCreate", permissions || []);
@@ -127,7 +127,7 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
             </div>
             <div className="bg-white m-4 p-6 min-h-screen">
               <p>{productDetails?.description}</p>
-              {productDetails?.productTypeID === 1 ? (
+              {/* {productDetails?.productTypeID === 1 ? ( */}
                 <div className="flex flex-row items-center justify-between">
                   <h3 className="my-6 text-xl font-semibold">
                     Version Of Products
@@ -136,7 +136,7 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     + &nbsp;Create Version
                   </Link>}
                 </div>
-              ) : (
+              {/* ) : (
                 <div className="flex flex-row items-center justify-between">
                   <h3 className="my-6 text-xl font-semibold">
                     Plans Of Products
@@ -145,8 +145,8 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     + &nbsp;Create Plan
                   </Link>}
                 </div>
-              )}
-              {productDetails?.productTypeID === 1 ? (
+              )} */}
+              {/* {productDetails?.productTypeID === 1 ? ( */}
                 <div className="flex felx-row gap-4 flex-wrap justify-self-auto">
                   <div className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium">
                     EasyBiz Neo Soft Bill
@@ -164,9 +164,9 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     EasyBiz Neo Platinum
                   </div>
                 </div>
-              ) : (
+              {/* ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Card 1 */}
+
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -200,7 +200,7 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
 
-                  {/* Card 2 */}
+                  
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -238,7 +238,7 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
 
-                  {/* Card 3 */}
+                  
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -276,7 +276,7 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
 
-                  {/* Card 4 */}
+                  
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -312,10 +312,10 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
-          <AddonsList addOnsList={addOnsList}/>
+          <AddonsList />
         </div>
       </div>
       <DeleteConfirmationModal

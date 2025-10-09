@@ -18,7 +18,9 @@ export default function Customer() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const columns = [
-    { header: "Customer", accessor: "client" },
+    { header: "Name", accessor: "client" },
+    { header: "Mobile", accessor: "mobile" },
+    { header: "Email", accessor: "email" },
     { header: "Server Name", accessor: "serverName" },
     { header: "Database Name", accessor: "databaseName" },
     { header: "Product", accessor: "product" },

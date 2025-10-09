@@ -52,7 +52,7 @@ export default function PermissionModule() {
   }, []);
   const onEditClick = (row: any) => {
     router.push(
-      `/settings/permission-options/update/${row?.userRightsMasterId}`
+      `/permission/permission-options/update/${row?.userRightsMasterId}`
     );
   };
   const onDeleteClick = (row: any) => {
@@ -75,7 +75,7 @@ export default function PermissionModule() {
           <div className="flex flex-row gap-2 items-center">
             {canCreate && (
               <Link
-                href={"/settings/permission-options/create"}
+                href={"/permission/permission-options/create"}
                 className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
               >
                 {" "}
@@ -101,7 +101,7 @@ export default function PermissionModule() {
           deleteLabel="Permission Option"
           deleteId={`?userRightsMasterId=${deleteId}` as string}
           deleteUrl={"/api/v1/user-rights-master"}
-          redirectUrl={"/settings/permission-options"}
+          redirectUrl={"/permission/permission-options"}
         />
       </div>
     </ValidatePermissions>

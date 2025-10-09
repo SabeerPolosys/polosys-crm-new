@@ -118,7 +118,7 @@ const UpdatePermissionOption: React.FC = () => {
           message: `Permition option updated successfully.`,
           type: "success",
         });
-        router.push("/settings/permission-options");
+        router.push("/permission/permission-options");
       } else {
         throw new Error("Failed to create role.");
       }
@@ -149,7 +149,7 @@ const UpdatePermissionOption: React.FC = () => {
         <div className="flex items-center mb-6">
           <div
             className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-            onClick={() => router.push("/settings/permission-options")}
+            onClick={() => router.push("/permission/permission-options")}
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>

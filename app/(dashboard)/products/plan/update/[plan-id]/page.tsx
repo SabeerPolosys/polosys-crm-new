@@ -18,7 +18,7 @@ interface PlanFormData {
   isActive: boolean;
 }
 
-const CreatePlan: React.FC = () => {
+const UpdatePlan: React.FC = () => {
   const [formData, setFormData] = useState<PlanFormData>({
     planName: "",
     planPrice: null,
@@ -29,7 +29,7 @@ const CreatePlan: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
+  const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
 
@@ -109,7 +109,7 @@ const CreatePlan: React.FC = () => {
           )} */}
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
-                Create {formField?.title}
+                Update {formField?.title}
               </h2>
               {formField?.formLabel && (
                 <p className="text-gray-500">{formField?.formLabel}</p>
@@ -122,7 +122,7 @@ const CreatePlan: React.FC = () => {
             handleClear={handleClear}
             formData={formData}
             handleFormDataChange={handleFormDataChange}
-            submitType="Create"
+            submitType="Update"
           />
         </div>
       </div>
@@ -130,4 +130,4 @@ const CreatePlan: React.FC = () => {
   );
 };
 
-export default CreatePlan;
+export default UpdatePlan;

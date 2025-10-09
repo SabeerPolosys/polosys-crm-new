@@ -45,7 +45,7 @@ export default function PermissionModule() {
     getAllPermissionModules();
   }, []);
   const onEditClick = (row: any) => {
-    router.push(`/settings/permission-module/update/${row?.moduleId}`);
+    router.push(`/permission/permission-module/update/${row?.moduleId}`);
   };
   const onDeleteClick = (row: any) => {
     setIsDeleteOpen(true);
@@ -67,7 +67,7 @@ export default function PermissionModule() {
           <div className="flex flex-row gap-2 items-center">
             {canCreate && (
               <Link
-                href={"/settings/permission-module/create"}
+                href={"/permission/permission-module/create"}
                 className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
               >
                 {" "}
@@ -93,7 +93,7 @@ export default function PermissionModule() {
           deleteLabel="Permission Module"
           deleteId={`?moduleId=${deleteId}` as string}
           deleteUrl={"/api/v1/module"}
-          redirectUrl={"/settings/permission-module"}
+          redirectUrl={"/permission/permission-module"}
         />
       </div>
     </ValidatePermissions>

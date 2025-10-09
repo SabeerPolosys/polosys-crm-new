@@ -1,0 +1,285 @@
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  UniqueIdentifier,
+  useDroppable,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  arrayMove,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Addons } from "@/types/auth";
+import api from "@/lib/axios";
+import { showToast } from "../common/ShowToast";
+
+type AddonsResponse = {
+  success: boolean;
+  message: string;
+  data: Addons[];
+};
+
+type ContainerId = "available" | "selected";
+type ProductDragableProps = {
+    handleFormDataChange(key: string, value: any): void;
+}
+
+/** Sortable card component */
+function SortableItem({ item }: { item: Addons }) {
+  const { addonID, name, description, addonPrice, currencyCode } = item;
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: addonID });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-white border border-gray-300 rounded-md p-3 mb-2 cursor-grab shadow-sm hover:bg-gray-50 select-none"
+    >
+      <div className="font-medium">{name}</div>
+      <div className="text-xs text-gray-600">{description}</div>
+      <div className="text-xs mt-1 text-gray-800">
+        {addonPrice.toFixed(2)} {currencyCode}
+      </div>
+    </div>
+  );
+}
+
+/** Droppable list wrapper */
+function DroppableList({
+  id,
+  title,
+  items,
+  emptyText,
+}: {
+  id: ContainerId;
+  title: string;
+  items: Addons[];
+  emptyText: string;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      data-container-id={id}
+      className={`flex-1 rounded-lg p-4 min-h-[250px] max-h-[500px] transition-colors overflow-y-scroll ${
+        id === "available" ? "bg-gray-100" : "bg-blue-50"
+      } ${isOver ? "ring-2 ring-offset-2 ring-blue-300" : ""}`}
+    >
+      <h3
+        className={`text-lg font-semibold mb-3 ${
+          id === "available" ? "text-gray-700" : "text-blue-700"
+        }`}
+      >
+        {title}
+      </h3>
+
+      <SortableContext
+        items={items.map((i) => i.addonID)}
+        strategy={rectSortingStrategy}
+      >
+        {items.length > 0 ? (
+          items.map((item) => <SortableItem key={item.addonID} item={item} />)
+        ) : (
+          <p
+            className={`text-sm italic ${
+              id === "available" ? "text-gray-500" : "text-blue-500"
+            }`}
+          >
+            {emptyText}
+          </p>
+        )}
+      </SortableContext>
+    </div>
+  );
+}
+
+export default function ProductDragableAdons({handleFormDataChange}:ProductDragableProps) {
+  const [available, setAvailable] = useState<Addons[]>([]);
+
+  const [selected, setSelected] = useState<Addons[]>([]);
+
+  const availableRef = useRef<Addons[]>(available);
+  const selectedRef = useRef<Addons[]>(selected);
+  useEffect(() => {
+    const getAllAddons = async () => {
+      try {
+        const res = await api.get<AddonsResponse>(`/api/v1/product-addon`);
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setAvailable(respose);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch addons.`,
+          type: "error",
+        });
+      }
+    };
+    getAllAddons();
+  }, []);
+
+  useEffect(() => {
+    availableRef.current = available;
+  }, [available]);
+
+  useEffect(() => {
+    selectedRef.current = selected;
+    // const selectedIds = selected.map((val)=>val?.addonID);
+    // handleFormDataChange && handleFormDataChange("addonIDs",selectedIds ?? []);
+  }, [selected]);
+
+  // dev check for duplicate addonIDs
+  useEffect(() => {
+    const allIds = [...available, ...selected].map((i) => i.addonID);
+    const dup = allIds.filter((id, idx) => allIds.indexOf(id) !== idx);
+    if (dup.length) {
+      console.warn("Duplicate addonIDs detected:", [...new Set(dup)]);
+    }
+  }, [available, selected]);
+
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const findContainer = (id: UniqueIdentifier | null): ContainerId | null => {
+    if (!id) return null;
+    const idStr = String(id);
+    if (availableRef.current.some((i) => i.addonID === idStr))
+      return "available";
+    if (selectedRef.current.some((i) => i.addonID === idStr)) return "selected";
+    return null;
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    const from = findContainer(activeId);
+    if (!from) return;
+
+    let to: ContainerId | null = null;
+    if (overId === "available" || overId === "selected") {
+      to = overId as ContainerId;
+    } else {
+      to = findContainer(overId);
+    }
+    if (!to) return;
+
+    if (from === to) {
+      const list =
+        from === "available" ? availableRef.current : selectedRef.current;
+      const oldIndex = list.findIndex((i) => i.addonID === activeId);
+      const newIndex = list.findIndex((i) => i.addonID === overId);
+      if (oldIndex === -1 || newIndex === -1) return;
+      if (oldIndex !== newIndex) {
+        const setter = from === "available" ? setAvailable : setSelected;
+        setter((prev) => arrayMove(prev, oldIndex, newIndex));
+      }
+      return;
+    }
+
+    const fromList =
+      from === "available" ? availableRef.current : selectedRef.current;
+    const movingItem = fromList.find((i) => i.addonID === activeId);
+    if (!movingItem) return;
+
+    if (from === "available") {
+      setAvailable((prev) => prev.filter((i) => i.addonID !== activeId));
+    } else {
+      setSelected((prev) => prev.filter((i) => i.addonID !== activeId));
+    }
+
+    const insertItem = (
+      list: Addons[],
+      movingItem: Addons,
+      targetIndex: number | null
+    ) => {
+      const next = [...list];
+      if (
+        targetIndex === null ||
+        targetIndex === -1 ||
+        targetIndex === list.length
+      ) {
+        next.push(movingItem);
+      } else {
+        next.splice(targetIndex, 0, movingItem);
+      }
+      return next;
+    };
+
+    if (to === "available") {
+      setAvailable((prev) =>
+        insertItem(
+          prev,
+          movingItem,
+          overId === "available"
+            ? prev.length
+            : prev.findIndex((i) => i.addonID === overId)
+        )
+      );
+    } else {
+      setSelected((prev) =>
+        insertItem(
+          prev,
+          movingItem,
+          overId === "selected"
+            ? prev.length
+            : prev.findIndex((i) => i.addonID === overId)
+        )
+      );
+    }
+  };
+
+  return (
+    <div className="col-span-2 w-full">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex flex-col md:flex-row gap-6 text-sm">
+          <DroppableList
+            id="selected"
+            title="Selected Add-ons"
+            items={selected}
+            emptyText="No add-ons selected"
+          />
+          <DroppableList
+            id="available"
+            title="Available Add-ons"
+            items={available}
+            emptyText="No available add-ons"
+          />
+
+        </div>
+      </DndContext>
+    </div>
+  );
+}

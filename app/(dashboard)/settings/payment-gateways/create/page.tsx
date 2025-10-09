@@ -3,32 +3,31 @@
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
 import React, { useState, FormEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
-interface PlanFormData {
-  planName: string;
-  planPrice: number|null;
-  currencyID: string;
-  billingCycle: string;
+interface PaymentGatewayFormData {
+  providerName: string;
+  apiKey: string;
+  endpointURL: string;
+  supportedModes: string;
   isActive: boolean;
 }
 
-const CreatePlan: React.FC = () => {
-  const [formData, setFormData] = useState<PlanFormData>({
-    planName: "",
-    planPrice: null,
-    currencyID: "",
-    billingCycle:"",
+const CreatePaymentGateway: React.FC = () => {
+  const [formData, setFormData] = useState<PaymentGatewayFormData>({
+    providerName: "",
+    apiKey: "",
+    endpointURL: "",
+    supportedModes: "",
     isActive: true,
   });
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
@@ -42,12 +41,12 @@ const CreatePlan: React.FC = () => {
 
   const handleClear = () => {
     setFormData({
-    planName: "",
-    planPrice: null,
-    currencyID: "",
-    billingCycle:"",
-    isActive: true,
-  });
+      providerName: "",
+      apiKey: "",
+      endpointURL: "",
+      supportedModes: "",
+      isActive: true,
+    });
   };
   const handleSubmit = async (e: FormEvent) => {
     try {
@@ -59,10 +58,10 @@ const CreatePlan: React.FC = () => {
         ])
       );
       if (
-        !trimmedFormData?.planName ||
-        !trimmedFormData?.planPrice ||
-        !trimmedFormData?.currencyID ||
-        !trimmedFormData?.billingCycle
+        !trimmedFormData?.providerName ||
+        !trimmedFormData?.apiKey ||
+        !trimmedFormData?.endpointURL ||
+        !trimmedFormData?.supportedModes
       ) {
         return showToast({
           message: `Please fill required fields.`,
@@ -70,19 +69,19 @@ const CreatePlan: React.FC = () => {
         });
       }
 
-      const res = await api.post(`${formField?.submitUrl}`, {...trimmedFormData});
+      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
       if (res?.status == 200) {
         showToast({
-          message: `Plan created successfully.`,
+          message: `Payment gateway created successfully.`,
           type: "success",
         });
-        router.push(`/products/plans`);
+        router.push("/settings/payment-gateways");
       } else {
-        throw new Error("Failed to create Plan.");
+        throw new Error("Failed to create payment gateway.");
       }
     } catch {
       showToast({
-        message: `Failed to create plan.`,
+        message: `Failed to create Payment gateway.`,
         type: "error",
       });
     }
@@ -130,4 +129,4 @@ const CreatePlan: React.FC = () => {
   );
 };
 
-export default CreatePlan;
+export default CreatePaymentGateway;

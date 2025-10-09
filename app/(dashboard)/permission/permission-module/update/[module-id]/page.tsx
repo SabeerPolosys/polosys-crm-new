@@ -90,7 +90,7 @@ const UpdatePermissionModule: React.FC = () => {
           message: `Permission module created successfully.`,
           type: "success",
         });
-        router.push("/settings/permission-module");
+        router.push("/permission/permission-module");
       } else {
         throw new Error("Failed to create permission module.");
       }
@@ -112,7 +112,7 @@ const UpdatePermissionModule: React.FC = () => {
         <div className="flex items-center mb-6">
           <div
             className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-            onClick={() => router.push("/settings/permission-module")}
+            onClick={() => router.push("/permission/permission-module")}
           >
             <IoMdArrowBack className="w-6 h-6" />
           </div>

@@ -7,6 +7,9 @@ import SbFormPermissionOptions from "./SbFormPermissionOptions";
 import SbFormTextArea from "./SbFormTextArea";
 import SbFormNumber from "./SbFormNumber";
 import SbFormDatepicker from "./SbFormDatepicker";
+import ProductDragableAdons from "../product/ProductDragableAdons";
+import PlanFeatures from "../product/PlanFeatures";
+import VersionPlanSelector from "../product/VersionPlanSelector";
 
 export default function SbForm({
   formField,
@@ -92,6 +95,17 @@ export default function SbForm({
                     handleFormDataChange={handleFormDataChange}
                   />
                 );
+              case "plan-selector":
+                return(
+                  <VersionPlanSelector key={index}/>
+                )
+              case "dragable-adons":
+                return(
+                  <ProductDragableAdons key={index} handleFormDataChange={handleFormDataChange}/>
+                )
+              case "features":
+                return(<PlanFeatures key={index} value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange} field={field}/>)
               default:
                 break;
             }

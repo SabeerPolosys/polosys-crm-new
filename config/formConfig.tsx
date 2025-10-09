@@ -232,7 +232,14 @@ export const formFieldconfig = {
         optionKey: "option",
       },
       {
-        label: "Plan Price",
+        label: "Plan Price Was",
+        key: "planPriceWas",
+        type: "number",
+        required: true,
+        placeholder: "Plan Price",
+      },
+      {
+        label: "Plan Price Now",
         key: "planPrice",
         type: "number",
         required: true,
@@ -265,6 +272,10 @@ export const formFieldconfig = {
         ],
         valueKey: "value",
         optionKey: "option",
+      },
+      {
+        key: "features",
+        type: "features",
       },
     ],
     hasSubmitButton: true,
@@ -310,6 +321,12 @@ export const formFieldconfig = {
         valueKey: "value",
         optionKey: "option",
       },
+      {
+        type: "plan-selector"
+      },
+      {
+        type: "dragable-adons",
+      },
     ],
     hasSubmitButton: true,
     submitButtonLabel: "Version",
@@ -342,7 +359,7 @@ export const formFieldconfig = {
         type: "select",
         required: true,
         defaultList: [
-          { value: "8358cf62-245a-33b9-dafa-e275cc1a5318", option: "SAR" },
+          { value: "8d5c3d62-dced-4756-8367-04927829e39b", option: "SAR" },
         ],
         valueKey: "value",
         optionKey: "option",
@@ -359,5 +376,64 @@ export const formFieldconfig = {
     submitButtonLabel: "Add-ons",
     hasClearButton: true,
     submitUrl: "/api/v1/product-addon",
+  },
+
+  "/settings/payment-gateways": {
+    Category: "Payments",
+    title: "Payment Gateway",
+    formLabel: "",
+    fields: [
+      {
+        label: "Gateway Name",
+        key: "providerName",
+        type: "select",
+        required: true,
+        defaultList: [
+          { value: "razorpay", option: "Razorpay" },
+          { value: "phonepe", option: "PhonePe" },
+          { value: "paytabs", option: "PayTabs" },
+        ],
+        valueKey: "value",
+        optionKey: "option",
+      },
+      {
+        label: "API Key",
+        key: "apiKey",
+        type: "input",
+        required: true,
+        placeholder: "API Key",
+      },
+      {
+        label: "Endpoint Url",
+        key: "endpointURL",
+        type: "input",
+        required: true,
+        placeholder: "Endpoint Url",
+      },
+      {
+        label: "Supported Modes",
+        key: "supportedModes",
+        type: "input",
+        required: true,
+        placeholder: "Supported Modes",
+      },
+      {
+        label: "Status",
+        key: "isActive",
+        type: "select",
+        required: true,
+        placeholder: "Status",
+        defaultList: [
+          { value: true, option: "Active" },
+          { value: false, option: "Invative" },
+        ],
+        valueKey: "value",
+        optionKey: "option",
+      },
+    ],
+    hasSubmitButton: true,
+    submitButtonLabel: "Payment Gateway",
+    hasClearButton: true,
+    submitUrl: "/api/v1/payment-gateway",
   },
 };
