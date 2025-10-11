@@ -104,3 +104,10 @@ export interface PaymentGateway {
   createdAt: Date; 
   modifiedAt: Date;
 }
+
+export interface Currency {
+  currencyCode: string;     
+  countryName: string;      
+  symbol: string;           
+  decimalPlaces: number;   
+}

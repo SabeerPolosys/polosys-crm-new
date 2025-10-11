@@ -10,6 +10,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import Link from "next/link";
 
 interface Column {
   header: string;
@@ -121,8 +122,14 @@ const DynamicTable = <T extends Record<string, any>>({
                             {row[col.accessor]}
                           </span>
                         );
-                      }else if(["haveRead", "haveCreate", "haveUpdate", "haveDelete"]?.includes(col.accessor)){
+                      }else if(["haveRead", "haveCreate", "haveUpdate", "haveDelete", "isInvoiced"]?.includes(col.accessor)){
                           value = row[col.accessor] ? <IoCheckmarkCircleOutline className="w-5 h-5 text-green-500"/> : <FaRegCircleXmark className="w-4 h-4 text-red-400"/>; 
+                      }else if(col.accessor.toLowerCase() === "convertoinvoice"){
+                          value = row[col.accessor] ? <button className="text-xs px-2 py-1 rounded bg-red-500 text-white">Conver to Invoice</button>: null
+                      }else if(col.accessor.toLowerCase() === "converttodeal"){
+                        value = <Link href={`/sales/leads/convert-to-deal/${row?.id}`} className="text-xs px-2 py-1 rounded bg-blue-800 text-white">Conver to Deal</Link>
+                      }else if(col.accessor.toLowerCase() === "deactivate"){
+                        value = <button className="text-xs px-2 py-1 rounded bg-red-500 text-white">Deactivate</button>
                       }
 
                       return <td key={col.accessor}>{value}</td>;

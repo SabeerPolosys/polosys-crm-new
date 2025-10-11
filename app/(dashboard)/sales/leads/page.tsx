@@ -9,11 +9,15 @@ import validatePermission from "@/components/permissions/PermissionCheckerNew";
 
 export default function Leads() {
   const columns = [
-    { header: "Name", accessor: "name" },
+    { header: "Full Name", accessor: "name" },
+    { header: "Country", accessor: "country" },
+    { header: "Email", accessor: "email" },
     { header: "Source", accessor: "source" },
     { header: "Status", accessor: "status" },
-    { header: "Lead Level", accessor: "level" },
-    { header: "Assign To", accessor: "assignto" },
+    // { header: "Lead Level", accessor: "level" },
+    // { header: "Assigned To", accessor: "assignto" },
+    // { header: "Assign", accessor: "assignto1" },
+    { header: "Convert To Deal", accessor: "convertToDeal" },
   ];
 
   const data = [
@@ -23,6 +27,8 @@ export default function Leads() {
       status: "New",
       level: "Hot",
       assignto: "Alice Johnson",
+      country: "United States",
+      email: "john.doe@example.com",
     },
     {
       name: "Emma Watson",
@@ -30,6 +36,8 @@ export default function Leads() {
       status: "Contacted",
       level: "Warm",
       assignto: "Bob Smith",
+      country: "United Kingdom",
+      email: "emma.watson@example.co.uk",
     },
     {
       name: "Liam Brown",
@@ -37,6 +45,8 @@ export default function Leads() {
       status: "Qualified",
       level: "Cold",
       assignto: "Charlie Davis",
+      country: "Australia",
+      email: "liam.brown@example.com.au",
     },
     {
       name: "Olivia Green",
@@ -44,6 +54,8 @@ export default function Leads() {
       status: "Lost",
       level: "Cold",
       assignto: "Diana Prince",
+      country: "Canada",
+      email: "olivia.green@example.ca",
     },
     {
       name: "Noah White",
@@ -51,6 +63,8 @@ export default function Leads() {
       status: "New",
       level: "Hot",
       assignto: "Ethan Hunt",
+      country: "India",
+      email: "noah.white@example.in",
     },
     {
       name: "Ava Black",
@@ -58,6 +72,8 @@ export default function Leads() {
       status: "Qualified",
       level: "Warm",
       assignto: "Fiona Gallagher",
+      country: "United Arab Emirates",
+      email: "ava.black@example.ae",
     },
     {
       name: "Mason Gray",
@@ -65,6 +81,8 @@ export default function Leads() {
       status: "Contacted",
       level: "Hot",
       assignto: "George Martin",
+      country: "Qatar",
+      email: "mason.gray@example.qa",
     },
     {
       name: "Sophia Blue",
@@ -72,6 +90,8 @@ export default function Leads() {
       status: "Lost",
       level: "Cold",
       assignto: "Hannah Davis",
+      country: "Oman",
+      email: "sophia.blue@example.om",
     },
     {
       name: "Lucas Red",
@@ -79,6 +99,8 @@ export default function Leads() {
       status: "Contacted",
       level: "Warm",
       assignto: "Ian Curtis",
+      country: "Saudi Arabia",
+      email: "lucas.red@example.sa",
     },
     {
       name: "Isabella Pink",
@@ -86,8 +108,11 @@ export default function Leads() {
       status: "New",
       level: "Hot",
       assignto: "Julia Roberts",
+      country: "Singapore",
+      email: "isabella.pink@example.sg",
     },
   ];
+
   const pathname = usePathname();
   const { permissions } = usePermissions();
   const canCreate = validatePermission(

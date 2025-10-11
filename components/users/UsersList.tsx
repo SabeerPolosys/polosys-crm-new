@@ -49,8 +49,8 @@ export default function UsersList() {
   const columns = [
     { header: "No", accessor: "slno" },
     { header: "Name", accessor: "userName" },
-    { header: "Contact", accessor: "contact" },
-    { header: "Role", accessor: "typeName" },
+    { header: "Email", accessor: "email" },
+    { header: "User Type", accessor: "typeName" },
     // { header: "Email", accessor: "email" },
   ];
   const searchParams = useSearchParams();
@@ -85,14 +85,14 @@ export default function UsersList() {
               <div className="flex md:flex-row flex-col items-center md:justify-between justify-center">
                 <h2 className="text-lg font-bold px-6">All Users</h2>
                 <div className="flex md:flex-row flex-col gap-2 items-center">
-                  <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
+                  {/* <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
                     {" "}
                     <FaRegUser /> Users
                   </button>
                   <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
                     {" "}
                     <LuUserRoundCog /> Manage Users
-                  </button>
+                  </button> */}
                   {canCreate && (
                     <Link
                       href={"/users/create-user"}

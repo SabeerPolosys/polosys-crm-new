@@ -21,9 +21,9 @@ import {
   FaMoon,
   FaSignOutAlt,
   FaChevronLeft,
-  FaChevronRight,
   FaRegQuestionCircle,
-  FaUserLock 
+  FaUserLock,
+  FaChevronDown
 } from "react-icons/fa";
 import { RiMenuAddLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
@@ -32,11 +32,22 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
 import useIsMobile from "@/helpers/useIsMobile";
+import { BiBarChart } from "react-icons/bi";
+// type MenuType = {
+//   label: string;
+//   icon: JSX.Element;
+//   link: string;
+// };
 type MenuType = {
   label: string;
   icon: JSX.Element;
-  link: string;
+  link?: string; // optional for parent items like "Accounts"
+  children?: {
+    label: string;
+    link: string;
+  }[];
 };
+
 type SettingsItem = {
   label: string;
   icon?: ReactElement;
@@ -44,12 +55,37 @@ type SettingsItem = {
   children?: SettingsItem[];
 };
 
+// const allMenuItems = [
+//   { label: "Dashboard", icon: <FaHome />, link: "/" },
+//   { label: "Users & Roles", icon: <FaUsers />, link: "/users" },
+//   { label: "Leads", icon: <FaUserTie />, link: "/leads" },
+//   { label: "Products suite", icon: <FaBoxOpen />, link: "/products" },
+//   { label: "Accounts", icon: <FaFileInvoice />, link: "/accounts" },
+//   { label: "Customers", icon: <FaUserFriends />, link: "/customers" },
+//   { label: "Reports & Analytics", icon: <FaChartBar />, link: "/reports" },
+// ];
 const allMenuItems = [
   { label: "Dashboard", icon: <FaHome />, link: "/" },
   { label: "Users & Roles", icon: <FaUsers />, link: "/users" },
-  { label: "Leads", icon: <FaUserTie />, link: "/leads" },
+  // { label: "Leads", icon: <FaUserTie />, link: "/leads" },
+  {
+    label: "Sales",
+    icon: <BiBarChart />,
+    children: [
+      { label: "Leads", link: "/sales/leads" },
+      { label: "Deals", link: "/sales/deals" },
+    ],
+  },
   { label: "Products suite", icon: <FaBoxOpen />, link: "/products" },
-  { label: "Payments", icon: <FaFileInvoice />, link: "/accounts" },
+  {
+    label: "Accounts",
+    icon: <FaFileInvoice />,
+    children: [
+      { label: "Payments", link: "/accounts/payments" },
+      { label: "Invoice", link: "/accounts/invoices" },
+      { label: "Purchase", link: "/accounts/purchases" },
+    ],
+  },
   { label: "Customers", icon: <FaUserFriends />, link: "/customers" },
   { label: "Reports & Analytics", icon: <FaChartBar />, link: "/reports" },
 ];
@@ -62,6 +98,7 @@ const settingsItems = [
       { label: "Add-ons", link: "/products/addons" },
       { label: "Plans", link: "/products/plan" },
       { label: "Payment Gateways", link: "/settings/payment-gateways" },
+      { label: "Currency", link: "/settings/currency" },
     ],
   },
   {
@@ -92,7 +129,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
 
   const toggleSubmenu = (label: string) => {
     setOpenSubmenus((prev) => ({
-      ...prev,
+      // ...prev,
       [label]: !prev[label],
     }));
   };
@@ -122,13 +159,42 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
       })
       .filter((item): item is SettingsItem => item !== null);
   };
+  // useEffect(() => {
+  //   const menus = allMenuItems?.filter((menu) => {
+  //     if (validatePermission(menu?.link, "canRead", permissions || [])) {
+  //       return menu;
+  //     }
+  //   });
+  //   setMenuItems(menus);
+  //   const filteredSettings = filterSettingsByPermission(
+  //     settingsItems,
+  //     permissions || []
+  //   );
+  //   setSettingsMenu(filteredSettings);
+  // }, [permissions]);
   useEffect(() => {
-    const menus = allMenuItems?.filter((menu) => {
-      if (validatePermission(menu?.link, "canRead", permissions || [])) {
-        return menu;
-      }
-    });
+    const menus = allMenuItems
+      .map((menu): MenuType | null => {
+        if (menu.children) {
+          const filteredChildren = menu.children.filter((child) =>
+            validatePermission(child.link, "canRead", permissions || [])
+          );
+          if (filteredChildren.length > 0) {
+            return { ...menu, children: filteredChildren };
+          }
+          return null;
+        }
+
+        if (validatePermission(menu.link!, "canRead", permissions || [])) {
+          return menu;
+        }
+
+        return null;
+      })
+      .filter((menu): menu is MenuType => menu !== null); // ⬅ Type guard
+
     setMenuItems(menus);
+
     const filteredSettings = filterSettingsByPermission(
       settingsItems,
       permissions || []
@@ -159,7 +225,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
           <div className="flex-1 overflow-y-auto sidebar-scroll">
             {/* Main Menu */}
             <p className="px-4 py-2 text-gray-400 text-xs">MAIN</p>
-            {menuItems.map(({ label, icon, link }) => {
+            {/* {menuItems.map(({ label, icon, link }) => {
               const isActive = pathname === link;
 
               return (
@@ -178,6 +244,74 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                   {label}
                 </Link>
               );
+            })} */}
+            {menuItems.map(({ label, icon, link, children }) => {
+              const isActive = pathname === link;
+              const isOpen = openSubmenus[label];
+
+              if (children && children.length > 0) {
+                return (
+                  <div key={label} className="w-full">
+                    {/* Parent button (like settings menu) */}
+                    <button
+                      onClick={() => toggleSubmenu(label)}
+                      className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition justify-between ${
+                        isOpen ? "" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {icon}
+                        {label}
+                      </div>
+                      <span className="ml-auto">
+                        {isOpen ? <FaChevronLeft /> : <FaChevronDown />}
+                      </span>
+                    </button>
+
+                    {/* Submenu items */}
+                    {isOpen && (
+                      <div className="ml-8 mt-1 flex flex-col">
+                        {children.map((child) => {
+                          const isChildActive = pathname === child.link;
+                          return (
+                            <Link
+                              href={child.link}
+                              key={child.label}
+                              className={`text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded ${
+                                isChildActive ? "" : ""
+                              }`}
+                              onClick={() => {
+                                // setOpenSubmenus({});
+                                isMobile && setCollapsed(true);
+                              }}
+                            >
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Regular menu item
+              return link ? (
+                <Link
+                  href={link}
+                  key={label}
+                  className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition cursor-pointer ${
+                    isActive ? "bg-gray-700" : ""
+                  }`}
+                  onClick={() => {
+                    // setOpenSubmenus({});
+                    isMobile && setCollapsed(true);
+                  }}
+                >
+                  {icon}
+                  {label}
+                </Link>
+              ) : null;
             })}
 
             {/* Settings */}
@@ -201,7 +335,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                       {openSubmenus[label] ? (
                         <FaChevronLeft />
                       ) : (
-                        <FaChevronRight />
+                        <FaChevronDown />
                       )}
                     </span>
                   )}
@@ -269,7 +403,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
               onClick={() => setCollapsed(false)}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-600 border-[1px]"
             >
-              <FaChevronRight />
+              <FaChevronDown />
             </button>
             <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
               <RiMenuAddLine />

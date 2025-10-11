@@ -2,40 +2,31 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
-import { ProductTypes } from "@/types/auth";
 
-interface VersionFormData {
-  versionNumber: string;
-  releaseDate: Date|null;
-  basePrice: number|null;
-  currencyID: string;
+interface CurrencyFormData {
+  currencyCode: string;
+  countryName: string;
+  symbol: string;
+  decimalPlaces: number | null;
 }
-type GetProductResponse = {
-  success: boolean;
-  message: string;
-  data: ProductTypes;
-};
 
-const CreateVersion: React.FC = () => {
-  const [formData, setFormData] = useState<VersionFormData>({
-    versionNumber: "",
-    releaseDate: null,
-    basePrice: null,
-    currencyID:"",
+const UpdateCurrency: React.FC = () => {
+  const [formData, setFormData] = useState<CurrencyFormData>({
+    currencyCode: "",
+    countryName: "",
+    symbol: "",
+    decimalPlaces: null,
   });
-  const [productDetails, setProductDetails] = useState<ProductTypes|null>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const productId = searchParams.get('productId');
-  const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
+  const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
 
@@ -48,31 +39,12 @@ const CreateVersion: React.FC = () => {
 
   const handleClear = () => {
     setFormData({
-    versionNumber: "",
-    releaseDate: null,
-    basePrice: null,
-    currencyID:"",
-  });
+      currencyCode: "",
+      countryName: "",
+      symbol: "",
+      decimalPlaces: null,
+    });
   };
-  useEffect(() => {
-      const getProductDetails = async () => {
-        try {
-          const res = await api.get<GetProductResponse>(
-            `/api/v1/product/${productId}`
-          );
-          if (res?.data?.success) {
-            const respose = res?.data?.data;
-            setProductDetails(respose);
-          }
-        } catch {
-          showToast({
-            message: `Failed to fetch product details.`,
-            type: "error",
-          });
-        }
-      };
-      getProductDetails();
-    }, [productId]);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
@@ -83,10 +55,10 @@ const CreateVersion: React.FC = () => {
         ])
       );
       if (
-        !trimmedFormData?.versionNumber ||
-        !trimmedFormData?.releaseDate ||
-        !trimmedFormData?.basePrice ||
-        !trimmedFormData?.currencyID
+        !trimmedFormData?.providerName ||
+        !trimmedFormData?.apiKey ||
+        !trimmedFormData?.endpointURL ||
+        !trimmedFormData?.supportedModes
       ) {
         return showToast({
           message: `Please fill required fields.`,
@@ -94,19 +66,19 @@ const CreateVersion: React.FC = () => {
         });
       }
 
-      const res = await api.post(`${formField?.submitUrl}`, {...trimmedFormData, productID: productId});
+      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
       if (res?.status == 200) {
         showToast({
-          message: `Version created successfully.`,
+          message: `Payment gateway created successfully.`,
           type: "success",
         });
-        router.push(`/products/${productId}`);
+        router.push("/settings/payment-gateways");
       } else {
-        throw new Error("Failed to create version.");
+        throw new Error("Failed to create payment gateway.");
       }
     } catch {
       showToast({
-        message: `Failed to create version.`,
+        message: `Failed to create Payment gateway.`,
         type: "error",
       });
     }
@@ -122,18 +94,13 @@ const CreateVersion: React.FC = () => {
           <div className="flex items-center mb-6">
             <div
               className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
-              onClick={() => router.push("/products")}
+              onClick={() => router.back()}
             >
               <IoMdArrowBack className="w-6 h-6" />
             </div>
-            {/* {formField?.icon && (
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              {formField?.icon}
-            </div>
-          )} */}
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
-                Create {formField?.title}
+                Update {formField?.title}
               </h2>
               {formField?.formLabel && (
                 <p className="text-gray-500">{formField?.formLabel}</p>
@@ -146,8 +113,7 @@ const CreateVersion: React.FC = () => {
             handleClear={handleClear}
             formData={formData}
             handleFormDataChange={handleFormDataChange}
-            submitType="Create"
-            productDetails={productDetails}
+            submitType="Update"
           />
         </div>
       </div>
@@ -155,4 +121,4 @@ const CreateVersion: React.FC = () => {
   );
 };
 
-export default CreateVersion;
+export default UpdateCurrency;

@@ -10,6 +10,7 @@ import SbFormDatepicker from "./SbFormDatepicker";
 import ProductDragableAdons from "../product/ProductDragableAdons";
 import PlanFeatures from "../product/PlanFeatures";
 import VersionPlanSelector from "../product/VersionPlanSelector";
+import { ProductTypes } from "@/types/auth";
 
 export default function SbForm({
   formField,
@@ -18,13 +19,15 @@ export default function SbForm({
   formData,
   handleFormDataChange,
   submitType,
+  productDetails
 }: {
   formField: any;
   handleSubmit: (e: React.FormEvent<Element>) => Promise<void>;
   handleClear(): void;
   formData: any;
   handleFormDataChange(key: string, value: string): void;
-  submitType?: "Create" | "Update";
+  submitType?: "Create" | "Update" | "Convert";
+  productDetails?: ProductTypes|null
 }) {
   return (
     <div>
@@ -97,7 +100,7 @@ export default function SbForm({
                 );
               case "plan-selector":
                 return(
-                  <VersionPlanSelector key={index}/>
+                  <VersionPlanSelector key={index} productDetails={productDetails}/>
                 )
               case "dragable-adons":
                 return(

@@ -18,13 +18,16 @@ export default function Customer() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const columns = [
-    { header: "Name", accessor: "client" },
+    { header: "Organization Name", accessor: "client" },
     { header: "Mobile", accessor: "mobile" },
     { header: "Email", accessor: "email" },
-    { header: "Server Name", accessor: "serverName" },
-    { header: "Database Name", accessor: "databaseName" },
-    { header: "Product", accessor: "product" },
-    { header: "Alias", accessor: "alias" },
+    // { header: "Server Name", accessor: "serverName" },
+    // { header: "Database Name", accessor: "databaseName" },
+    // { header: "Product", accessor: "product" },
+    // { header: "Alias", accessor: "alias" },
+    { header: "Country", accessor: "country" },
+    { header: "Status", accessor: "status" },
+    { header: "Change Status", accessor: "deactivate" },
   ];
   useEffect(() => {
     const getAllPermissionModules = async () => {
