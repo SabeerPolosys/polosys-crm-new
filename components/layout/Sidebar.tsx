@@ -99,6 +99,8 @@ const settingsItems = [
       { label: "Plans", link: "/products/plan" },
       { label: "Payment Gateways", link: "/settings/payment-gateways" },
       { label: "Currency", link: "/settings/currency" },
+      { label: "Servers", link: "/settings/servers" },
+      { label: "Databases", link: "/settings/databases" },
     ],
   },
   {

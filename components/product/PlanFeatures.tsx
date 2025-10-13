@@ -40,10 +40,11 @@ export default function PlanFeatures({
   return (
     <div className="">
       {/* Button to open modal */}
+      <br/>
       <button
         onClick={() => setIsOpen(true)}
         type="button"
-        className="relative flex items-center gap-2 bg-gray-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition cursor-pointer"
+        className="relative flex items-center gap-2 bg-gray-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition cursor-pointer mt-2"
       >
         <FiPlus size={16} />
         Manage Plan Features
@@ -84,7 +85,7 @@ export default function PlanFeatures({
           </h2>
 
           {/* Table */}
-          <div className="overflow-x-auto border border-gray-200 rounded-lg">
+          <div className="overflow-x-auto border border-gray-200 rounded-lg max-h-96 overflow-y-scroll">
             <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-700 text-sm font-medium">

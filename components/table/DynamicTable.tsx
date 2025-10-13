@@ -11,10 +11,14 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import Link from "next/link";
+import StatusUpdateModal from "./StatusUpdateModal";
 
 interface Column {
   header: string;
   accessor: string;
+  specialName?: string;
+  colour?: any
+  options?: {value:string, key:string}[];
 }
 
 interface DynamicTableProps<T> {
@@ -108,6 +112,8 @@ const DynamicTable = <T extends Record<string, any>>({
                       let value = row[col.accessor];
                       if (col.accessor.toLowerCase() === "slno") {
                         value = rowIndex + 1;
+                      }else if(col?.specialName?.toLowerCase() === "changeablestatus"){
+                        value = <StatusUpdateModal status={row[col.accessor]} colour={col?.colour?.[row[col.accessor]] ?? "bg-blue-500"} options={col?.options ?? []}/>
                       } else if (col.accessor.toLowerCase() === "status") {
                         value = (
                           <span
@@ -127,7 +133,7 @@ const DynamicTable = <T extends Record<string, any>>({
                       }else if(col.accessor.toLowerCase() === "convertoinvoice"){
                           value = row[col.accessor] ? <button className="text-xs px-2 py-1 rounded bg-red-500 text-white">Conver to Invoice</button>: null
                       }else if(col.accessor.toLowerCase() === "converttodeal"){
-                        value = <Link href={`/sales/leads/convert-to-deal/${row?.id}`} className="text-xs px-2 py-1 rounded bg-blue-800 text-white">Conver to Deal</Link>
+                        value = <Link href={`/sales/leads/convert-to-deal/${row?.id}`} className="text-xs px-2 py-1 rounded bg-blue-800 text-white">Convert</Link>
                       }else if(col.accessor.toLowerCase() === "deactivate"){
                         value = <button className="text-xs px-2 py-1 rounded bg-red-500 text-white">Deactivate</button>
                       }

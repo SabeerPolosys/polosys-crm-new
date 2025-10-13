@@ -53,10 +53,12 @@ export default function VersionPlanSelector({
     <div>
       {/* Open Modal Button */}
       {productDetails?.productTypeID === 2 && (
+        <>
+        <br/>
         <button
           onClick={() => setIsOpen(true)}
           type="button"
-          className="relative flex items-center gap-2 bg-gray-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition cursor-pointer"
+          className="relative flex items-center gap-2 bg-gray-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-700 transition cursor-pointer mt-2"
         >
           <FiPlus size={16} />
           Manage Version Plans
@@ -64,6 +66,7 @@ export default function VersionPlanSelector({
             {plans.filter((p) => p.selected).length}
           </span>
         </button>
+        </>
       ) }
 
       {/* Modal */}

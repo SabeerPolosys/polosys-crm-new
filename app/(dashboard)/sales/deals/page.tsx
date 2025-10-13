@@ -16,6 +16,7 @@ export default function Deals() {
     { header: "Version Name", accessor: "versionName" },
     { header: "Quoted Price", accessor: "quotedPrice" },
     { header: "Currency", accessor: "currencySymbol" },
+    { header: "Created By", accessor: "createdBy" },
     // { header: "Convert To Purchase", accessor: "assignto2" },
   ];
 
@@ -27,6 +28,7 @@ export default function Deals() {
     quotedPrice: 1500,
     currencySymbol: "₹",
     assignto2: "",
+    createdBy: "Alice Johnson",
   },
   {
     leadId: "L-1002",
@@ -35,6 +37,7 @@ export default function Deals() {
     quotedPrice: 3200,
     currencySymbol: "د.إ",
     assignto2: "",
+    createdBy: "Bob Smith",
   },
   {
     leadId: "L-1003",
@@ -43,6 +46,7 @@ export default function Deals() {
     quotedPrice: 2800,
     currencySymbol: "﷼",
     assignto2: "",
+    createdBy: "Charlie Davis",
   },
   {
     leadId: "L-1004",
@@ -51,6 +55,7 @@ export default function Deals() {
     quotedPrice: 3000,
     currencySymbol: "﷼",
     assignto2: "",
+    createdBy: "Diana Prince",
   },
   {
     leadId: "L-1005",
@@ -59,6 +64,7 @@ export default function Deals() {
     quotedPrice: 2500.75,
     currencySymbol: "﷼",
     assignto2: "",
+    createdBy: "Ethan Hunt",
   },
   {
     leadId: "L-1006",
@@ -67,6 +73,7 @@ export default function Deals() {
     quotedPrice: 1200,
     currencySymbol: "₹",
     assignto2: "",
+    createdBy: "Fiona Gallagher",
   },
   {
     leadId: "L-1007",
@@ -75,6 +82,7 @@ export default function Deals() {
     quotedPrice: 4700.5,
     currencySymbol: "د.إ",
     assignto2: "",
+    createdBy: "George Martin",
   },
   {
     leadId: "L-1008",
@@ -83,6 +91,7 @@ export default function Deals() {
     quotedPrice: 3900,
     currencySymbol: "﷼",
     assignto2: "",
+    createdBy: "Hannah Davis",
   },
   {
     leadId: "L-1009",
@@ -91,6 +100,7 @@ export default function Deals() {
     quotedPrice: 1100,
     currencySymbol: "S$",
     assignto2: "",
+    createdBy: "Ian Curtis",
   },
   {
     leadId: "L-1010",
@@ -99,9 +109,9 @@ export default function Deals() {
     quotedPrice: 5100,
     currencySymbol: "$",
     assignto2: "",
-  }
+    createdBy: "Julia Roberts",
+  },
 ];
-
 
   const pathname = usePathname();
   const { permissions } = usePermissions();

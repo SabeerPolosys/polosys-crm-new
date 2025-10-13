@@ -16,6 +16,7 @@ type CustomerResponse = {
 export default function Customer() {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchKey, setSearchKey] = useState("");
   const router = useRouter();
   const columns = [
     { header: "Organization Name", accessor: "client" },
@@ -57,21 +58,29 @@ export default function Customer() {
   return (
     <ValidatePermissions>
       <div className="rounded-lg py-10 bg-white">
-        <div className="px-6 flex flex-row items-center justify-between">
-          <h2 className="text-lg font-bold">Customers</h2>
-          <div>
-            <button className="border-[1px] border-gray-400 px-2 py-1 rounded text-xs flex flex-row items-center gap-1 text-gray-400">
-              {" "}
-              <FaRegFileAlt /> Export Details
-            </button>
-          </div>
+      <div className="px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h2 className="text-lg font-bold">Customers</h2>
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <input
+            type="text"
+            placeholder="Search customers..."
+            className="border border-gray-300 px-3 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-96"
+            value={searchKey}
+            onChange={(e) => setSearchKey(e.target.value)}
+          />
+          <button className="border-[1px] border-gray-400 px-2 py-1 rounded text-xs flex flex-row items-center gap-1 text-gray-400">
+            <FaRegFileAlt /> Export Details
+          </button>
         </div>
-        <DynamicTable
-          columns={columns}
-          data={customerDetails}
-          onRowClick={handleRowClick}
-        />
       </div>
+
+      <DynamicTable
+        columns={columns}
+        data={customerDetails}
+        onRowClick={handleRowClick}
+      />
+    </div>
     </ValidatePermissions>
   );
 }

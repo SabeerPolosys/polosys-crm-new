@@ -111,3 +111,21 @@ export interface Currency {
   symbol: string;           
   decimalPlaces: number;   
 }
+
+export interface ServerType {
+  serverName: string;
+  Region: string;
+  ip: string;
+  remarks: string;
+  isActive: boolean;
+  databaseLimit: number;
+}
+
+export interface DatabaseType {
+  databaseName: string,
+  userLimit: number,
+  isActive: boolean,
+  product: string,
+  version: string,
+  server: string
+}
