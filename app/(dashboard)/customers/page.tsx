@@ -31,10 +31,10 @@ export default function Customer() {
     { header: "Change Status", accessor: "deactivate" },
   ];
   useEffect(() => {
-    const getAllPermissionModules = async () => {
+    const getCustomerDetails = async () => {
       try {
         setIsLoading(true);
-        const res = await api.get<CustomerResponse>(`/api/v1/client-database`);
+        const res = await api.get<CustomerResponse>(`/api/v1/common/Client`);
         if (res?.data?.success) {
           const respose = res?.data?.data;
           setCustomerDetails(respose);
@@ -48,7 +48,7 @@ export default function Customer() {
         setIsLoading(false);
       }
     };
-    getAllPermissionModules();
+    getCustomerDetails();
   }, []);
 
   const handleRowClick = (rowData: any) => {

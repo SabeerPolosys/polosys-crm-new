@@ -40,7 +40,7 @@ export default function StatusUpdateModal({
       {/* Status Badge */}
       <div>
         <span
-          className={`${colour} text-white px-3 py-1 rounded-2xl cursor-pointer`}
+          className={`${colour} px-3 py-1 rounded-2xl cursor-pointer`}
           onClick={openModal}
         >
           {status}

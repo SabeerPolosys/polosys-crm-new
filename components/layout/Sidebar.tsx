@@ -23,7 +23,7 @@ import {
   FaChevronLeft,
   FaRegQuestionCircle,
   FaUserLock,
-  FaChevronDown
+  FaChevronDown,
 } from "react-icons/fa";
 import { RiMenuAddLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
@@ -33,6 +33,7 @@ import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
 import useIsMobile from "@/helpers/useIsMobile";
 import { BiBarChart } from "react-icons/bi";
+import { useLogout } from "@/helpers/useLogout";
 // type MenuType = {
 //   label: string;
 //   icon: JSX.Element;
@@ -128,6 +129,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
   const [settingsMenu, setSettingsMenu] = useState<SettingsItem[]>([]);
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const logout = useLogout();
 
   const toggleSubmenu = (label: string) => {
     setOpenSubmenus((prev) => ({
@@ -386,8 +388,8 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
 
             {/* Logout */}
             <button
-              onClick={() => alert("Logging out...")}
-              className="flex items-center w-full px-4 py-2 text-sm gap-3 text-red-400 hover:bg-gray-700 transition"
+              onClick={logout}
+              className="flex items-center w-full px-4 py-2 text-sm gap-3 text-red-400 hover:bg-gray-700 transition cursor-pointer"
             >
               <FaSignOutAlt />
               Logout
@@ -417,10 +419,13 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
 
           {/* Bottom Button */}
           <div>
-            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
+            {/* <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px]">
               <MdOutlineDarkMode />
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px] mt-4">
+            </button> */}
+            <button
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-600 border-[1px] mt-4 cursor-pointer"
+              onClick={logout}
+            >
               <RiLogoutCircleLine />
             </button>
           </div>

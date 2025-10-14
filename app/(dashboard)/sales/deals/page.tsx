@@ -17,6 +17,15 @@ export default function Deals() {
     { header: "Quoted Price", accessor: "quotedPrice" },
     { header: "Currency", accessor: "currencySymbol" },
     { header: "Created By", accessor: "createdBy" },
+    { header: "Status", accessor: "status",specialName: "changeableStatus",
+      colour: {
+        "Quote Sent": "bg-blue-200 text-blue-800",
+        "Confirmed Purchase": "bg-green-200 text-green-800",
+      },
+      options: [
+        { value: "Quote Send", key: "Quoted" },
+        { value: "Confirm Purchase", key: "Purchased" },
+      ], },
     // { header: "Convert To Purchase", accessor: "assignto2" },
   ];
 
@@ -29,6 +38,7 @@ export default function Deals() {
     currencySymbol: "₹",
     assignto2: "",
     createdBy: "Alice Johnson",
+    status: "Quote Sent",
   },
   {
     leadId: "L-1002",
@@ -38,6 +48,7 @@ export default function Deals() {
     currencySymbol: "د.إ",
     assignto2: "",
     createdBy: "Bob Smith",
+    status: "Confirmed Purchase",
   },
   {
     leadId: "L-1003",
@@ -47,6 +58,7 @@ export default function Deals() {
     currencySymbol: "﷼",
     assignto2: "",
     createdBy: "Charlie Davis",
+    status: "Quote Sent",
   },
   {
     leadId: "L-1004",
@@ -56,6 +68,7 @@ export default function Deals() {
     currencySymbol: "﷼",
     assignto2: "",
     createdBy: "Diana Prince",
+    status: "Confirmed Purchase",
   },
   {
     leadId: "L-1005",
@@ -65,6 +78,7 @@ export default function Deals() {
     currencySymbol: "﷼",
     assignto2: "",
     createdBy: "Ethan Hunt",
+    status: "Quote Sent",
   },
   {
     leadId: "L-1006",
@@ -74,6 +88,7 @@ export default function Deals() {
     currencySymbol: "₹",
     assignto2: "",
     createdBy: "Fiona Gallagher",
+    status: "Confirmed Purchase",
   },
   {
     leadId: "L-1007",
@@ -83,6 +98,7 @@ export default function Deals() {
     currencySymbol: "د.إ",
     assignto2: "",
     createdBy: "George Martin",
+    status: "Quote Sent",
   },
   {
     leadId: "L-1008",
@@ -92,6 +108,7 @@ export default function Deals() {
     currencySymbol: "﷼",
     assignto2: "",
     createdBy: "Hannah Davis",
+    status: "Confirmed Purchase",
   },
   {
     leadId: "L-1009",
@@ -101,6 +118,7 @@ export default function Deals() {
     currencySymbol: "S$",
     assignto2: "",
     createdBy: "Ian Curtis",
+    status: "Quote Sent",
   },
   {
     leadId: "L-1010",
@@ -110,8 +128,10 @@ export default function Deals() {
     currencySymbol: "$",
     assignto2: "",
     createdBy: "Julia Roberts",
+    status: "Confirmed Purchase",
   },
 ];
+
 
   const pathname = usePathname();
   const { permissions } = usePermissions();

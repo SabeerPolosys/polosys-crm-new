@@ -164,6 +164,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
+import { useLogout } from "@/helpers/useLogout";
 
 type MenuType = {
   label: string;
@@ -182,6 +183,7 @@ export default function Navbar() {
   const [menuItems, setMenuItems] = useState<MenuType[]>([]);
 
   const { permissions } = usePermissions();
+  const logout = useLogout();
 
   // Sidebar-like menu structure
   const allMenuItems: MenuType[] = [
@@ -269,7 +271,7 @@ export default function Navbar() {
   }, [permissions]);
 
   return (
-    <nav className="w-full px-6 py-3 flex items-center justify-between relative bg-white shadow-sm">
+    <nav className="w-full px-6 py-3 flex items-center justify-between relative bg-white shadow-sm" onMouseLeave={()=>{setOpenDropdowns({});setUserDropdownOpen(false);}}>
       {/* Left - Logo */}
       <div className="flex items-center gap-2 font-bold text-2xl text-gray-800">
         <span>Polosys</span>
@@ -374,13 +376,13 @@ export default function Navbar() {
         <div className="relative">
           <FiUser
             className="cursor-pointer hover:text-black"
-            onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+            onClick={() => {setUserDropdownOpen(!userDropdownOpen); setOpenDropdowns({});}}
           />
           {userDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-20">
               <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-800 hover:rounded-lg hover:text-white"
-                onClick={() => alert("Logging out...")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-300 hover:rounded-lg cursor-pointer text-sm"
+                onClick={logout}
               >
                 Logout
               </button>

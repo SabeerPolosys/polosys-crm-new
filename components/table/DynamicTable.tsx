@@ -17,8 +17,8 @@ interface Column {
   header: string;
   accessor: string;
   specialName?: string;
-  colour?: any
-  options?: {value:string, key:string}[];
+  colour?: any;
+  options?: { value: string; key: string }[];
 }
 
 interface DynamicTableProps<T> {
@@ -68,7 +68,11 @@ const DynamicTable = <T extends Record<string, any>>({
   };
   const { permissions } = usePermissions();
   const canEdit = validatePermission(pathname, "canUpdate", permissions || []);
-  const canDelete = validatePermission(pathname, "canDelete", permissions || []);
+  const canDelete = validatePermission(
+    pathname,
+    "canDelete",
+    permissions || []
+  );
 
   return (
     <div className="px-4 py-6">
@@ -112,30 +116,71 @@ const DynamicTable = <T extends Record<string, any>>({
                       let value = row[col.accessor];
                       if (col.accessor.toLowerCase() === "slno") {
                         value = rowIndex + 1;
-                      }else if(col?.specialName?.toLowerCase() === "changeablestatus"){
-                        value = <StatusUpdateModal status={row[col.accessor]} colour={col?.colour?.[row[col.accessor]] ?? "bg-blue-500"} options={col?.options ?? []}/>
+                      } else if (
+                        col?.specialName?.toLowerCase() === "changeablestatus"
+                      ) {
+                        value = (
+                          <StatusUpdateModal
+                            status={row[col.accessor]}
+                            colour={
+                              col?.colour?.[row[col.accessor]] ?? "bg-blue-500"
+                            }
+                            options={col?.options ?? []}
+                          />
+                        );
                       } else if (col.accessor.toLowerCase() === "status") {
                         value = (
                           <span
-                            className={`${styles.status} ${
-                              row[col.accessor] === "Pending"
-                                ? styles.pending
-                                : row[col.accessor] === "Paid"
-                                ? styles.paid
-                                : styles.overdue
-                            }`}
+                            className={`${
+                              col?.colour?.[row?.[col?.accessor]]
+                            } px-3 py-1 rounded-2xl cursor-pointer`}
                           >
                             {row[col.accessor]}
                           </span>
                         );
-                      }else if(["haveRead", "haveCreate", "haveUpdate", "haveDelete", "isInvoiced"]?.includes(col.accessor)){
-                          value = row[col.accessor] ? <IoCheckmarkCircleOutline className="w-5 h-5 text-green-500"/> : <FaRegCircleXmark className="w-4 h-4 text-red-400"/>; 
-                      }else if(col.accessor.toLowerCase() === "convertoinvoice"){
-                          value = row[col.accessor] ? <button className="text-xs px-2 py-1 rounded bg-red-500 text-white">Conver to Invoice</button>: null
-                      }else if(col.accessor.toLowerCase() === "converttodeal"){
-                        value = <Link href={`/sales/leads/convert-to-deal/${row?.id}`} className="text-xs px-2 py-1 rounded bg-blue-800 text-white">Convert</Link>
-                      }else if(col.accessor.toLowerCase() === "deactivate"){
-                        value = <button className="text-xs px-2 py-1 rounded bg-red-500 text-white">Deactivate</button>
+                      } else if (
+                        [
+                          "haveRead",
+                          "haveCreate",
+                          "haveUpdate",
+                          "haveDelete",
+                          "isInvoiced",
+                        ]?.includes(col.accessor)
+                      ) {
+                        value = (
+                          <div className="flex items-center justify-center h-full">
+                            {row[col.accessor] ? (
+                              <IoCheckmarkCircleOutline className="w-5 h-5 text-green-500" />
+                            ) : (
+                              <FaRegCircleXmark className="w-4 h-4 text-red-400" />
+                            )}
+                          </div>
+                        );
+                      } else if (
+                        col.accessor.toLowerCase() === "convertoinvoice"
+                      ) {
+                        value = row[col.accessor] ? (
+                          <button className="text-xs px-2 py-1 rounded bg-blue-700 text-white">
+                            Convert
+                          </button>
+                        ) : null;
+                      } else if (
+                        col.accessor.toLowerCase() === "converttodeal"
+                      ) {
+                        value = (
+                          <Link
+                            href={`/sales/leads/convert-to-deal/${row?.id}`}
+                            className="text-xs px-2 py-1 rounded bg-blue-800 text-white"
+                          >
+                            Convert
+                          </Link>
+                        );
+                      } else if (col.accessor.toLowerCase() === "deactivate") {
+                        value = (
+                          <button className="text-xs px-2 py-1 rounded bg-red-400 text-white">
+                            Deactivate
+                          </button>
+                        );
                       }
 
                       return <td key={col.accessor}>{value}</td>;

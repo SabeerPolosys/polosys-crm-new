@@ -2,7 +2,7 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
@@ -10,12 +10,28 @@ import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 
+interface Feature {
+  featureName: string;
+  status: boolean;
+}
 interface PlanFormData {
+  // versionID: string;
+  // productID: string;
   planName: string;
-  planPrice: number|null;
+  planPrice: number | null;
   currencyID: string;
   billingCycle: string;
   isActive: boolean;
+  code: string;
+  features: Feature[];
+}
+
+interface CheckCodeResponse {
+  success: boolean;
+  message: string;
+  data: {
+    codeExists: boolean;
+  };
 }
 
 const CreatePlan: React.FC = () => {
@@ -23,12 +39,14 @@ const CreatePlan: React.FC = () => {
     planName: "",
     planPrice: null,
     currencyID: "",
-    billingCycle:"",
+    billingCycle: "",
     isActive: true,
+    code: "",
+    features: [],
   });
+  const [isCodeExist, setIsCodeExist] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
@@ -42,16 +60,35 @@ const CreatePlan: React.FC = () => {
 
   const handleClear = () => {
     setFormData({
-    planName: "",
-    planPrice: null,
-    currencyID: "",
-    billingCycle:"",
-    isActive: true,
-  });
+      planName: "",
+      planPrice: null,
+      currencyID: "",
+      billingCycle: "",
+      isActive: true,
+      code: "",
+      features: [],
+    });
   };
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
+      if (isCodeExist) {
+        return showToast({
+          message: `Plan code exist already, select a different one.`,
+          type: "error",
+        });
+      }
+      if (formData?.features?.length <= 0) {
+        return showToast({
+          message: `Atleast one plan feature required.`,
+          type: "error",
+        });
+      } else if (formData?.features?.some((f) => !f?.featureName?.trim())) {
+        return showToast({
+          message: `All features must have a feature name.`,
+          type: "error",
+        });
+      }
       const trimmedFormData = Object.fromEntries(
         Object.entries(formData).map(([key, value]) => [
           key,
@@ -62,7 +99,8 @@ const CreatePlan: React.FC = () => {
         !trimmedFormData?.planName ||
         !trimmedFormData?.planPrice ||
         !trimmedFormData?.currencyID ||
-        !trimmedFormData?.billingCycle
+        !trimmedFormData?.billingCycle ||
+        !trimmedFormData?.code
       ) {
         return showToast({
           message: `Please fill required fields.`,
@@ -70,7 +108,9 @@ const CreatePlan: React.FC = () => {
         });
       }
 
-      const res = await api.post(`${formField?.submitUrl}`, {...trimmedFormData});
+      const res = await api.post(`${formField?.submitUrl}`, {
+        ...trimmedFormData,
+      });
       if (res?.status == 200) {
         showToast({
           message: `Plan created successfully.`,
@@ -87,6 +127,43 @@ const CreatePlan: React.FC = () => {
       });
     }
   };
+  useEffect(() => {
+    const controller = new AbortController();
+    const debounceTimer = setTimeout(() => {
+      const checkCodeExistOrNot = async () => {
+        try {
+          const res = await api.get<CheckCodeResponse>(
+            `/api/v1/product-plan/check-code/${formData?.code}`,
+            { signal: controller.signal }
+          );
+          if (res?.data?.success && res?.data?.data?.codeExists === false) {
+            setIsCodeExist(false);
+          } else {
+            setIsCodeExist(true);
+          }
+        } catch (error: any) {
+          if (error.name === "CanceledError" || error.name === "AbortError") {
+            // Request was canceled
+          } else {
+            setIsCodeExist(true);
+            showToast({
+              message: `Failed to check code`,
+              type: "error",
+            });
+          }
+        }
+      };
+
+      if (formData?.code) {
+        checkCodeExistOrNot();
+      }
+    }, 500);
+
+    return () => {
+      controller.abort();
+      clearTimeout(debounceTimer);
+    };
+  }, [formData?.code]);
 
   return (
     <ValidatePermissions permissionType="canCreate">
@@ -102,11 +179,6 @@ const CreatePlan: React.FC = () => {
             >
               <IoMdArrowBack className="w-6 h-6" />
             </div>
-            {/* {formField?.icon && (
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              {formField?.icon}
-            </div>
-          )} */}
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
                 Create {formField?.title}
@@ -123,6 +195,7 @@ const CreatePlan: React.FC = () => {
             formData={formData}
             handleFormDataChange={handleFormDataChange}
             submitType="Create"
+            isCodeExist={isCodeExist}
           />
         </div>
       </div>

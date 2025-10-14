@@ -19,7 +19,8 @@ export default function SbForm({
   formData,
   handleFormDataChange,
   submitType,
-  productDetails
+  productDetails,
+  isCodeExist
 }: {
   formField: any;
   handleSubmit: (e: React.FormEvent<Element>) => Promise<void>;
@@ -27,7 +28,8 @@ export default function SbForm({
   formData: any;
   handleFormDataChange(key: string, value: string): void;
   submitType?: "Create" | "Update" | "Convert";
-  productDetails?: ProductTypes|null
+  productDetails?: ProductTypes|null,
+  isCodeExist?: boolean
 }) {
   return (
     <div>
@@ -42,6 +44,7 @@ export default function SbForm({
                     key={index}
                     value={formData[field?.key] ?? ""}
                     handleFormDataChange={handleFormDataChange}
+                    isCodeExist={isCodeExist}
                   />
                 );
               case "password":

@@ -19,11 +19,11 @@ export default function Leads() {
       accessor: "status",
       specialName: "changeableStatus",
       colour: {
-        New: "bg-blue-400",
-        Contacted: "bg-yellow-400",
-        Quoted: "bg-purple-400",
-        Lost: "bg-red-400",
-        Pending: "bg-orange-400",
+        New: "bg-gray-200 text-gray-700",
+        Contacted: "bg-blue-100 text-blue-700",
+        Quoted: "bg-green-100 text-green-700",
+        Lost: "bg-red-100 text-red-700",
+        Pending: "bg-orange-100 text-orange-700",
       },
       options: [
         { value: "New", key: "New" },
@@ -38,9 +38,9 @@ export default function Leads() {
       accessor: "level",
       specialName: "changeableStatus",
       colour: {
-        Cold: "bg-blue-600",
-        Warm: "bg-yellow-600",
-        Hot: "bg-red-600",
+        Cold: "bg-blue-200 text-blue-800",
+        Warm: "bg-yellow-200 text-yellow-800",
+        Hot: "bg-red-200 text-red-800",
       },
       options: [
         { value: "Hot", key: "Hot" },

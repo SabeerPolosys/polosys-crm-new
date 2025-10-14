@@ -130,6 +130,7 @@ export function PermissionsProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     async function fetchPermissions() {
       try {
+        setLoading(true);
         const res = await api.get(`/api/v1/user-rights?utypeid=${localStorage.getItem("rid")}`);
         if(res?.data?.success){
           setPermissions(res?.data?.data || []);

@@ -19,20 +19,19 @@ export default function PlanFeatures({
   field,
 }: PlanFeatureProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [features, setFeatures] = useState([{ name: "", status: "1" }]);
+  const [features, setFeatures] = useState([{ featureName: "", status: true }]);
 
-  const handleAdd = () => setFeatures([...features, { name: "", status: "1" }]);
+  const handleAdd = () => setFeatures([...features, { featureName: "", status: true }]);
   const handleRemove = (index: number) =>
     setFeatures(features.filter((_, i) => i !== index));
 
-  const handleChange = (index: number, field: string, value: string) => {
+  const handleChange = (index: number, field: string, value: boolean|string) => {
     const updated = [...features];
     updated[index][field] = value;
     setFeatures(updated);
   };
 
   const handleSave = () => {
-    console.log("Saved features:", features);
     handleFormDataChange(field?.key, features);
     setIsOpen(false);
   };
@@ -110,9 +109,9 @@ export default function PlanFeatures({
                     <td className="py-3 px-4 border-b-[1px] border-gray-300">
                       <input
                         type="text"
-                        value={feature.name}
+                        value={feature.featureName}
                         onChange={(e) =>
-                          handleChange(index, "name", e.target.value)
+                          handleChange(index, "featureName", e.target.value)
                         }
                         placeholder="Enter feature name"
                         className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -122,15 +121,15 @@ export default function PlanFeatures({
                     <td className="py-3 px-4 border-b-[1px] border-gray-300">
                       <div className="relative w-full">
                         <select
-                          value={feature.status}
+                          value={feature?.status?.toString()}
                           onChange={(e) =>
-                            handleChange(index, "status", e.target.value)
+                            handleChange(index, "status", e.target.value === "true")
                           }
                           className="w-full appearance-none border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm text-gray-600 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
                         >
                           <option value="">Select Status</option>
-                          <option value="1">Active</option>
-                          <option value="0">Inactive</option>
+                          <option value={"true"}>Active</option>
+                          <option value={"false"}>Inactive</option>
                         </select>
 
                         {/* Vertical Divider */}
@@ -178,8 +177,8 @@ export default function PlanFeatures({
           <div className="mt-6 flex justify-end gap-2">
             <button
               onClick={() => {
-                setFeatures([{ name: "", status: "1" }]);
-                handleFormDataChange(field?.key, null);
+                setFeatures([{ featureName: "", status: true }]);
+                handleFormDataChange(field?.key, []);
                 setIsOpen(false);
               }}
               className="px-4 py-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 transition"
