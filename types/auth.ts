@@ -7,7 +7,7 @@ export interface LoginRequest {
 export interface LoginResponse {
   message: string;
   token?: string;
-  usertypeid?:string;
+  usertypeid?: string;
 }
 
 export interface ResetRequest {
@@ -16,54 +16,54 @@ export interface ResetRequest {
 }
 
 export interface RoleType {
-  userTypeId: string,
-  typeName: string,
-  description: string,
-  createdAt: Date,
-  modifiedAt: Date
+  userTypeId: string;
+  typeName: string;
+  description: string;
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export interface UserType {
-  userId: string,
-  userName: string,
-  email: string,
-  userTypeId: string,
-  typeName?: string,
-  clientID: string,
-  organizationName?: string,
-  isActive: boolean,
-  createdAt: Date,
-  modifiedAt: Date
+  userId: string;
+  userName: string;
+  email: string;
+  userTypeId: string;
+  typeName?: string;
+  clientID: string;
+  organizationName?: string;
+  isActive: boolean;
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export interface PermissionModuleType {
-  moduleId: string,
-  moduleName: string,
-  description: string,
-  createdAt: Date,
-  modifiedAt: Date
+  moduleId: string;
+  moduleName: string;
+  description: string;
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export interface PermissionOptions {
-  userRightsMasterId: string,
-  moduleId: string,
-  rightName: string,
-  description: string,
-  url: string,
-  view: boolean,
-  create: boolean,
-  edit: boolean,
-  delete: boolean
+  userRightsMasterId: string;
+  moduleId: string;
+  rightName: string;
+  description: string;
+  url: string;
+  view: boolean;
+  create: boolean;
+  edit: boolean;
+  delete: boolean;
 }
 
 export interface ProductTypes {
-  productID: string,
-  name: string,
-  description: string,
-  productTypeID: number,
-  isActive: boolean,
-  createdAt: Date,
-  modifiedAt: Date
+  productID: string;
+  name: string;
+  description: string;
+  productTypeID: number;
+  isActive: boolean;
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export interface CustomerDetails {
@@ -77,9 +77,11 @@ export interface CustomerDetails {
   productID: string;
   product: string;
   alias: string;
+  statusID: number;
+  statusName: string;
   isActive: boolean;
-  createdAt: Date;  
-  modifiedAt: Date; 
+  createdAt: Date;
+  modifiedAt: Date;
 }
 
 export interface Addons {
@@ -89,7 +91,7 @@ export interface Addons {
   addonPrice: number;
   currencyID: string;
   currencyCode: string;
-  createdAt: Date;  
+  createdAt: Date;
   modifiedAt: Date;
   isActive: boolean;
 }
@@ -98,18 +100,19 @@ export interface PaymentGateway {
   gatewayID: string;
   providerName: string;
   apiKey: string;
+  secretKey: string;
   endpointURL: string;
-  supportedModes: string; 
+  supportedModes: string;
   isActive: boolean;
-  createdAt: Date; 
+  createdAt: Date;
   modifiedAt: Date;
 }
 
 export interface Currency {
-  currencyCode: string;     
-  countryName: string;      
-  symbol: string;           
-  decimalPlaces: number;   
+  currencyCode: string;
+  countryName: string;
+  symbol: string;
+  decimalPlaces: number;
 }
 
 export interface ServerType {
@@ -122,10 +125,41 @@ export interface ServerType {
 }
 
 export interface DatabaseType {
-  databaseName: string,
-  userLimit: number,
-  isActive: boolean,
-  product: string,
-  version: string,
-  server: string
+  databaseName: string;
+  userLimit: number;
+  isActive: boolean;
+  product: string;
+  version: string;
+  server: string;
+}
+
+export interface PlanType {
+  planID: string;
+  planName: string;
+  planPrice: number;
+  currencyID: string;
+  billingCycle: string;
+  isActive: boolean;
+  createdAt: Date;
+  modifiedAt: Date;
+  code: string;
+  currencyCode: string;
+  features: {
+    featureID: string;
+    planID: string;
+    featureName: string;
+    remarks: string | null;
+    status: boolean;
+    createdAt: string;
+    modifiedAt: string;
+  }[];
+}
+
+export interface CurrencyDetailsType {
+  currencyID: string;
+  currencyCode: string;
+  symbol: string;
+  decimalPlaces: string;
+  createdAt: string;
+  modifiedAt: string;
 }

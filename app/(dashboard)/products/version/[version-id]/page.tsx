@@ -8,18 +8,17 @@ import { TiTick } from "react-icons/ti";
 import { FiMoreVertical } from "react-icons/fi";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
-import Link from "next/link";
-import AddonsList from "@/components/product/AddonsList";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import { usePermissions } from "@/context/PermissionsContext";
 import validatePermission from "@/components/permissions/PermissionCheckerNew";
+import VersionAvailableAddons from "@/components/product/VersionAvailableAddons";
 type GetProductResponse = {
   success: boolean;
   message: string;
   data: ProductTypes;
 };
 
-export default function IndividualProduct() {
+export default function VersionDetails() {
   const [productDetails, setProductDetails] = useState<ProductTypes | null>(
     null
   );
@@ -33,25 +32,25 @@ export default function IndividualProduct() {
     setOpenDropdownIndex(openDropdownIndex === index ? null : index);
   };
   const params = useParams();
-  useEffect(() => {
-    const getProductDetails = async () => {
-      try {
-        const res = await api.get<GetProductResponse>(
-          `/api/v1/product/${params?.productId}`
-        );
-        if (res?.data?.success) {
-          const respose = res?.data?.data;
-          setProductDetails(respose);
-        }
-      } catch {
-        showToast({
-          message: `Failed to fetch product details.`,
-          type: "error",
-        });
-      }
-    };
-    getProductDetails();
-  }, [params]);
+  // useEffect(() => {
+  //   const getProductDetails = async () => {
+  //     try {
+  //       const res = await api.get<GetProductResponse>(
+  //         `/api/v1/product/${params?.productId}`
+  //       );
+  //       if (res?.data?.success) {
+  //         const respose = res?.data?.data;
+  //         setProductDetails(respose);
+  //       }
+  //     } catch {
+  //       showToast({
+  //         message: `Failed to fetch product details.`,
+  //         type: "error",
+  //       });
+  //     }
+  //   };
+  //   getProductDetails();
+  // }, [params]);
   // const addOnsList = [
   //   "User action report",
   //   "Schemes",
@@ -68,75 +67,115 @@ export default function IndividualProduct() {
   //   "FAM",
   // ];
   const { permissions } = usePermissions();
-const canCreatePlan = validatePermission("/products/plan", "canCreate", permissions || []);
-const canCreateVersion = validatePermission("/products/version", "canCreate", permissions || []);
-const canEditProduct = validatePermission("/products", "canUpdate", permissions || []);
-const canDeleteProduct = validatePermission("/products", "canDelete", permissions || []);
+  const canCreatePlan = validatePermission(
+    "/products/plan",
+    "canCreate",
+    permissions || []
+  );
+  const canCreateVersion = validatePermission(
+    "/products/version",
+    "canCreate",
+    permissions || []
+  );
+  const canEditProduct = validatePermission(
+    "/products",
+    "canUpdate",
+    permissions || []
+  );
+  const canDeleteProduct = validatePermission(
+    "/products",
+    "canDelete",
+    permissions || []
+  );
   return (
     <ValidatePermissions path="/products">
-    <div
-      onClick={() => openDropdownIndex !== null && setOpenDropdownIndex(null)}
-    >
-      <div className="flex flex-row items-center justify-between my-4">
-        <h2 className="font-semibold">Product Suite</h2>
-        <button className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
-          + &nbsp; Add Lead
-        </button>
-      </div>
-      <div className="p-4 rounded-lg border-[1px] border-gray-300">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 bg-gray-50">
-            <div className="flex flex-row items-center justify-between m-4">
-              <h2 className="font-semibold text-xl">{productDetails?.name}</h2>
-              <div className="relative">
-                {(canEditProduct || canDeleteProduct) && <FiMoreVertical
-                  className="text-lg cursor-pointer hover:text-white hover:rounded-full p-0.5 hover:bg-gray-800 hover:scale-105 transition-all duration-150 ease-in-out w-6 h-6"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleDropdown(0);
-                  }}
-                />}
+      <div
+        onClick={() => openDropdownIndex !== null && setOpenDropdownIndex(null)}
+      >
+        <div className="flex flex-row items-center justify-between my-4">
+          <h2 className="font-semibold">Version Details</h2>
+        </div>
+        <div className="p-4 rounded-lg border-[1px] border-gray-300">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="col-span-2 bg-gray-50">
+              <div className="flex flex-row items-center justify-between m-4">
+                <h2 className="font-semibold text-xl">Books GCC</h2>
+                <div className="relative">
+                  {(canEditProduct || canDeleteProduct) && (
+                    <FiMoreVertical
+                      className="text-lg cursor-pointer hover:text-white hover:rounded-full p-0.5 hover:bg-gray-800 hover:scale-105 transition-all duration-150 ease-in-out w-6 h-6"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDropdown(0);
+                      }}
+                    />
+                  )}
 
-                {openDropdownIndex === 0 && (
-                  <div
-                    className="absolute right-full top-1/2 bg-white border border-gray-200 rounded-md shadow-lg z-50"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {canEditProduct && <button
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-blue-500 cursor-pointer"
-                      onClick={() => {
-                        router.push(`/products/update/${params?.productId}`);
-                      }}
+                  {openDropdownIndex === 0 && (
+                    <div
+                      className="absolute right-full top-1/2 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <MdOutlineEdit />
-                      Edit
-                    </button>}
-                    {canDeleteProduct && <button
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-red-500 cursor-pointer"
-                      onClick={() => {
-                        setIsDeleteOpen(true);
-                        setDeleteId(params?.productId);
-                      }}
-                    >
-                      <MdDeleteOutline />
-                      Delete
-                    </button>}
-                  </div>
-                )}
+                      {canEditProduct && (
+                        <button
+                          className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-blue-500 cursor-pointer"
+                          onClick={() => {
+                            // router.push(`/products/update/${params?.productId}`);
+                          }}
+                        >
+                          <MdOutlineEdit />
+                          Edit
+                        </button>
+                      )}
+                      {canDeleteProduct && (
+                        <button
+                          className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 text-red-500 cursor-pointer"
+                          onClick={() => {
+                            setIsDeleteOpen(true);
+                            setDeleteId(params?.productId);
+                          }}
+                        >
+                          <MdDeleteOutline />
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="bg-white m-4 p-6 min-h-screen">
-              <p>{productDetails?.description}</p>
-              {/* {productDetails?.productTypeID === 1 ? ( */}
+              <div className="bg-white m-4 p-6 min-h-screen">
+                <div className=" mx-auto bg-white shadow-md rounded-md p-6">
+                  <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                    Product Details
+                  </h2>
+
+                  <div className="grid grid-cols-2 gap-y-3 text-sm text-gray-700">
+                    <div className="font-medium text-gray-600">
+                      Release Date:
+                    </div>
+                    <div>2025-10-14</div>
+
+                    <div className="font-medium text-gray-600">Version:</div>
+                    <div>v2.1.0</div>
+
+                    <div className="font-medium text-gray-600">Price:</div>
+                    <div>$49.99</div>
+
+                    <div className="font-medium text-gray-600">Currency:</div>
+                    <div>USD</div>
+
+                    <div className="font-medium text-gray-600">Country:</div>
+                    <div>United States</div>
+                  </div>
+                </div>
+
+                {/* {productDetails?.productTypeID === 1 ? ( */}
                 <div className="flex flex-row items-center justify-between">
                   <h3 className="my-6 text-xl font-semibold">
-                    Version Of Products
+                    Plans Of The Version
                   </h3>
-                  {canCreateVersion && <Link href={`/products/version/create?productId=${params?.productId}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">
-                    + &nbsp;Create Version
-                  </Link>}
                 </div>
-              {/* ) : (
+                {/* ) : (
                 <div className="flex flex-row items-center justify-between">
                   <h3 className="my-6 text-xl font-semibold">
                     Plans Of Products
@@ -146,27 +185,8 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                   </Link>}
                 </div>
               )} */}
-              {/* {productDetails?.productTypeID === 1 ? ( */}
-                <div className="flex felx-row gap-4 flex-wrap justify-self-auto">
-                  <Link href={`/products/version/123`} className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium">
-                    EasyBiz Neo Soft Bill
-                  </Link>
-                  <Link href={`/products/version/123`} className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium">
-                    EasyBiz Neo Gold ite
-                  </Link>
-                  <Link href={`/products/version/123`} className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium">
-                    EasyBiz Neo Silver
-                  </Link>
-                  <Link href={`/products/version/123`} className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium">
-                    EasyBiz Neo Gold
-                  </Link>
-                  <Link href={`/products/version/123`} className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium">
-                    EasyBiz Neo Platinum
-                  </Link>
-                </div>
-              {/* ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -200,7 +220,6 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
 
-                  
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -238,7 +257,6 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
 
-                  
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -276,7 +294,6 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
 
-                  
                   <div className="rounded-lg shadow-lg p-4 bg-white hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-gray-200">
                     <div className="text-center flex flex-col gap-1">
                       <h3 className="font-semibold text-gray-700 text-lg">
@@ -312,24 +329,23 @@ const canDeleteProduct = validatePermission("/products", "canDelete", permission
                     </div>
                   </div>
                 </div>
-              )} */}
+              </div>
             </div>
+            <VersionAvailableAddons />
           </div>
-          <AddonsList />
         </div>
+        <DeleteConfirmationModal
+          isOpen={isDeleteOpen}
+          onClose={() => {
+            setIsDeleteOpen(false);
+            setDeleteId(null);
+          }}
+          deleteLabel="Version"
+          deleteId={`?productId=${deleteId}` as string}
+          deleteUrl={""}
+          redirectUrl={"/products"}
+        />
       </div>
-      <DeleteConfirmationModal
-        isOpen={isDeleteOpen}
-        onClose={() => {
-          setIsDeleteOpen(false);
-          setDeleteId(null);
-        }}
-        deleteLabel="Product"
-        deleteId={`?productId=${deleteId}` as string}
-        deleteUrl={"/api/v1/product"}
-        redirectUrl={"/products"}
-      />
-    </div>
     </ValidatePermissions>
   );
 }

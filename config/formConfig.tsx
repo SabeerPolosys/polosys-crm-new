@@ -225,11 +225,12 @@ export const formFieldconfig = {
         key: "currencyID",
         type: "select",
         required: true,
-        defaultList: [
-          { value: "4c89c5a5-95cd-fefd-b1df-7b46a68c1d12", option: "SAR" },
-        ],
-        valueKey: "value",
-        optionKey: "option",
+        // defaultList: [
+        //   { value: "8D5C3D62-DCED-4756-8367-04927829E39B", option: "SAR" },
+        // ],
+        valueKey: "currencyID",
+        optionKey: "currencyCode",
+        getListUrl: "/api/v1/common/Currency"
       },
       {
         label: "Plan Price Was",
@@ -323,11 +324,12 @@ export const formFieldconfig = {
         key: "currencyID",
         type: "select",
         required: true,
-        defaultList: [
-          { value: "8358cf62-245a-33b9-dafa-e275cc1a5318", option: "SAR" },
-        ],
-        valueKey: "value",
-        optionKey: "option",
+        // defaultList: [
+        //   { value: "8358cf62-245a-33b9-dafa-e275cc1a5318", option: "SAR" },
+        // ],
+        valueKey: "currencyID",
+        optionKey: "currencyCode",
+        getListUrl: "/api/v1/common/Currency",
       },
       {
         label: "Country Name",
@@ -339,10 +341,12 @@ export const formFieldconfig = {
         getListUrl: "/api/v1/common/countries",
       },
       {
-        type: "plan-selector"
+        type: "plan-selector",
+        key: "planIDs",
       },
       {
         type: "dragable-adons",
+        key: "addonIDs"
       },
     ],
     hasSubmitButton: true,
@@ -375,11 +379,9 @@ export const formFieldconfig = {
         key: "currencyID",
         type: "select",
         required: true,
-        defaultList: [
-          { value: "8d5c3d62-dced-4756-8367-04927829e39b", option: "SAR" },
-        ],
-        valueKey: "value",
-        optionKey: "option",
+        valueKey: "currencyID",
+        optionKey: "currencyCode",
+        getListUrl: "/api/v1/common/Currency"
       },
       {
         label: "Description",
@@ -400,18 +402,25 @@ export const formFieldconfig = {
     title: "Payment Gateway",
     formLabel: "",
     fields: [
+      // {
+      //   label: "Gateway Name",
+      //   key: "providerName",
+      //   type: "select",
+      //   required: true,
+      //   defaultList: [
+      //     { value: "razorpay", option: "Razorpay" },
+      //     { value: "phonepe", option: "PhonePe" },
+      //     { value: "paytabs", option: "PayTabs" },
+      //   ],
+      //   valueKey: "value",
+      //   optionKey: "option",
+      // },
       {
         label: "Gateway Name",
         key: "providerName",
-        type: "select",
+        type: "input",
         required: true,
-        defaultList: [
-          { value: "razorpay", option: "Razorpay" },
-          { value: "phonepe", option: "PhonePe" },
-          { value: "paytabs", option: "PayTabs" },
-        ],
-        valueKey: "value",
-        optionKey: "option",
+        placeholder: "Gateway Name",
       },
       {
         label: "API Key",
@@ -419,6 +428,13 @@ export const formFieldconfig = {
         type: "input",
         required: true,
         placeholder: "API Key",
+      },
+      {
+        label: "Secret Key",
+        key: "secretKey",
+        type: "input",
+        required: true,
+        placeholder: "Secret Key",
       },
       {
         label: "Endpoint Url",

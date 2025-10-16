@@ -2,20 +2,42 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import { PlanType } from "@/types/auth";
 
+interface Feature {
+  featureName: string;
+  status: boolean;
+}
 interface PlanFormData {
+  // versionID: string;
+  // productID: string;
   planName: string;
-  planPrice: number|null;
+  planPrice: number | null;
   currencyID: string;
   billingCycle: string;
   isActive: boolean;
+  code: string;
+  features: Feature[];
+}
+
+interface CheckCodeResponse {
+  success: boolean;
+  message: string;
+  data: {
+    codeExists: boolean;
+  };
+}
+interface GetPlanDetailsResponse {
+  success: boolean;
+  message: string;
+  data: PlanType;
 }
 
 const UpdatePlan: React.FC = () => {
@@ -23,12 +45,14 @@ const UpdatePlan: React.FC = () => {
     planName: "",
     planPrice: null,
     currencyID: "",
-    billingCycle:"",
+    billingCycle: "",
     isActive: true,
+    code: "",
+    features: [],
   });
+  const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
@@ -42,16 +66,63 @@ const UpdatePlan: React.FC = () => {
 
   const handleClear = () => {
     setFormData({
-    planName: "",
-    planPrice: null,
-    currencyID: "",
-    billingCycle:"",
-    isActive: true,
-  });
+      planName: "",
+      planPrice: null,
+      currencyID: "",
+      billingCycle: "",
+      isActive: true,
+      code: "",
+      features: [],
+    });
   };
+  useEffect(() => {
+    const getPlanDetails = async () => {
+      try {
+        const res = await api.get<GetPlanDetailsResponse>(
+          `/api/v1/product-plan/${params?.["plan-id"]}`
+        );
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setFormData({
+            planName: respose?.planName,
+            planPrice: respose?.planPrice,
+            currencyID: respose?.currencyID,
+            billingCycle: respose?.billingCycle,
+            isActive: respose?.isActive,
+            code: respose?.code,
+            features:
+              respose?.features?.map((feature) => {
+                return {
+                  featureName: feature?.featureName,
+                  status: feature?.status,
+                  remarks: feature?.remarks
+                };
+              }) ?? [],
+          });
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch plan details.`,
+          type: "error",
+        });
+      }
+    };
+    getPlanDetails();
+  }, []);
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
+      if (formData?.features?.length <= 0) {
+        return showToast({
+          message: `Atleast one plan feature required.`,
+          type: "error",
+        });
+      } else if (formData?.features?.some((f) => !f?.featureName?.trim())) {
+        return showToast({
+          message: `All features must have a feature name.`,
+          type: "error",
+        });
+      }
       const trimmedFormData = Object.fromEntries(
         Object.entries(formData).map(([key, value]) => [
           key,
@@ -62,7 +133,8 @@ const UpdatePlan: React.FC = () => {
         !trimmedFormData?.planName ||
         !trimmedFormData?.planPrice ||
         !trimmedFormData?.currencyID ||
-        !trimmedFormData?.billingCycle
+        !trimmedFormData?.billingCycle ||
+        !trimmedFormData?.code
       ) {
         return showToast({
           message: `Please fill required fields.`,
@@ -70,19 +142,21 @@ const UpdatePlan: React.FC = () => {
         });
       }
 
-      const res = await api.post(`${formField?.submitUrl}`, {...trimmedFormData});
+      const res = await api.put(`${formField?.submitUrl}`, {
+        ...trimmedFormData, planID: params?.["plan-id"]
+      });
       if (res?.status == 200) {
         showToast({
           message: `Plan created successfully.`,
           type: "success",
         });
-        router.push(`/products/plans`);
+        router.push(`/products/plan`);
       } else {
-        throw new Error("Failed to create Plan.");
+        throw new Error("Failed to update plan.");
       }
     } catch {
       showToast({
-        message: `Failed to create plan.`,
+        message: `Failed to update plan.`,
         type: "error",
       });
     }
@@ -102,11 +176,6 @@ const UpdatePlan: React.FC = () => {
             >
               <IoMdArrowBack className="w-6 h-6" />
             </div>
-            {/* {formField?.icon && (
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              {formField?.icon}
-            </div>
-          )} */}
             <div>
               <h2 className="text-2xl font-bold text-gray-800">
                 Update {formField?.title}

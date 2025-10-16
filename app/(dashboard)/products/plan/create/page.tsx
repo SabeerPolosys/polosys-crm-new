@@ -116,7 +116,7 @@ const CreatePlan: React.FC = () => {
           message: `Plan created successfully.`,
           type: "success",
         });
-        router.push(`/products/plans`);
+        router.push(`/products/plan`);
       } else {
         throw new Error("Failed to create Plan.");
       }

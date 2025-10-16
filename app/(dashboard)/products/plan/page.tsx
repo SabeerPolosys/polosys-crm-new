@@ -9,42 +9,57 @@ import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { showToast } from "@/components/common/ShowToast";
 import DeleteConfirmationModal from "@/components/common/DeleteConfirmationModal";
+import PlanDetailsViewModal from "@/components/product/PlanDetailsViewModal";
+import { PlanType } from "@/types/auth";
+type PlanResponseType = {
+  success: boolean,
+  message: string,
+  data: PlanType[]
+}
+
+// const features = [
+//   { name: "Unlimited Projects", available: true },
+//   { name: "Team Collaboration", available: true },
+//   { name: "Priority Support", available: false },
+//   { name: "Custom Domains", available: false },
+// ];
 
 export default function PlanList() {
-  const [addOnsList, setAddOnsList] = useState<any[]>([{
-    name: "Starter",price:3000, currency: "INR", billing: "Monthly", status: "Active"
-  }]);
+  const [planList, setPlanList] = useState<PlanType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDetailOpen, setIsDetailsOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [features, setFeatures] = useState([]);
   const router = useRouter();
   useEffect(() => {
-    // const getAllAddons = async () => {
-    //   try {
-    //     if(isDeleteOpen) return;
-    //     setIsLoading(true);
-    //     const res = await api.get<AddonsResponse>(`/api/v1/product-addon`);
-    //     if (res?.data?.success) {
-    //       const respose = res?.data?.data;
-    //       setAddOnsList(respose);
-    //     }
-    //   } catch {
-    //     showToast({
-    //       message: `Failed to fetch addons.`,
-    //       type: "error",
-    //     });
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-    // getAllAddons();
+    const getAllPlans = async () => {
+      try {
+        if(isDeleteOpen) return;
+        setIsLoading(true);
+        const res = await api.get<PlanResponseType>(`/api/v1/product-plan`);
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setPlanList(respose);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch plans.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllPlans();
   }, [isDeleteOpen]);
   const columns = [
-    { header: "Name", accessor: "name" },
-    { header: "Price", accessor: "price" },
-    { header: "Currency", accessor: "currency" },
-    { header: "Billing Cycle", accessor: "billing" },
-    { header: "Status", accessor: "status" },
+    { header: "Name", accessor: "planName" },
+    { header: "Price", accessor: "planPrice" },
+    { header: "Currency", accessor: "currencyCode" },
+    { header: "Billing Cycle", accessor: "billingCycle" },
+    { header: "Status", accessor: "isActive" },
+    { header: "Plan Code", accessor: "code" },
   ];
 
   const pathname = usePathname();
@@ -55,11 +70,15 @@ export default function PlanList() {
     permissions || []
   );
   const onEditClick = (row: any) => {
-    router.push(`/products/plan/update/${row?.addonID}`);
+    router.push(`/products/plan/update/${row?.planID}`);
   };
   const onDeleteClick = (row: any) => {
     setIsDeleteOpen(true);
     setDeleteId(row?.addonID);
+  };
+  const handleRowClick = (row:any) => {
+    setFeatures(row?.features)
+    setIsDetailsOpen(true);
   };
   return (
     <ValidatePermissions>
@@ -81,12 +100,13 @@ export default function PlanList() {
         </div>
         <DynamicTable
           columns={columns}
-          data={addOnsList}
+          data={planList}
           isDataLoading={isLoading}
           isEditAllowed={true}
           isDeleteAllowed={true}
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
+          onRowClick={handleRowClick}
         />
         <DeleteConfirmationModal
           isOpen={isDeleteOpen}
@@ -98,6 +118,11 @@ export default function PlanList() {
           deleteId={`?ProductAddonID=${deleteId}` as string}
           deleteUrl={"/api/v1/product-addon"}
           redirectUrl={"/products/addons"}
+        />
+        <PlanDetailsViewModal
+          isOpen={isDetailOpen}
+          onClose={() => setIsDetailsOpen(false)}
+          features={features}
         />
       </div>
     </ValidatePermissions>

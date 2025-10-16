@@ -1,12 +1,13 @@
 "use client";
 
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiPlus, FiTrash2, FiChevronDown } from "react-icons/fi";
 import { AiOutlineClose } from "react-icons/ai";
+import { usePathname } from "next/navigation";
 type PlanFeatureProps = {
   handleFormDataChange(key: string, value: any): void;
-  value: string[];
+  value: any[];
   field: {
     key: string;
     type: string;
@@ -20,6 +21,7 @@ export default function PlanFeatures({
 }: PlanFeatureProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [features, setFeatures] = useState([{ featureName: "", status: true }]);
+  const pathname = usePathname();
 
   const handleAdd = () => setFeatures([...features, { featureName: "", status: true }]);
   const handleRemove = (index: number) =>
@@ -35,6 +37,11 @@ export default function PlanFeatures({
     handleFormDataChange(field?.key, features);
     setIsOpen(false);
   };
+  useEffect(()=>{
+    if(pathname?.startsWith("/products/plan/update/")){
+      setFeatures(value);
+    }
+  }, [value])
 
   return (
     <div className="">

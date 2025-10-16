@@ -12,6 +12,7 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import StatusUpdateModal from "./StatusUpdateModal";
+import { getBillingCycle } from "@/helpers/helperFunction";
 
 interface Column {
   header: string;
@@ -19,6 +20,8 @@ interface Column {
   specialName?: string;
   colour?: any;
   options?: { value: string; key: string }[];
+  onClick?: () => void;
+  setUpdateDetails?: any;
 }
 
 interface DynamicTableProps<T> {
@@ -48,7 +51,7 @@ const DynamicTable = <T extends Record<string, any>>({
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
   const pathname = usePathname();
 
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.ceil(data?.length / rowsPerPage);
 
   const paginatedData = data.slice(
     (currentPage - 1) * rowsPerPage,
@@ -94,7 +97,7 @@ const DynamicTable = <T extends Record<string, any>>({
                   <tr key={i}>
                     <td
                       colSpan={
-                        columns.length +
+                        columns?.length +
                         (isEditAllowed && canEdit ? 1 : 0) +
                         (isDeleteAllowed && canDelete ? 1 : 0)
                       }
@@ -139,6 +142,35 @@ const DynamicTable = <T extends Record<string, any>>({
                           </span>
                         );
                       } else if (
+                        col.accessor.toLowerCase() === "billingcycle"
+                      ) {
+                        value = (
+                          <span>{getBillingCycle(row[col.accessor])}</span>
+                        );
+                      } else if (col.accessor.toLowerCase() === "isactive") {
+                        value = row[col.accessor] ? (
+                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                            Incactive
+                          </span>
+                        );
+                      } else if (col.accessor.toLowerCase() === "statusname") {
+                        value =
+                          row[col.accessor] === "Active" ? (
+                            <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                              Active
+                            </span>
+                          ) : row[col.accessor] === "Inactive" ? (
+                            <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                              Incactive
+                            </span>
+                          ) : (
+                            <span>{row[col.accessor]}</span>
+                          );
+                      } else if (
                         [
                           "haveRead",
                           "haveCreate",
@@ -176,11 +208,32 @@ const DynamicTable = <T extends Record<string, any>>({
                           </Link>
                         );
                       } else if (col.accessor.toLowerCase() === "deactivate") {
-                        value = (
-                          <button className="text-xs px-2 py-1 rounded bg-red-400 text-white">
-                            Deactivate
-                          </button>
-                        );
+                        value =
+                          row?.statusID === 11 ? (
+                            <button
+                              className="text-xs px-2 py-1 rounded bg-red-400 text-white cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                col?.onClick && col?.onClick();
+                                col?.setUpdateDetails &&
+                                  col?.setUpdateDetails(row);
+                              }}
+                            >
+                              Deactivate
+                            </button>
+                          ) : (
+                            <button
+                              className="text-xs px-2 py-1 rounded bg-green-400 text-white cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                col?.onClick && col?.onClick();
+                                col?.setUpdateDetails &&
+                                  col?.setUpdateDetails(row);
+                              }}
+                            >
+                              Activate
+                            </button>
+                          );
                       }
 
                       return <td key={col.accessor}>{value}</td>;
@@ -217,7 +270,7 @@ const DynamicTable = <T extends Record<string, any>>({
                 <tr>
                   <td
                     colSpan={
-                      columns.length +
+                      columns?.length +
                       (isEditAllowed && canEdit ? 1 : 0) +
                       (isDeleteAllowed && canDelete ? 1 : 0)
                     }

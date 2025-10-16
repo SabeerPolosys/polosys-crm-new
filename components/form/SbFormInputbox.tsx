@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { ChangeEvent } from "react";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
@@ -22,6 +23,7 @@ export default function SbFormInputbox({
   handleFormDataChange,
   isCodeExist,
 }: SbFormInputProps) {
+  const pathname = usePathname();
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     handleFormDataChange(field?.key, e.target.value);
   };
@@ -55,9 +57,10 @@ export default function SbFormInputbox({
         type="text"
         value={value}
         onChange={handleChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-9"
+        className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-9 ${(field?.isExistCheck && pathname?.startsWith("/products/plan/update")) ? "bg-gray-200 cursor-not-allowed" : ""}`}
         placeholder={field?.placeholder}
         required={field?.required ?? false}
+        disabled={field?.isExistCheck && pathname?.startsWith("/products/plan/update")}
       />
     </div>
   );

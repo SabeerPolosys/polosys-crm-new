@@ -20,7 +20,7 @@ export default function SbForm({
   handleFormDataChange,
   submitType,
   productDetails,
-  isCodeExist
+  isCodeExist,
 }: {
   formField: any;
   handleSubmit: (e: React.FormEvent<Element>) => Promise<void>;
@@ -28,8 +28,8 @@ export default function SbForm({
   formData: any;
   handleFormDataChange(key: string, value: string): void;
   submitType?: "Create" | "Update" | "Convert";
-  productDetails?: ProductTypes|null,
-  isCodeExist?: boolean
+  productDetails?: ProductTypes | null;
+  isCodeExist?: boolean;
 }) {
   return (
     <div>
@@ -102,16 +102,34 @@ export default function SbForm({
                   />
                 );
               case "plan-selector":
-                return(
-                  <VersionPlanSelector key={index} productDetails={productDetails}/>
-                )
+                return (
+                  <VersionPlanSelector
+                    field={field}
+                    key={index}
+                    productDetails={productDetails}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                  />
+                );
               case "dragable-adons":
-                return(
-                  <ProductDragableAdons key={index} handleFormDataChange={handleFormDataChange}/>
-                )
+                return (
+                  <ProductDragableAdons
+                    field={field}
+                    key={index}
+                    handleFormDataChange={handleFormDataChange}
+                    value={formData[field?.key] ?? ""}
+                    currencyID={formData?.currencyID}
+                  />
+                );
               case "features":
-                return(<PlanFeatures key={index} value={formData[field?.key] ?? ""}
-                    handleFormDataChange={handleFormDataChange} field={field}/>)
+                return (
+                  <PlanFeatures
+                    key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                    field={field}
+                  />
+                );
               default:
                 break;
             }

@@ -30,8 +30,14 @@ type AddonsResponse = {
 
 type ContainerId = "available" | "selected";
 type ProductDragableProps = {
-    handleFormDataChange(key: string, value: any): void;
-}
+  handleFormDataChange(key: string, value: any): void;
+  value: string[];
+  field: {
+    key: string;
+    type: string;
+  };
+  currencyID?: string;
+};
 
 /** Sortable card component */
 function SortableItem({ item }: { item: Addons }) {
@@ -100,11 +106,11 @@ function DroppableList({
       </h3>
 
       <SortableContext
-        items={items.map((i) => i.addonID)}
+        items={(items?.map((i) => i?.addonID))??[]}
         strategy={rectSortingStrategy}
       >
-        {items.length > 0 ? (
-          items.map((item) => <SortableItem key={item.addonID} item={item} />)
+        {items?.length > 0 ? (
+          items?.map((item) => <SortableItem key={item?.addonID} item={item} />)
         ) : (
           <p
             className={`text-sm italic ${
@@ -119,7 +125,12 @@ function DroppableList({
   );
 }
 
-export default function ProductDragableAdons({handleFormDataChange}:ProductDragableProps) {
+export default function ProductDragableAdons({
+  handleFormDataChange,
+  field,
+  value,
+  currencyID,
+}: ProductDragableProps) {
   const [available, setAvailable] = useState<Addons[]>([]);
 
   const [selected, setSelected] = useState<Addons[]>([]);
@@ -127,9 +138,11 @@ export default function ProductDragableAdons({handleFormDataChange}:ProductDraga
   const availableRef = useRef<Addons[]>(available);
   const selectedRef = useRef<Addons[]>(selected);
   useEffect(() => {
-    const getAllAddons = async () => {
+    const getAllAddons = async (currencyID: string) => {
       try {
-        const res = await api.get<AddonsResponse>(`/api/v1/product-addon`);
+        const res = await api.get<AddonsResponse>(
+          `/api/v1/product-addon/ByCurrencyID/${currencyID}`
+        );
         if (res?.data?.success) {
           const respose = res?.data?.data;
           setAvailable(respose);
@@ -141,8 +154,10 @@ export default function ProductDragableAdons({handleFormDataChange}:ProductDraga
         });
       }
     };
-    getAllAddons();
-  }, []);
+    if (currencyID) {
+      getAllAddons(currencyID);
+    }
+  }, [currencyID]);
 
   useEffect(() => {
     availableRef.current = available;
@@ -156,11 +171,11 @@ export default function ProductDragableAdons({handleFormDataChange}:ProductDraga
 
   // dev check for duplicate addonIDs
   useEffect(() => {
-    const allIds = [...available, ...selected].map((i) => i.addonID);
-    const dup = allIds.filter((id, idx) => allIds.indexOf(id) !== idx);
-    if (dup.length) {
-      console.warn("Duplicate addonIDs detected:", [...new Set(dup)]);
-    }
+    const allIds = ([...(available ?? []), ...(selected ?? [])]?.map((i) => i?.addonID))??[];
+    const dup = allIds?.filter((id, idx) => allIds?.indexOf(id) !== idx);
+    // if (dup.length) {
+    //   console.warn("Duplicate addonIDs detected:", [...new Set(dup)]);
+    // }
   }, [available, selected]);
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -256,6 +271,10 @@ export default function ProductDragableAdons({handleFormDataChange}:ProductDraga
       );
     }
   };
+  useEffect(() => {
+    const selectedAddonIds = selected?.map((addOns) => addOns?.addonID);
+    handleFormDataChange(field?.key, selectedAddonIds);
+  }, [selected]);
 
   return (
     <div className="col-span-2 w-full">
@@ -277,7 +296,6 @@ export default function ProductDragableAdons({handleFormDataChange}:ProductDraga
             items={available}
             emptyText="No available add-ons"
           />
-
         </div>
       </DndContext>
     </div>

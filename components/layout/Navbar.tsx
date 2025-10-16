@@ -178,7 +178,9 @@ type MenuType = {
 export default function Navbar() {
   const pathname = usePathname();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [openDropdowns, setOpenDropdowns] = useState<{ [key: string]: boolean }>({});
+  const [openDropdowns, setOpenDropdowns] = useState<{
+    [key: string]: boolean;
+  }>({});
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const [menuItems, setMenuItems] = useState<MenuType[]>([]);
 
@@ -217,6 +219,7 @@ export default function Navbar() {
         { label: "Plans", link: "/products/plan" },
         { label: "Payment Gateways", link: "/settings/payment-gateways" },
         { label: "Currency", link: "/settings/currency" },
+        { label: "Mapping", link: "/settings/map-to-country" },
         { label: "Servers", link: "/settings/servers" },
         { label: "Databases", link: "/settings/databases" },
       ],
@@ -240,7 +243,10 @@ export default function Navbar() {
   // Close user dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target as Node)
+      ) {
         setUserDropdownOpen(false);
       }
     };
@@ -260,7 +266,9 @@ export default function Navbar() {
             return { ...menu, children: visibleChildren };
           }
           return null;
-        } else if (validatePermission(menu.link!, "canRead", permissions || [])) {
+        } else if (
+          validatePermission(menu.link!, "canRead", permissions || [])
+        ) {
           return menu;
         }
         return null;
@@ -271,11 +279,19 @@ export default function Navbar() {
   }, [permissions]);
 
   return (
-    <nav className="w-full px-6 py-3 flex items-center justify-between relative bg-white shadow-sm" onMouseLeave={()=>{setOpenDropdowns({});setUserDropdownOpen(false);}}>
+    <nav
+      className="w-full px-6 py-3 flex items-center justify-between relative bg-white shadow-sm"
+      onMouseLeave={() => {
+        setOpenDropdowns({});
+        setUserDropdownOpen(false);
+      }}
+    >
       {/* Left - Logo */}
       <div className="flex items-center gap-2 font-bold text-2xl text-gray-800">
         <span>Polosys</span>
-        <span role="img" aria-label="tree">🌳</span>
+        <span role="img" aria-label="tree">
+          🌳
+        </span>
       </div>
 
       {/* Center - Menu (Desktop) */}
@@ -294,7 +310,11 @@ export default function Navbar() {
                   }`}
                 >
                   {label}
-                  {isOpen ? <FaChevronUp className="text-xs" /> : <FaChevronDown className="text-xs" />}
+                  {isOpen ? (
+                    <FaChevronUp className="text-xs" />
+                  ) : (
+                    <FaChevronDown className="text-xs" />
+                  )}
                 </button>
 
                 {isOpen && (
@@ -304,9 +324,11 @@ export default function Navbar() {
                         key={child.link}
                         href={child.link}
                         className={`block px-4 py-2 text-sm hover:bg-gray-400 ${
-                          pathname === child.link ? "bg-gray-800 text-white" : ""
+                          pathname === child.link
+                            ? "bg-gray-800 text-white"
+                            : ""
                         }`}
-                        onClick={()=>setOpenDropdowns({})}
+                        onClick={() => setOpenDropdowns({})}
                       >
                         {child.label}
                       </Link>
@@ -324,7 +346,7 @@ export default function Navbar() {
               className={`px-3 py-1 rounded-md transition-colors ${
                 isActive ? "bg-gray-800 text-white" : "hover:bg-gray-400"
               }`}
-              onClick={()=>setOpenDropdowns({})}
+              onClick={() => setOpenDropdowns({})}
             >
               {label}
             </Link>
@@ -343,7 +365,11 @@ export default function Navbar() {
                 }`}
               >
                 {label}
-                {isOpen ? <FaChevronUp className="text-xs" /> : <FaChevronDown className="text-xs" />}
+                {isOpen ? (
+                  <FaChevronUp className="text-xs" />
+                ) : (
+                  <FaChevronDown className="text-xs" />
+                )}
               </button>
 
               {isOpen && children && (
@@ -355,7 +381,7 @@ export default function Navbar() {
                       className={`block px-4 py-2 text-sm hover:bg-gray-400 ${
                         pathname === child.link ? "bg-gray-800 text-white" : ""
                       }`}
-                      onClick={()=>setOpenDropdowns({})}
+                      onClick={() => setOpenDropdowns({})}
                     >
                       {child.label}
                     </Link>
@@ -368,7 +394,10 @@ export default function Navbar() {
       </div>
 
       {/* Right - Icons */}
-      <div className="flex items-center gap-5 text-gray-600 text-lg relative" ref={userDropdownRef}>
+      <div
+        className="flex items-center gap-5 text-gray-600 text-lg relative"
+        ref={userDropdownRef}
+      >
         <FiSearch className="cursor-pointer hover:text-black" />
         <FiBell className="cursor-pointer hover:text-black" />
 
@@ -376,13 +405,16 @@ export default function Navbar() {
         <div className="relative">
           <FiUser
             className="cursor-pointer hover:text-black"
-            onClick={() => {setUserDropdownOpen(!userDropdownOpen); setOpenDropdowns({});}}
+            onClick={() => {
+              setUserDropdownOpen(!userDropdownOpen);
+              setOpenDropdowns({});
+            }}
           />
           {userDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-20">
+            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20">
               <button
-                className="w-full text-left px-4 py-2 hover:bg-gray-300 hover:rounded-lg cursor-pointer text-sm"
                 onClick={logout}
+                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-400 hover:text-gray-800 transition-colors"
               >
                 Logout
               </button>

@@ -26,7 +26,7 @@ export default function SbFormSelectbox({
 }: SbFormInputProps) {
   const [list, setList] = useState<any[]>([]);
   const [isListLoading, setIsListLoading] = useState(false);
-  const getAllRoles = async (url: string) => {
+  const getListDetails = async (url: string) => {
     try {
       setIsListLoading(true);
       const res = await api.get(url);
@@ -48,7 +48,7 @@ export default function SbFormSelectbox({
     if (field?.defaultList) {
       setList(field?.defaultList);
     } else if (field?.getListUrl) {
-      getAllRoles(field?.getListUrl);
+      getListDetails(field?.getListUrl);
     }
   }, [field?.getListUrl, field?.defaultList]);
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
