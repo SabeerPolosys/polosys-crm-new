@@ -106,7 +106,7 @@ function DroppableList({
       </h3>
 
       <SortableContext
-        items={(items?.map((i) => i?.addonID))??[]}
+        items={items?.map((i) => i?.addonID) ?? []}
         strategy={rectSortingStrategy}
       >
         {items?.length > 0 ? (
@@ -144,8 +144,17 @@ export default function ProductDragableAdons({
           `/api/v1/product-addon/ByCurrencyID/${currencyID}`
         );
         if (res?.data?.success) {
-          const respose = res?.data?.data;
-          setAvailable(respose);
+          const response = res?.data?.data;
+          const selectedAddons = response.filter((addon) =>
+            value?.includes(addon?.addonID)
+          );
+
+          const availableAddons = response.filter(
+            (addon) => !value?.includes(addon?.addonID)
+          );
+
+          setSelected(selectedAddons);
+          setAvailable(availableAddons);
         }
       } catch {
         showToast({
@@ -171,7 +180,8 @@ export default function ProductDragableAdons({
 
   // dev check for duplicate addonIDs
   useEffect(() => {
-    const allIds = ([...(available ?? []), ...(selected ?? [])]?.map((i) => i?.addonID))??[];
+    const allIds =
+      [...(available ?? []), ...(selected ?? [])]?.map((i) => i?.addonID) ?? [];
     const dup = allIds?.filter((id, idx) => allIds?.indexOf(id) !== idx);
     // if (dup.length) {
     //   console.warn("Duplicate addonIDs detected:", [...new Set(dup)]);

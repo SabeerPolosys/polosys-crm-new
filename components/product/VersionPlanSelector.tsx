@@ -8,6 +8,7 @@ import { PlanType, ProductTypes } from "@/types/auth";
 import api from "@/lib/axios";
 import { showToast } from "../common/ShowToast";
 import { getBillingCycle } from "@/helpers/helperFunction";
+import { usePathname } from "next/navigation";
 
 type Plan = {
   // name: string;
@@ -55,6 +56,8 @@ export default function VersionPlanSelector({
   const [isOpen, setIsOpen] = useState(false);
 
   const [plans, setPlans] = useState<Plan[]>([]);
+  const pathname = usePathname();
+
   useEffect(() => {
     const getAllPlans = async () => {
       try {
@@ -63,7 +66,9 @@ export default function VersionPlanSelector({
           const response = res?.data?.data;
           setPlans(
             response?.map((plan) => ({
-              selected: false,
+              selected:
+                pathname?.startsWith("/products/version/update") &&
+                value?.includes(plan?.planID),
               planID: plan?.planID,
               planName: plan?.planName,
               planPrice: plan?.planPrice,
@@ -83,7 +88,8 @@ export default function VersionPlanSelector({
       }
     };
     getAllPlans();
-  }, []);
+  }, [value]);
+
   const handleSave = () => {
     const selectedPlanIDs = plans
       .filter((p) => p.selected)

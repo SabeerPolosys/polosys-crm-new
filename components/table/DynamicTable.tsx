@@ -22,6 +22,11 @@ interface Column {
   options?: { value: string; key: string }[];
   onClick?: () => void;
   setUpdateDetails?: any;
+  isConvert?: boolean;
+  defaultValue?: string;
+  onUpdate?: (data: any) => Promise<boolean>;
+  isFor?: string;
+  updateKey?: string;
 }
 
 interface DynamicTableProps<T> {
@@ -76,7 +81,27 @@ const DynamicTable = <T extends Record<string, any>>({
     "canDelete",
     permissions || []
   );
-
+const getStatusStringWithNumber = (status: string|number) => {
+  switch(status){
+    case 41:
+    case "41":
+      return "New";
+    case 42:
+    case "42":
+      return "Contacted";
+    case 43:
+    case "43":
+      return "Qualified";
+    case 44:
+    case "44":
+      return "Lost";
+    case 45:
+    case "45":
+      return "Pending";
+    default:
+      return "Other";
+  }
+}
   return (
     <div className="px-4 py-6">
       <div className={pathname?.includes("/users") ? "" : styles.tableWrapper}>
@@ -124,11 +149,15 @@ const DynamicTable = <T extends Record<string, any>>({
                       ) {
                         value = (
                           <StatusUpdateModal
-                            status={row[col.accessor]}
+                            status={col?.isConvert ? getStatusStringWithNumber(row[col.accessor]) : row[col.accessor] || col?.defaultValue}
                             colour={
-                              col?.colour?.[row[col.accessor]] ?? "bg-blue-500"
+                              col?.colour?.[row[col.accessor] || col?.defaultValue] ?? "bg-blue-500"
                             }
                             options={col?.options ?? []}
+                            handleSubmit={col?.onUpdate}
+                            submitData={(col?.isFor??"") === "leadStatus" ? {leadID: row?.leadID, userID: row?.userID, countryID: row?.countryID, fullName: row?.fullName, email: row?.email, mobile: row?.mobile, source: row?.source, priority: row?.priority, status: row?.status } : {}}
+                            updateKey={col?.updateKey}
+                            canEdit={canEdit}
                           />
                         );
                       } else if (col.accessor.toLowerCase() === "status") {

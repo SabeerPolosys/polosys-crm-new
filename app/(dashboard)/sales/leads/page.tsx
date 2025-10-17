@@ -6,11 +6,42 @@ import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import { usePathname } from "next/navigation";
 import { usePermissions } from "@/context/PermissionsContext";
 import validatePermission from "@/components/permissions/PermissionCheckerNew";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios";
+import { showToast } from "@/components/common/ShowToast";
+import { LeadsType } from "@/types/auth";
+type GetLeadResponse = {
+  success: boolean;
+  message: string;
+  data: LeadsType[];
+};
 
 export default function Leads() {
+  const [leads, setLeads] = useState<LeadsType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const getAllLeads = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get<GetLeadResponse>(`/api/v1/leads`);
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setLeads(respose || []);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch leads.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllLeads();
+  }, []);
   const columns = [
-    { header: "Full Name", accessor: "name" },
-    { header: "Country", accessor: "country" },
+    { header: "Full Name", accessor: "fullName" },
+    { header: "Country", accessor: "countryName" },
     { header: "Email", accessor: "email" },
     { header: "Phone", accessor: "phone" },
     { header: "Source", accessor: "source" },
@@ -18,6 +49,9 @@ export default function Leads() {
       header: "Status",
       accessor: "status",
       specialName: "changeableStatus",
+      isConvert: true,
+      isFor: "leadStatus",
+      updateKey: "status",
       colour: {
         New: "bg-gray-200 text-gray-700",
         Contacted: "bg-blue-100 text-blue-700",
@@ -26,17 +60,36 @@ export default function Leads() {
         Pending: "bg-orange-100 text-orange-700",
       },
       options: [
-        { value: "New", key: "New" },
-        { value: "Contacted", key: "Contacted" },
-        { value: "Quoted", key: "Quoted" },
-        { value: "Lost", key: "Lost" },
-        { value: "Pending", key: "Pending" },
+        { key: "41", value: "New" },
+        { key: "42", value: "Contacted" },
+        { key: "43", value: "Quoted" },
+        { key: "44", value: "Lost" },
+        { key: "45", value: "Pending" },
       ],
+      onUpdate: async (data: any) => {
+        try {
+          const res = await api.put(`/api/v1/leads`, data);
+          showToast({
+            message: `Status updated successfully.`,
+            type: "success",
+          });
+          return true;
+        } catch {
+          showToast({
+            message: `Failed to update status.`,
+            type: "error",
+          });
+          return false;
+        }
+      },
     },
     {
       header: "Priority Level",
       accessor: "level",
       specialName: "changeableStatus",
+      defaultValue: "Warm",
+      isFor: "leadStatus",
+      updateKey: "priority",
       colour: {
         Cold: "bg-blue-200 text-blue-800",
         Warm: "bg-yellow-200 text-yellow-800",
@@ -47,115 +100,27 @@ export default function Leads() {
         { value: "Cold", key: "Cold" },
         { value: "Warm", key: "Warm" },
       ],
+      onUpdate: async (data: any) => {
+        try {
+          const res = await api.put(`/api/v1/leads`, data);
+          showToast({
+            message: `Priority level updated successfully.`,
+            type: "success",
+          });
+          return true;
+        } catch {
+          showToast({
+            message: `Failed to update priority level.`,
+            type: "error",
+          });
+          return false;
+        }
+      },
     },
     // { header: "Assigned To", accessor: "assignto" },
     // { header: "Assign", accessor: "assignto1" },
-    { header: "Convert To Deal", accessor: "convertToDeal" },
+    // { header: "Convert To Deal", accessor: "convertToDeal" },
   ];
-
-  const data = [
-  {
-    name: "John Doe",
-    source: "Website",
-    status: "New",
-    level: "Hot",
-    assignto: "Alice Johnson",
-    country: "United States",
-    email: "john.doe@example.com",
-    phone: "+1 202-555-0101",
-  },
-  {
-    name: "Emma Watson",
-    source: "Referral",
-    status: "Contacted",
-    level: "Warm",
-    assignto: "Bob Smith",
-    country: "United Kingdom",
-    email: "emma.watson@example.co.uk",
-    phone: "+44 7700 900123",
-  },
-  {
-    name: "Liam Brown",
-    source: "LinkedIn",
-    status: "Quoted",
-    level: "Cold",
-    assignto: "Charlie Davis",
-    country: "Australia",
-    email: "liam.brown@example.com.au",
-    phone: "+61 412 345 678",
-  },
-  {
-    name: "Olivia Green",
-    source: "Email Campaign",
-    status: "Lost",
-    level: "Cold",
-    assignto: "Diana Prince",
-    country: "Canada",
-    email: "olivia.green@example.ca",
-    phone: "+1 416-555-0198",
-  },
-  {
-    name: "Noah White",
-    source: "Phone Call",
-    status: "New",
-    level: "Hot",
-    assignto: "Ethan Hunt",
-    country: "India",
-    email: "noah.white@example.in",
-    phone: "+91 98765 43210",
-  },
-  {
-    name: "Ava Black",
-    source: "Website",
-    status: "Pending",
-    level: "Warm",
-    assignto: "Fiona Gallagher",
-    country: "United Arab Emirates",
-    email: "ava.black@example.ae",
-    phone: "+971 50 123 4567",
-  },
-  {
-    name: "Mason Gray",
-    source: "Referral",
-    status: "Contacted",
-    level: "Hot",
-    assignto: "George Martin",
-    country: "Qatar",
-    email: "mason.gray@example.qa",
-    phone: "+974 5555 1234",
-  },
-  {
-    name: "Sophia Blue",
-    source: "Social Media",
-    status: "Lost",
-    level: "Cold",
-    assignto: "Hannah Davis",
-    country: "Oman",
-    email: "sophia.blue@example.om",
-    phone: "+968 9212 3456",
-  },
-  {
-    name: "Lucas Red",
-    source: "LinkedIn",
-    status: "Contacted",
-    level: "Warm",
-    assignto: "Ian Curtis",
-    country: "Saudi Arabia",
-    email: "lucas.red@example.sa",
-    phone: "+966 5 555 1234",
-  },
-  {
-    name: "Isabella Pink",
-    source: "Website",
-    status: "New",
-    level: "Hot",
-    assignto: "Julia Roberts",
-    country: "Singapore",
-    email: "isabella.pink@example.sg",
-    phone: "+65 8123 4567",
-  },
-];
-
 
   const pathname = usePathname();
   const { permissions } = usePermissions();
@@ -210,15 +175,15 @@ export default function Leads() {
               {" "}
               <FaRegFileAlt /> Export details
             </button>
-            {canCreate && (
+            {/* {canCreate && (
               <button className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
                 {" "}
                 + &nbsp; Add Lead
               </button>
-            )}
+            )} */}
           </div>
         </div>
-        <DynamicTable columns={columns} data={data} />
+        <DynamicTable columns={columns} data={leads} />
       </div>
     </ValidatePermissions>
   );

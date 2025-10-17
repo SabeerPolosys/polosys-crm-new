@@ -99,7 +99,7 @@ const settingsItems = [
       { label: "Add-ons", link: "/products/addons" },
       { label: "Plans", link: "/products/plan" },
       { label: "Payment Gateways", link: "/settings/payment-gateways" },
-      { label: "Currency", link: "/settings/currency" },
+      // { label: "Currency", link: "/settings/currency" },
       { label: "Mapping", link: "/settings/map-to-country" },
       { label: "Servers", link: "/settings/servers" },
       { label: "Databases", link: "/settings/databases" },

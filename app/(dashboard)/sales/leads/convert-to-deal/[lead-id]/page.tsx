@@ -156,7 +156,7 @@ const ConvertToDeal: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <ProductDragableAdons handleFormDataChange={() => {}} />
+              {/* <ProductDragableAdons handleFormDataChange={() => {}} /> */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Final Price

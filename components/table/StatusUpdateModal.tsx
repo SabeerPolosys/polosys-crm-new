@@ -11,11 +11,19 @@ const STATUS_OPTIONS = ["Pending", "In Progress", "Completed", "Cancelled"];
 export default function StatusUpdateModal({
   status,
   colour,
-  options
+  options,
+  handleSubmit,
+  submitData,
+  updateKey,
+  canEdit
 }: {
   status: string;
   colour: string;
-  options: {value:string, key:string}[]
+  options: { value: string; key: string }[];
+  handleSubmit?: (data: any) => Promise<boolean>;
+  submitData: any;
+  updateKey?: string;
+  canEdit?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(status);
@@ -27,12 +35,9 @@ export default function StatusUpdateModal({
     setSelectedStatus(e.target.value);
   };
 
-  const handleSave = () => {
-    // Example: You can add API logic here to save the new status
-    console.log("New Status:", selectedStatus);
-
-    // Close modal after saving
-    closeModal();
+  const handleSave = async () => {
+    const result = (await (handleSubmit && handleSubmit({...submitData, [updateKey ?? ""]: selectedStatus}))) ?? false;
+    result && closeModal();
   };
 
   return (
@@ -41,7 +46,7 @@ export default function StatusUpdateModal({
       <div>
         <span
           className={`${colour} px-3 py-1 rounded-2xl cursor-pointer`}
-          onClick={openModal}
+          onClick={canEdit ? openModal : ()=>{}}
         >
           {status}
         </span>
@@ -84,8 +89,8 @@ export default function StatusUpdateModal({
             </label>
             <div className="relative w-full">
               <select
-                //   value={value}
-                //   onChange={handleChange}
+                value={selectedStatus}
+                onChange={handleStatusChange}
                 className="w-full px-3 py-2 h-9 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none"
               >
                 {options?.map((option, index) => {

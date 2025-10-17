@@ -212,7 +212,6 @@ export default function MapGatewayToCountry() {
   return (
     <ValidatePermissions
       permissionType="canCreate"
-      path="/settings/payment-gateways"
     >
       <div>
         <h2 className="font-semibold text-md mb-2">Payment Gateway</h2>

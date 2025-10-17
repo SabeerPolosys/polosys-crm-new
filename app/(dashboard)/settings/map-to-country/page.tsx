@@ -79,13 +79,13 @@ export default function MappingCurrencyOrGateway() {
           </h2>
 
           <div className="flex flex-row gap-2 items-center">
-            <Link
+            {canCreate && <Link
               href="/settings/map-to-country/create"
               className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs"
             >
               {" "}
               + &nbsp; Create Mapping
-            </Link>
+            </Link>}
           </div>
         </div>
         <DynamicTable

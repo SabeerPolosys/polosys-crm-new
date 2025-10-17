@@ -163,3 +163,32 @@ export interface CurrencyDetailsType {
   createdAt: string;
   modifiedAt: string;
 }
+
+export interface ProductVersion {
+  versionID: string;
+  productID: string;
+  versionNumber: string;
+  releaseDate: Date;
+  basePrice: number;
+  currencyID: string;
+  createdAt: string;
+  modifiedAt: string;
+  isActive: boolean;
+  currencyCode: string;
+  addons: Addons[];
+  plans: PlanType[];
+}
+
+export interface LeadsType {
+  leadID: string;
+  userID: string;
+  countryID: string;
+  countryName: string;
+  fullName: string;
+  userName: string;
+  email: string;
+  mobile: string | null;
+  source: string;
+  status: number;
+  priority: string | null;
+}

@@ -94,7 +94,7 @@ const UpdateServer: React.FC = () => {
   };
 
   return (
-    <ValidatePermissions permissionType="canCreate">
+    <ValidatePermissions permissionType="canUpdate">
       <div>
         {formField?.Category && (
           <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>
