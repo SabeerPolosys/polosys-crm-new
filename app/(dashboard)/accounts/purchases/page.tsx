@@ -1,10 +1,35 @@
 "use client";
+import { showToast } from "@/components/common/ShowToast";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import DynamicTable from "@/components/table/DynamicTable";
+import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function PurchaseDetails() {
+  const [purchaseDetails, setPurchaseDetails] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  useEffect(() => {
+    const getAllPurchases = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get(`/api/v1/purchase`);
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setPurchaseDetails(respose);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch purchase details.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllPurchases();
+  }, []);
   const columns = [
     { header: "Product", accessor: "product" },
     { header: "Version", accessor: "version" },

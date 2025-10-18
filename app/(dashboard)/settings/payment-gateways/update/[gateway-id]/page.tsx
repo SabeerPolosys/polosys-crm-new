@@ -17,6 +17,7 @@ interface PaymentGatewayFormData {
   endpointURL: string;
   supportedModes: string;
   isActive: boolean;
+  secretKey: string;
 }
 type PaymentGatewayResponse = {
   success: boolean;
@@ -31,6 +32,7 @@ const UpdatePaymentGateway: React.FC = () => {
     endpointURL: "",
     supportedModes: "",
     isActive: true,
+    secretKey: ""
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -53,6 +55,7 @@ const UpdatePaymentGateway: React.FC = () => {
       endpointURL: "",
       supportedModes: "",
       isActive: true,
+      secretKey: ""
     });
   };
   useEffect(() => {
@@ -69,6 +72,7 @@ const UpdatePaymentGateway: React.FC = () => {
             endpointURL: response?.endpointURL,
             supportedModes: response?.supportedModes,
             isActive: response?.isActive,
+            secretKey: response?.secretKey
           });
         }
       } catch {

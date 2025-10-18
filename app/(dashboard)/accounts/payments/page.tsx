@@ -1,21 +1,50 @@
 "use client";
+import { showToast } from "@/components/common/ShowToast";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import DynamicTable from "@/components/table/DynamicTable";
+import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function Accounts() {
+export default function Payments() {
+  const [allPayments, setAllPayments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  useEffect(() => {
+    const getAllPayments = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get(`/api/v1/payment`);
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setAllPayments(respose);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch payments details.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllPayments();
+  }, []);
   const columns = [
     { header: "Payment Id", accessor: "paymentId" },
     { header: "Date", accessor: "date" },
     { header: "Amount", accessor: "amount" },
     { header: "Tax", accessor: "tax" },
     { header: "Total", accessor: "total" },
-    { header: "Status", accessor: "status", colour: {
+    {
+      header: "Status",
+      accessor: "status",
+      colour: {
         Pending: "bg-blue-100 text-blue-700",
         Success: "bg-green-100 text-green-700",
         Failed: "bg-red-100 text-red-700",
-      }, },
+      },
+    },
     { header: "Payment Method", accessor: "paymentMethod" },
     { header: "Is Invoiced", accessor: "isInvoiced" },
     { header: "Convert To Invoice", accessor: "converToInvoice" },

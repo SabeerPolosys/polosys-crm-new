@@ -98,6 +98,18 @@ const getStatusStringWithNumber = (status: string|number) => {
     case 45:
     case "45":
       return "Pending";
+    case 51:
+    case "51":
+      return "Open";
+    case 52:
+    case "52":
+      return "Won";
+    case 53:
+    case "53":
+      return "Lost";
+    case 54:
+    case "54":
+      return "OnHold";
     default:
       return "Other";
   }
