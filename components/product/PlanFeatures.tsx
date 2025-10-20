@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FiPlus, FiTrash2, FiChevronDown } from "react-icons/fi";
 import { AiOutlineClose } from "react-icons/ai";
 import { usePathname } from "next/navigation";
+import { showToast } from "../common/ShowToast";
 type PlanFeatureProps = {
   handleFormDataChange(key: string, value: any): void;
   value: any[];
@@ -23,30 +24,46 @@ export default function PlanFeatures({
   const [features, setFeatures] = useState([{ featureName: "", status: true }]);
   const pathname = usePathname();
 
-  const handleAdd = () => setFeatures([...features, { featureName: "", status: true }]);
+  const handleAdd = () =>
+    setFeatures([...features, { featureName: "", status: true }]);
   const handleRemove = (index: number) =>
     setFeatures(features.filter((_, i) => i !== index));
 
-  const handleChange = (index: number, field: string, value: boolean|string) => {
+  const handleChange = (
+    index: number,
+    field: string,
+    value: boolean | string
+  ) => {
     const updated = [...features];
     updated[index][field] = value;
     setFeatures(updated);
   };
 
   const handleSave = () => {
+    const isValid = features.every(
+      (f) => f.featureName.trim() !== "" && typeof f.status === "boolean"
+    );
+
+    if (!isValid) {
+      showToast({
+        message: `Please fill all feature names and ensure each has a valid status.`,
+        type: "error",
+      });
+      return;
+    }
     handleFormDataChange(field?.key, features);
     setIsOpen(false);
   };
-  useEffect(()=>{
-    if(pathname?.startsWith("/products/plan/update/")){
+  useEffect(() => {
+    if (pathname?.startsWith("/products/plan/update/")) {
       setFeatures(value);
     }
-  }, [value])
+  }, [value]);
 
   return (
     <div className="">
       {/* Button to open modal */}
-      <br/>
+      <br />
       <button
         onClick={() => setIsOpen(true)}
         type="button"
@@ -130,11 +147,15 @@ export default function PlanFeatures({
                         <select
                           value={feature?.status?.toString()}
                           onChange={(e) =>
-                            handleChange(index, "status", e.target.value === "true")
+                            handleChange(
+                              index,
+                              "status",
+                              e.target.value === "true"
+                            )
                           }
                           className="w-full appearance-none border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm text-gray-600 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
                         >
-                          <option value="">Select Status</option>
+                          {/* <option value="">Select Status</option> */}
                           <option value={"true"}>Active</option>
                           <option value={"false"}>Inactive</option>
                         </select>
@@ -186,9 +207,9 @@ export default function PlanFeatures({
               onClick={() => {
                 setFeatures([{ featureName: "", status: true }]);
                 handleFormDataChange(field?.key, []);
-                setIsOpen(false);
+                // setIsOpen(false);
               }}
-              className="px-4 py-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 transition"
+              className="px-4 py-2 rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 transition cursor-pointer"
             >
               Clear
             </button>

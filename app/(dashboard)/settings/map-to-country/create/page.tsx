@@ -155,6 +155,17 @@ export default function MapGatewayToCountry() {
     });
   };
   const handleCurrencyChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const isExist = selectedCurrencies?.find((currency) => {
+      return currency?.currencyID === e?.target?.value?.split("___")?.[0];
+    });
+
+    if (isExist) {
+      showToast({
+        message: "Currency already exist in list.",
+        type: "error",
+      });
+      return;
+    }
     setSelecteCurrencies((prev) => [
       ...prev,
       {
@@ -209,10 +220,17 @@ export default function MapGatewayToCountry() {
       })
     );
   };
+  const handleClear = () => {
+    setSelectedCountry("");
+    setSelecteCurrencies([]);
+    setPaymentGateways((prev) =>
+      prev?.map((gateway) => {
+        return { ...gateway, isSelected: false, isDefault: false };
+      })
+    );
+  };
   return (
-    <ValidatePermissions
-      permissionType="canCreate"
-    >
+    <ValidatePermissions permissionType="canCreate">
       <div>
         <h2 className="font-semibold text-md mb-2">Payment Gateway</h2>
         <div className="bg-gray-50 rounded-xl shadow-md p-6 mb-8">
@@ -243,8 +261,8 @@ export default function MapGatewayToCountry() {
                   </label>
                   <div className="relative w-full">
                     <select
-                      //   value={value}
-                      //   onChange={handleChange}
+                      value={selectedCountry}
+                      onChange={(e) => setSelectedCountry(e.target.value)}
                       className="w-full px-3 py-2 h-9 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none"
                       required={true}
                     >
@@ -416,7 +434,7 @@ export default function MapGatewayToCountry() {
                 <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 col-span-2">
                   <button
                     type="button"
-                    //   onClick={handleClear}
+                    onClick={handleClear}
                     className="px-4 py-2 border border-gray-300 rounded-md md:text-sm text-[10px] font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   >
                     <FaTimes className="inline mr-2" />

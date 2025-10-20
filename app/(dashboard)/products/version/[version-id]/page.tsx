@@ -14,6 +14,7 @@ import validatePermission from "@/components/permissions/PermissionCheckerNew";
 import VersionAvailableAddons from "@/components/product/VersionAvailableAddons";
 import { formatDateToDDMMYYYY } from "@/helpers/helperFunction";
 import PlanViewCard from "@/components/product/PlanViewCard";
+import { IoMdArrowBack } from "react-icons/io";
 type GetVersionResponse = {
   success: boolean;
   message: string;
@@ -91,6 +92,17 @@ export default function VersionDetails() {
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2 bg-gray-50">
               <div className="flex flex-row items-center justify-between m-4">
+                <div className="flex flex-row items-center">
+                  <div
+                    className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
+                    onClick={() => router.back()}
+                  >
+                    <IoMdArrowBack className="w-6 h-6" />
+                  </div>
+                  <h2 className="font-semibold text-xl">
+                    {versionDetails?.versionNumber}
+                  </h2>
+                </div>
                 <h2 className="font-semibold text-xl">
                   {versionDetails?.versionNumber}
                 </h2>

@@ -192,3 +192,19 @@ export interface LeadsType {
   status: number;
   priority: string | null;
 }
+
+export interface PaymentDetails {
+  paymentID: string;
+  subscriptionID: string;
+  purchaseOrderID: string;
+  paidOn: string;
+  amountPaid: number;
+  taxAmount: number;
+  currencyID: string;
+  currencyCode: string;
+  paymentStatus: number;
+  status: string;
+  paymentMode: string;
+  remarks: string;
+  isInvoiced: string;
+}

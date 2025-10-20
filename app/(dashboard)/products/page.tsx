@@ -40,41 +40,6 @@ export default function Products() {
     };
     getAllPermissionModules();
   }, []);
-  const addOnsList = [
-    "User action report",
-    "Schemes",
-    "RPOS Sync service",
-    "Biometric",
-    "Additional database",
-    "Report data sync",
-    "RPOS Theme",
-    "Vansales",
-    "Weigh scale",
-    "Web report",
-    "Polosys live",
-    "Bank POS",
-    "FAM",
-  ];
-  //   const products = [
-  //     {
-  //         id:1,
-  //         title:"Polosys ERP",
-  //         label: "Licensed product",
-  //         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
-  //     },
-  //     {
-  //         id:2,
-  //         title:"EazyBiz",
-  //         label: "Licensed product",
-  //         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
-  //     },
-  //     {
-  //         id:3,
-  //         title:"Books",
-  //         label: "Subscription product",
-  //         description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s."
-  //     }
-  // ]
   const pathname = usePathname();
   const { permissions } = usePermissions();
   const canCreate = validatePermission(
@@ -95,7 +60,9 @@ export default function Products() {
           <div className="grid grid-cols-3 gap-4">
             <div className="md:col-span-2 col-span-3 bg-gray-50 pb-4">
               <div className="flex flex-row items-center justify-between m-4">
-                <h2 className="font-semibold text-xl">All Products</h2>
+                <div className="flex flex-row items-center">
+                  <h2 className="font-semibold text-xl">All Products</h2>
+                </div>
                 {canCreate && (
                   <Link
                     href={"/products/create"}

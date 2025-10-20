@@ -12,7 +12,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col max-h-screen">
       {/* Navbar */}
       {isCollapsed && <Navbar />}
 
@@ -21,7 +21,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
         <Sidebar collapsed={isCollapsed} setCollapsed={setIsCollapsed} />
 
         {/* Main content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6 max-h-screen overflow-y-scroll">{children}</main>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import AddonsList from "@/components/product/AddonsList";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import { usePermissions } from "@/context/PermissionsContext";
 import validatePermission from "@/components/permissions/PermissionCheckerNew";
+import { IoMdArrowBack } from "react-icons/io";
 type GetProductResponse = {
   success: boolean;
   message: string;
@@ -113,9 +114,17 @@ export default function IndividualProduct() {
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2 bg-gray-50">
               <div className="flex flex-row items-center justify-between m-4">
-                <h2 className="font-semibold text-xl">
-                  {productDetails?.name}
-                </h2>
+                <div className="flex flex-row items-center">
+                  <div
+                    className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
+                    onClick={() => router.push("/products")}
+                  >
+                    <IoMdArrowBack className="w-6 h-6" />
+                  </div>
+                  <h2 className="font-semibold text-xl">
+                    {productDetails?.name}
+                  </h2>
+                </div>
                 <div className="relative">
                   {(canEditProduct || canDeleteProduct) && (
                     <FiMoreVertical
@@ -164,35 +173,35 @@ export default function IndividualProduct() {
               <div className="bg-white m-4 p-6 min-h-screen">
                 <p>{productDetails?.description}</p>
                 <ValidatePermissions path="/products/version">
-                <>
-                <div className="flex flex-row items-center justify-between">
-                  <h3 className="my-6 text-xl font-semibold">
-                    Version Of Products
-                  </h3>
-                  {canCreateVersion && (
-                    <Link
-                      href={`/products/version/create?productId=${params?.productId}`}
-                      className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer"
-                    >
-                      + &nbsp;Create Version
-                    </Link>
-                  )}
-                </div>
+                  <>
+                    <div className="flex flex-row items-center justify-between">
+                      <h3 className="my-6 text-xl font-semibold">
+                        Version Of Products
+                      </h3>
+                      {canCreateVersion && (
+                        <Link
+                          href={`/products/version/create?productId=${params?.productId}`}
+                          className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer"
+                        >
+                          + &nbsp;Create Version
+                        </Link>
+                      )}
+                    </div>
 
-                <div className="flex felx-row gap-4 flex-wrap justify-self-auto">
-                  {productVersions?.map((version) => {
-                    return (
-                      <Link
-                        href={`/products/version/${version?.versionID}`}
-                        className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium"
-                        key={version?.versionID}
-                      >
-                        {version?.versionNumber}
-                      </Link>
-                    );
-                  })}
-                </div>
-                </>
+                    <div className="flex felx-row gap-4 flex-wrap justify-self-auto">
+                      {productVersions?.map((version) => {
+                        return (
+                          <Link
+                            href={`/products/version/${version?.versionID}`}
+                            className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium"
+                            key={version?.versionID}
+                          >
+                            {version?.versionNumber}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </>
                 </ValidatePermissions>
               </div>
             </div>

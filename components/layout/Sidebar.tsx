@@ -211,7 +211,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
     <>
       {/* Expanded Sidebar */}
       {!collapsed && (
-        <div className="min-h-screen w-64 bg-gray-800 text-white flex flex-col transition-all duration-300">
+        <div className="max-h-screen w-64 bg-gray-800 text-white flex flex-col transition-all duration-300">
           {/* Header */}
           <div className="p-4 text-2xl flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -283,7 +283,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                               href={child.link}
                               key={child.label}
                               className={`text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded ${
-                                isChildActive ? "" : ""
+                                isChildActive ? "bg-gray-400" : ""
                               }`}
                               onClick={() => {
                                 // setOpenSubmenus({});
@@ -352,7 +352,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                       <Link
                         href={subItem?.link ?? ""}
                         key={subItem.label}
-                        className="text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded"
+                        className={`text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded ${pathname === subItem?.link ? "bg-gray-400" : ""}`}
                       >
                         {subItem.label}
                       </Link>

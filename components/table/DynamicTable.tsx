@@ -172,6 +172,8 @@ const getStatusStringWithNumber = (status: string|number) => {
                             canEdit={canEdit}
                           />
                         );
+                      }else if(col?.specialName?.toLowerCase() === "paymenttotal"){
+                          value = <span>{(row?.amountPaid ?? 0)+(row?.taxAmount ?? 0)}</span>
                       } else if (col.accessor.toLowerCase() === "status") {
                         value = (
                           <span
