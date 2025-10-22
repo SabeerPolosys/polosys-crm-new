@@ -5,8 +5,6 @@ import { Dialog, DialogPanel } from "@headlessui/react";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiChevronDown } from "react-icons/fi";
 
-// Example statuses
-const STATUS_OPTIONS = ["Pending", "In Progress", "Completed", "Cancelled"];
 
 export default function StatusUpdateModal({
   status,

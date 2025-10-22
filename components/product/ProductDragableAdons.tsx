@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Addons } from "@/types/auth";
 import api from "@/lib/axios";
 import { showToast } from "../common/ShowToast";
+import CreateAddonModal from "./CreateAddonModal";
 
 type AddonsResponse = {
   success: boolean;
@@ -81,11 +82,13 @@ function DroppableList({
   title,
   items,
   emptyText,
+  setRefetch
 }: {
   id: ContainerId;
   title: string;
   items: Addons[];
   emptyText: string;
+  setRefetch: Dispatch<SetStateAction<number>>
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
@@ -97,13 +100,16 @@ function DroppableList({
         id === "available" ? "bg-gray-100" : "bg-blue-50"
       } ${isOver ? "ring-2 ring-offset-2 ring-blue-300" : ""}`}
     >
-      <h3
+      <div className="flex flex-row items-center justify-between">
+        <h3
         className={`text-lg font-semibold mb-3 ${
           id === "available" ? "text-gray-700" : "text-blue-700"
         }`}
       >
         {title}
       </h3>
+      {id === "available" && <CreateAddonModal setRefetch={setRefetch}/> }
+      </div>
 
       <SortableContext
         items={items?.map((i) => i?.addonID) ?? []}
@@ -132,6 +138,7 @@ export default function ProductDragableAdons({
   currencyID,
 }: ProductDragableProps) {
   const [available, setAvailable] = useState<Addons[]>([]);
+  const [refetch, setRefetch] = useState(1);
 
   const [selected, setSelected] = useState<Addons[]>([]);
 
@@ -166,7 +173,7 @@ export default function ProductDragableAdons({
     if (currencyID) {
       getAllAddons(currencyID);
     }
-  }, [currencyID]);
+  }, [currencyID, refetch]);
 
   useEffect(() => {
     availableRef.current = available;
@@ -299,12 +306,14 @@ export default function ProductDragableAdons({
             title="Selected Add-ons"
             items={selected}
             emptyText="No add-ons selected"
+            setRefetch={setRefetch}
           />
           <DroppableList
             id="available"
             title="Available Add-ons"
             items={available}
             emptyText="No available add-ons"
+            setRefetch={setRefetch}
           />
         </div>
       </DndContext>

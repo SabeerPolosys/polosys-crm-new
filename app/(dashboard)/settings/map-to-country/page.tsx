@@ -34,29 +34,29 @@ export default function MappingCurrencyOrGateway() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const router = useRouter();
-  //   useEffect(() => {
-  //     const getAllAddons = async () => {
-  //       try {
-  //         if (isDeleteOpen) return;
-  //         setIsLoading(true);
-  //         const res = await api.get<PaymentGatewayResponse>(
-  //           `/api/v1/payment-gateway`
-  //         );
-  //         if (res?.data?.success) {
-  //           const respose = res?.data?.data;
-  //           setPaymentGateways(respose);
-  //         }
-  //       } catch {
-  //         showToast({
-  //           message: `Failed to fetch addons.`,
-  //           type: "error",
-  //         });
-  //       } finally {
-  //         setIsLoading(false);
-  //       }
-  //     };
-  //     getAllAddons();
-  //   }, [isDeleteOpen]);
+    useEffect(() => {
+      // const getAllMapping = async () => {
+      //   try {
+      //     if (isDeleteOpen) return;
+      //     setIsLoading(true);
+      //     const res = await api.get<PaymentGatewayResponse>(
+      //       `/api/v1/payment-gateway`
+      //     );
+      //     if (res?.data?.success) {
+      //       const respose = res?.data?.data;
+      //       setPaymentGateways(respose);
+      //     }
+      //   } catch {
+      //     showToast({
+      //       message: `Failed to fetch addons.`,
+      //       type: "error",
+      //     });
+      //   } finally {
+      //     setIsLoading(false);
+      //   }
+      // };
+      // getAllMapping();
+    }, [isDeleteOpen]);
   const columns = [
     { header: "Country Name", accessor: "countryName" },
     { header: "Payment Gateways", accessor: "gateways" },

@@ -20,6 +20,26 @@ interface GetCurrenciesResponse {
   data: CurrencyDetailsType[];
 }
 
+interface CountryCurrencyMapping {
+  countryMappingID: string;
+  countryID: string;
+  countryName: string;
+  countryCode: string;
+  currencyID: string;
+  currencyCode: string;
+  symbol: string;
+  decimalPlaces: number;
+  isDefault: boolean;
+  createdAt: string;
+  modifiedAt: string;
+}
+
+interface GetCountryCorrecnyMappingResponse {
+  success: boolean;
+  message: string;
+  data: CountryCurrencyMapping[];
+}
+
 export default function MapGatewayToCountry() {
   const router = useRouter();
   const [countries, setCountries] = useState<any[]>([]);
@@ -42,9 +62,7 @@ export default function MapGatewayToCountry() {
       isDefault: boolean;
     }[]
   >([]);
-  const [gatewayStates, setGatewayStates] = useState<
-    Record<string, { isAvailable: boolean; isDefault: boolean }>
-  >({});
+
   const getCounties = async () => {
     try {
       setIsListLoading(true);
@@ -117,20 +135,8 @@ export default function MapGatewayToCountry() {
     getPaymentGateways();
     getCurrencies();
   }, []);
-  const handleCheckboxChange = (
-    id: string,
-    field: "isAvailable" | "isDefault"
-  ) => {
-    setGatewayStates((prev) => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        [field]: !prev[id][field],
-      },
-    }));
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedCountry) {
@@ -140,20 +146,92 @@ export default function MapGatewayToCountry() {
       });
     }
 
-    const mappedData = Object.entries(gatewayStates).map(([id, values]) => ({
-      gatewayID: id,
-      countryID: selectedCountry,
-      ...values,
-    }));
+    // Build currency and gateway payloads
+    const currencyMapping =
+      selectedCurrencies?.map((currency) => ({
+        countryID: selectedCountry,
+        currencyID: currency?.currencyID,
+        isDefault: currency?.isDefault,
+      })) || [];
 
-    // Perform API submission here
-    console.log("Submitting:", mappedData);
+    const selectedGateways =
+      paymentGateways
+        ?.filter((gateway) => gateway?.isSelected)
+        ?.map((gateway) => ({
+          gatewayID: gateway?.gatewayID,
+          countryID: selectedCountry,
+          isActive: true,
+          isDefault: gateway?.isDefault,
+        })) || [];
 
-    showToast({
-      message: "Gateway mapping submitted.",
-      type: "success",
-    });
+    if (currencyMapping.length === 0 || selectedGateways.length === 0) {
+      return showToast({
+        message: "Please select at least one currency and gateway.",
+        type: "error",
+      });
+    }
+    const isHaveDefaultCurrency = currencyMapping?.some(
+      (currency) => currency?.isDefault
+    );
+    const isHaveDefaultGateway = selectedGateways?.some(
+      (gateway) => gateway?.isDefault
+    );
+    if (!isHaveDefaultCurrency) {
+      return showToast({
+        message: "Please select a default currency.",
+        type: "error",
+      });
+    }
+    if (!isHaveDefaultGateway) {
+      return showToast({
+        message: "Please select a default payment gateway.",
+        type: "error",
+      });
+    }
+
+    try {
+      const [currencyRes, gatewayRes] = await Promise.allSettled([
+        api.post(`/api/v1/common/Country-Curruncy`, currencyMapping),
+        api.post(`/api/v1/payment-gateway/country-mapping`, selectedGateways),
+      ]);
+      if (
+        currencyRes.status === "fulfilled" &&
+        currencyRes.value?.status === 200
+      ) {
+        showToast({
+          message: "Currency mapping updated successfully.",
+          type: "success",
+        });
+      } else {
+        showToast({
+          message: "Failed to update currency mapping.",
+          type: "error",
+        });
+      }
+
+      if (
+        gatewayRes.status === "fulfilled" &&
+        gatewayRes.value?.status === 200
+      ) {
+        showToast({
+          message: "Payment gateway mapping updated successfully.",
+          type: "success",
+        });
+        router.push("/settings/map-to-country");
+      } else {
+        showToast({
+          message: "Failed to update gateway mapping.",
+          type: "error",
+        });
+      }
+    } catch {
+      showToast({
+        message: "Unexpected error while updating mappings.",
+        type: "error",
+      });
+    }
   };
+
   const handleCurrencyChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const isExist = selectedCurrencies?.find((currency) => {
       return currency?.currencyID === e?.target?.value?.split("___")?.[0];
@@ -229,6 +307,33 @@ export default function MapGatewayToCountry() {
       })
     );
   };
+  useEffect(() => {
+    const getCountryCurrencyMapping = async () => {
+      try {
+        if (!selectedCountry) return;
+        const result = await api.get<GetCountryCorrecnyMappingResponse>(
+          `/api/v1/common/("Country-Curruncy Mapping")/${selectedCountry}`
+        );
+        if (result?.status === 200) {
+          setSelecteCurrencies(
+            result?.data?.data?.map((currency) => ({
+              currencyID: currency?.currencyID,
+              currencyCode: currency?.currencyCode,
+              isSelected: true,
+              isDefault: currency?.isDefault,
+            }))
+          );
+        }
+      } catch {
+        showToast({
+          message: "Failed to fetch currency mapping of selected country.",
+          type: "error",
+        });
+      }
+    };
+
+    getCountryCurrencyMapping();
+  }, [selectedCountry]);
   return (
     <ValidatePermissions permissionType="canCreate">
       <div>

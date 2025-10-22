@@ -6,9 +6,12 @@ import { useState } from "react";
 import PaymentTable from "@/components/customers/PaymentTable";
 import InvoiceTable from "@/components/customers/InvoiceTable";
 import ProductDetails from "@/components/customers/ProductDetails";
+import { useRouter } from "next/navigation";
+import { IoMdArrowBack } from "react-icons/io";
 
 export default function IndividualCustomer() {
   const [activeTab, setActiveTab] = useState("products");
+  const router = useRouter();
 
   return (
     <div>
@@ -16,16 +19,24 @@ export default function IndividualCustomer() {
       <div className="border-[1px] border-gray-300 rounded-lg min-w-full min-h-[200px] p-4">
         <div className="grid grid-cols-1 gap-4 mb-6">
           <div className="bg-gray-50 rounded-xl shadow-md p-6">
-            <div className="flex flex-row items-center justify-center">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border border-gray-300 shadow-sm">
-                  <HiOutlineHome className="w-8 h-8 text-gray-700" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    KPM Hypermarket
-                  </h2>
-                  <p className="text-sm text-gray-500">Retail Store</p>
+            <div className="flex flex-row items-center mb-6">
+              <div
+                className="bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
+                onClick={() => router.push("/customers")}
+              >
+                <IoMdArrowBack className="w-6 h-6" />
+              </div>
+              <div className="flex w-full items-center justify-center">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border border-gray-300 shadow-sm">
+                    <HiOutlineHome className="w-8 h-8 text-gray-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      KPM Hypermarket
+                    </h2>
+                    <p className="text-sm text-gray-500">Retail Store</p>
+                  </div>
                 </div>
               </div>
             </div>
