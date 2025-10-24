@@ -12,7 +12,7 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import StatusUpdateModal from "./StatusUpdateModal";
-import { getBillingCycle } from "@/helpers/helperFunction";
+import { formatDateTime, getBillingCycle } from "@/helpers/helperFunction";
 
 interface Column {
   header: string;
@@ -174,6 +174,8 @@ const getStatusStringWithNumber = (status: string|number) => {
                         );
                       }else if(col?.specialName?.toLowerCase() === "paymenttotal"){
                           value = <span>{(row?.amountPaid ?? 0)+(row?.taxAmount ?? 0)}</span>
+                      }else if(col?.specialName?.toLowerCase() === "convertdatetime"){
+                          value = <span>{formatDateTime(row[col.accessor])}</span>
                       } else if (col.accessor.toLowerCase() === "status") {
                         value = (
                           <span

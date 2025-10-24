@@ -581,13 +581,6 @@ export const formFieldconfig = {
         placeholder: "IP Address",
       },
       {
-        label: "Remarks",
-        key: "remarks",
-        type: "input",
-        required: true,
-        placeholder: "Remarks",
-      },
-      {
         label: "Status",
         key: "isActive",
         type: "select",
@@ -601,11 +594,29 @@ export const formFieldconfig = {
         optionKey: "option",
       },
       {
+        label: "Validity",
+        key: "validity",
+        type: "dateTime",
+        required: true,
+      },
+      {
         label: "Database Limit",
         key: "databaseLimit",
         type: "number",
         required: true,
         placeholder: "Database Limit",
+      },
+      {
+        label: "Remarks",
+        key: "remarks",
+        type: "input",
+        required: true,
+        placeholder: "Remarks",
+      },
+      {
+        label: "Is Default",
+        key: "isDefault",
+        type: "checkbox",
       },
     ],
     hasSubmitButton: true,

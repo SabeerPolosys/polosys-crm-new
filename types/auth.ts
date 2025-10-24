@@ -208,3 +208,13 @@ export interface PaymentDetails {
   remarks: string;
   isInvoiced: string;
 }
+export interface InvoiceDetails {
+  invoiceID: string;
+  invoiceNumber: string;
+  date: string;        
+  amount: number;
+  taxAmount: number;
+  total: number;
+  paymentID: string;
+  invoiceDate: string; 
+}

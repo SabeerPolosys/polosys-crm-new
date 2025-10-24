@@ -11,6 +11,7 @@ import ProductDragableAdons from "../product/ProductDragableAdons";
 import PlanFeatures from "../product/PlanFeatures";
 import VersionPlanSelector from "../product/VersionPlanSelector";
 import { ProductTypes } from "@/types/auth";
+import SbFormCheckbox from "./SbFormCheckbox";
 
 export default function SbForm({
   formField,
@@ -130,6 +131,13 @@ export default function SbForm({
                     field={field}
                   />
                 );
+              case "checkbox":
+                return(
+                  <SbFormCheckbox key={index}
+                    value={formData[field?.key] ?? ""}
+                    handleFormDataChange={handleFormDataChange}
+                    field={field}/>
+                )
               default:
                 break;
             }

@@ -211,7 +211,7 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
     <>
       {/* Expanded Sidebar */}
       {!collapsed && (
-        <div className="max-h-screen w-64 bg-gray-800 text-white flex flex-col transition-all duration-300">
+        <div className="h-screen w-64 bg-gray-800 text-white flex flex-col transition-all duration-300">
           {/* Header */}
           <div className="p-4 text-2xl flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -230,26 +230,6 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
           <div className="flex-1 overflow-y-auto sidebar-scroll">
             {/* Main Menu */}
             <p className="px-4 py-2 text-gray-400 text-xs">MAIN</p>
-            {/* {menuItems.map(({ label, icon, link }) => {
-              const isActive = pathname === link;
-
-              return (
-                <Link
-                  href={link}
-                  key={label}
-                  className={`flex items-center w-full px-4 py-3 text-sm gap-3 hover:bg-gray-700 transition cursor-pointer ${
-                    isActive ? "bg-gray-700" : ""
-                  }`}
-                  onClick={() => {
-                    setOpenSubmenus({});
-                    isMobile && setCollapsed(true);
-                  }}
-                >
-                  {icon}
-                  {label}
-                </Link>
-              );
-            })} */}
             {menuItems.map(({ label, icon, link, children }) => {
               const isActive = pathname === link;
               const isOpen = openSubmenus[label];

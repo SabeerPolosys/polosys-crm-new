@@ -18,6 +18,7 @@ interface ServerFormData {
   isActive: boolean;
   isDefault: boolean;
   databaseLimit: number | null;
+  validity: Date | null;
 }
 
 const CreateServer: React.FC = () => {
@@ -29,6 +30,7 @@ const CreateServer: React.FC = () => {
     isActive: true,
     isDefault: false,
     databaseLimit: null,
+    validity: null,
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -52,6 +54,7 @@ const CreateServer: React.FC = () => {
       isActive: true,
       isDefault: false,
       databaseLimit: null,
+      validity: null,
     });
   };
   const handleSubmit = async (e: FormEvent) => {
@@ -67,7 +70,9 @@ const CreateServer: React.FC = () => {
         !trimmedFormData?.serverName ||
         !trimmedFormData?.region ||
         !trimmedFormData?.ipAddress ||
-        !trimmedFormData?.databaseLimit
+        !trimmedFormData?.databaseLimit ||
+        !trimmedFormData?.remarks ||
+        !trimmedFormData?.validity
       ) {
         return showToast({
           message: `Please fill required fields.`,

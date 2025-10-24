@@ -37,7 +37,7 @@ export default function SbFormDatepicker({
         dateFormat="dd/MM/yyyy"
         placeholderText="DD/MM/YYYY"
         wrapperClassName="w-full"
-        className="w-full px-4 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+        className="w-full px-3 py-2 h-9 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
         popperClassName="shadow-lg border rounded-lg"
         showMonthDropdown
         showYearDropdown

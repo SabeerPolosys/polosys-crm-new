@@ -1,58 +1,113 @@
 "use client";
-import { useRef } from "react";
+import { showToast } from "@/components/common/ShowToast";
+import { formatDateToDDMMYYYY } from "@/helpers/helperFunction";
+import api from "@/lib/axios";
+import { useParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { FaDownload, FaPaperPlane } from "react-icons/fa";
+interface InvoiceDetail {
+  description: string;
+  quantity: number;
+  itemPrice: number;
+  category: string;
+}
+
+interface Invoice {
+  invoiceNumber: string;
+  date: Date;
+  dueDate: Date;
+  clientName: string;
+  email: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  postalCode: string;
+  region: string;
+  amount: number;
+  taxAmount: number;
+  total: number;
+  paymentID: string;
+  invoiceDate: string;
+  details: InvoiceDetail[];
+}
+
+type GetInvoiceResponse = {
+  success: boolean;
+  message: string;
+  data: Invoice[];
+};
 
 export default function InvoicePage() {
+  const [invoiceDetails, setInvoiceDetails] = useState<Invoice | null>(null);
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const params = useParams();
+  useEffect(() => {
+    const getAllInvoices = async () => {
+      try {
+        const res = await api.get<GetInvoiceResponse>(
+          `/api/v1/invoice/${params?.["invoice-id"]}`
+        );
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setInvoiceDetails(response?.[0] ?? null);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch invoice details.`,
+          type: "error",
+        });
+      }
+    };
+    getAllInvoices();
+  }, []);
 
   const handleDownload = async () => {
-  if (!invoiceRef.current) return;
-  const html2pdf = (await import("html2pdf.js")).default;
+    if (!invoiceRef.current) return;
+    const html2pdf = (await import("html2pdf.js")).default;
 
-  // Convert unsupported lab() colors to rgb() fallback
-  const elements = invoiceRef.current.querySelectorAll("*");
-  elements.forEach((el) => {
-    const style = window.getComputedStyle(el);
+    // Convert unsupported lab() colors to rgb() fallback
+    const elements = invoiceRef.current.querySelectorAll("*");
+    elements.forEach((el) => {
+      const style = window.getComputedStyle(el);
 
-    const element = el as HTMLElement;
+      const element = el as HTMLElement;
 
-    if (style.color.includes("lab(")) {
-      element.style.color = "#000";
-    }
-    if (style.backgroundColor.includes("lab(")) {
-      element.style.backgroundColor = "#fff";
-    }
-    if (style.borderColor.includes("lab(")) {
-      element.style.borderColor = "#ccc";
-    }
-  });
+      if (style.color.includes("lab(")) {
+        element.style.color = "#000";
+      }
+      if (style.backgroundColor.includes("lab(")) {
+        element.style.backgroundColor = "#fff";
+      }
+      if (style.borderColor.includes("lab(")) {
+        element.style.borderColor = "#ccc";
+      }
+    });
 
-  const opt = {
-  margin: 0,
-  filename: `invoice-${Date.now()}.pdf`,
-  image: { type: "jpeg" as const, quality: 0.98 },
-  html2canvas: {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    onclone: (clonedDoc: any) => {
-      clonedDoc.querySelectorAll("*").forEach((el: any) => {
-        const style = window.getComputedStyle(el);
-        if (style.color.includes("lab(")) {
-          (el as HTMLElement).style.color = "#000";
-        }
-        if (style.backgroundColor.includes("lab(")) {
-          (el as HTMLElement).style.backgroundColor = "#fff";
-        }
-      });
-    },
-  },
-  jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
-};
+    const opt = {
+      margin: 0,
+      filename: `invoice-${Date.now()}.pdf`,
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        onclone: (clonedDoc: any) => {
+          clonedDoc.querySelectorAll("*").forEach((el: any) => {
+            const style = window.getComputedStyle(el);
+            if (style.color.includes("lab(")) {
+              (el as HTMLElement).style.color = "#000";
+            }
+            if (style.backgroundColor.includes("lab(")) {
+              (el as HTMLElement).style.backgroundColor = "#fff";
+            }
+          });
+        },
+      },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" as const },
+    };
 
-  html2pdf().set(opt).from(invoiceRef.current).save();
-};
-
+    html2pdf().set(opt).from(invoiceRef.current).save();
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen py-10 px-4">
@@ -78,12 +133,11 @@ export default function InvoicePage() {
       >
         {/* Header */}
         <header className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            INVOICE
-          </h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">INVOICE</h1>
           <div className="mt-3 text-sm text-gray-600">
-            <p className="font-medium text-black">Company Name</p>
-            <p>123 Street, City, Country</p>
+            <p className="font-medium text-black">Polosys Technologies L.L.P</p>
+            <p>Neospace, KINFRA Techno-Industrial Park,</p>
+            <p>University, Kakkanchery, Kozhikode, Kerala 673634</p>
             <p>Email: info@company.com</p>
           </div>
         </header>
@@ -92,19 +146,30 @@ export default function InvoicePage() {
         <section className="flex justify-between text-sm mb-10">
           <div>
             <h3 className="font-semibold text-gray-800 mb-2">Bill To:</h3>
-            <p className="font-medium">John Doe</p>
-            <p>456 Client St, City</p>
-            <p>Email: john@example.com</p>
+            <p className="font-medium">{invoiceDetails?.clientName}</p>
+            <p>
+              {invoiceDetails?.addressLine1}, {invoiceDetails?.addressLine2}
+            </p>
+            <p>
+              {invoiceDetails?.city}, {invoiceDetails?.region},{" "}
+              {invoiceDetails?.postalCode}
+            </p>
+            <p>Email: {invoiceDetails?.email}</p>
           </div>
           <div className="text-right">
             <p>
-              <span className="font-semibold">Invoice #:</span> INV-001
+              <span className="font-semibold">Invoice #:</span>{" "}
+              {invoiceDetails?.invoiceNumber}
             </p>
             <p>
-              <span className="font-semibold">Date:</span> 2025-10-10
+              <span className="font-semibold">Date:</span>{" "}
+              {invoiceDetails?.date &&
+                formatDateToDDMMYYYY(invoiceDetails?.date)}
             </p>
             <p>
-              <span className="font-semibold">Due Date:</span> 2025-10-20
+              <span className="font-semibold">Due Date:</span>{" "}
+              {invoiceDetails?.dueDate &&
+                formatDateToDDMMYYYY(invoiceDetails?.dueDate)}
             </p>
           </div>
         </section>
@@ -116,63 +181,85 @@ export default function InvoicePage() {
               <tr>
                 <th className="p-3 border border-gray-300">Description</th>
                 <th className="p-3 border border-gray-300 text-right">Qty</th>
+                <th className="p-3 border border-gray-300 text-right">Type</th>
                 <th className="p-3 border border-gray-300 text-right">Rate</th>
-                <th className="p-3 border border-gray-300 text-right">Amount</th>
+                <th className="p-3 border border-gray-300 text-right">
+                  Amount
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr className="hover:bg-gray-50">
-                <td className="p-3 border border-gray-200">
-                  Books Ultimate Plan
-                </td>
-                <td className="p-3 border border-gray-200 text-right">1</td>
-                <td className="p-3 border border-gray-200 text-right">
-                  $50.00
-                </td>
-                <td className="p-3 border border-gray-200 text-right">
-                  $50.00
-                </td>
-              </tr>
-              <tr className="hover:bg-gray-50">
-                <td className="p-3 border border-gray-200">Books Addon</td>
-                <td className="p-3 border border-gray-200 text-right">2</td>
-                <td className="p-3 border border-gray-200 text-right">
-                  $10.00
-                </td>
-                <td className="p-3 border border-gray-200 text-right">
-                  $20.00
-                </td>
-              </tr>
+              {invoiceDetails?.details?.map((product, index) => {
+                return (
+                  <tr className="hover:bg-gray-50" key={index}>
+                    <td className="p-3 border border-gray-200">
+                      {product?.description}
+                    </td>
+                    <td className="p-3 border border-gray-200 text-right">
+                      {product?.quantity}
+                    </td>
+                    <td className="p-3 border border-gray-200 text-right">
+                      {product?.category}
+                    </td>
+                    <td className="p-3 border border-gray-200 text-right">
+                      {product?.itemPrice}
+                    </td>
+                    <td className="p-3 border border-gray-200 text-right">
+                      {(product?.quantity ?? 1) * product?.itemPrice}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
             <tfoot>
-              <tr>
-                <td
-                  colSpan={3}
-                  className="p-3 border-t border-gray-300 text-right font-semibold"
-                >
-                  Subtotal
-                </td>
-                <td className="p-3 border-t border-gray-300 text-right">
-                  $70.00
-                </td>
-              </tr>
-              <tr>
-                <td colSpan={3} className="p-3 text-right font-semibold">
-                  Tax (10%)
-                </td>
-                <td className="p-3 text-right">$7.00</td>
-              </tr>
-              <tr>
-                <td
-                  colSpan={3}
-                  className="p-3 text-right font-bold text-blue-700 border-t border-gray-300"
-                >
-                  Total
-                </td>
-                <td className="p-3 text-right font-bold text-blue-700 border-t border-gray-300">
-                  $77.00
-                </td>
-              </tr>
+              {(() => {
+                const subtotal =
+                  invoiceDetails?.details?.reduce(
+                    (sum, item) =>
+                      sum + (item.quantity ?? 1) * (item.itemPrice ?? 0),
+                    0
+                  ) ?? 0;
+
+                const taxRate = 0.18;
+                const taxAmount = subtotal * taxRate;
+
+                const total = subtotal + taxAmount;
+
+                return (
+                  <>
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="p-3 border-t border-gray-300 text-right font-semibold"
+                      >
+                        Subtotal
+                      </td>
+                      <td className="p-3 border-t border-gray-300 text-right">
+                        {subtotal.toFixed(2)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colSpan={4} className="p-3 text-right font-semibold">
+                        Tax (18%)
+                      </td>
+                      <td className="p-3 text-right">
+                        {taxAmount.toFixed(2)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="p-3 text-right font-bold text-blue-700 border-t border-gray-300"
+                      >
+                        Total
+                      </td>
+                      <td className="p-3 text-right font-bold text-blue-700 border-t border-gray-300">
+                        {total.toFixed(2)}
+                      </td>
+                    </tr>
+                  </>
+                );
+              })()}
             </tfoot>
           </table>
         </div>

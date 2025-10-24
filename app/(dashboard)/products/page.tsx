@@ -52,9 +52,9 @@ export default function Products() {
       <div>
         <div className="flex flex-row items-center justify-between my-4">
           <h2 className="font-semibold">Product Suite</h2>
-          <button className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
+          {/* <button className="bg-gray-800 text-white px-2 text-xs py-1 rounded">
             + &nbsp; Add Lead
-          </button>
+          </button> */}
         </div>
         <div className="p-4 rounded-lg border-[1px] border-gray-300">
           <div className="grid grid-cols-3 gap-4">
