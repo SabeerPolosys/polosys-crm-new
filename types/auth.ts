@@ -67,21 +67,34 @@ export interface ProductTypes {
 }
 
 export interface CustomerDetails {
-  clientServerID: string;
+  // clientServerID: string;
+  // clientID: string;
+  // client: string;
+  // serverID: string;
+  // serverName: string;
+  // databaseID: string;
+  // databaseName: string;
+  // productID: string;
+  // product: string;
+  // alias: string;
+  // statusID: number;
+  // statusName: string;
+  // isActive: boolean;
+  // createdAt: Date;
+  // modifiedAt: Date;
   clientID: string;
-  client: string;
-  serverID: string;
-  serverName: string;
-  databaseID: string;
-  databaseName: string;
-  productID: string;
-  product: string;
-  alias: string;
+  organizationName: string;
+  email: string;
+  mobile: string;
+  countryID: string;
+  countryName: string;
+  userID: string;
+  userName: string;
+  isActive: boolean;
+  createdAt: string;     
+  modifiedAt: string;   
   statusID: number;
   statusName: string;
-  isActive: boolean;
-  createdAt: Date;
-  modifiedAt: Date;
 }
 
 export interface Addons {
@@ -116,11 +129,16 @@ export interface Currency {
 }
 
 export interface ServerType {
+  serverID: string;
   serverName: string;
-  Region: string;
-  ip: string;
-  remarks: string;
+  region: string;
+  createdAt: string;    
+  modifiedAt: string;    
   isActive: boolean;
+  ipAddress: string;
+  validity: Date;    
+  isDefault: boolean;
+  remarks: string;
   databaseLimit: number;
 }
 

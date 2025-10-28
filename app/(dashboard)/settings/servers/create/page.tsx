@@ -70,7 +70,7 @@ const CreateServer: React.FC = () => {
         !trimmedFormData?.serverName ||
         !trimmedFormData?.region ||
         !trimmedFormData?.ipAddress ||
-        !trimmedFormData?.databaseLimit ||
+        // !trimmedFormData?.databaseLimit ||
         !trimmedFormData?.remarks ||
         !trimmedFormData?.validity
       ) {

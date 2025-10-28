@@ -20,7 +20,7 @@ export default function Payments() {
     const getAllPayments = async () => {
       try {
         setIsLoading(true);
-        const res = await api.get(`/api/v1/payment`);
+        const res = await api.get<GetPaymentsResponse>(`/api/v1/payment`);
         if (res?.data?.success) {
           const respose = res?.data?.data;
           setAllPayments(respose);
@@ -37,7 +37,8 @@ export default function Payments() {
     getAllPayments();
   }, []);
   const columns = [
-    { header: "Payment Id", accessor: "paymentID" },
+    { header: "Order Id", accessor: "transactionOrderID"},
+    { header: "Payment Id", accessor: "transactionRef" },
     { header: "Date", accessor: "paidOn" },
     { header: "Amount", accessor: "amountPaid" },
     { header: "Tax", accessor: "taxAmount" },

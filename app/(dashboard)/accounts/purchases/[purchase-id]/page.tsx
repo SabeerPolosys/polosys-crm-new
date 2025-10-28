@@ -1,24 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { showToast } from "@/components/common/ShowToast";
+import api from "@/lib/axios";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { FiBox, FiKey, FiPlusCircle } from "react-icons/fi";
 import { FiShoppingCart, FiEyeOff } from "react-icons/fi";
+import { IoMdArrowBack } from "react-icons/io";
 
 export default function ProductDetailsPage() {
-  const [product] = useState({
-    product: "Books",
-    version: "Books Gcc",
-    purchaseDate: "2025-08-03",
-    lastRenewed: "2025-08-03",
-    expiryDate: "2025-09-02",
-    plan: "Ultimate",
-    status: "Active",
-    price: 1500,
-    currency: "₹",
-    customer: "Rahul",
-    autoRenew: false,
-  });
+  const [purchaseDetails, setPurchaseDetails] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const params = useParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const getAllPurchases = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get(
+          `/api/v1/purchase/PurchaseDetails/${params?.["purchase-id"]}`
+        );
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setPurchaseDetails(response);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch purchase details.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllPurchases();
+  }, []);
 
   return (
     // <div>
@@ -81,6 +99,20 @@ export default function ProductDetailsPage() {
       </div>
       <div className="p-4 rounded-lg border-[1px] border-gray-300 bg-gray-50">
         <div className="p-6">
+          <div className="flex items-center mb-6">
+            <div
+              className="mr-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
+              onClick={() => router.back()}
+            >
+              <IoMdArrowBack className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Purchased Items
+              </h2>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Card 1 - EasyBiz Neo */}
             <div className="bg-gray-100 p-4 rounded-xl shadow-sm flex flex-col justify-between">

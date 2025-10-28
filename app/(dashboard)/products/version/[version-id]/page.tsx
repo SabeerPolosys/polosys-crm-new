@@ -103,9 +103,6 @@ export default function VersionDetails() {
                     {versionDetails?.versionNumber}
                   </h2>
                 </div>
-                <h2 className="font-semibold text-xl">
-                  {versionDetails?.versionNumber}
-                </h2>
                 <div className="relative">
                   {(canEditVersion || canDeleteVersion) && (
                     <FiMoreVertical

@@ -2,13 +2,14 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, FormEvent, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
 import SbForm from "@/components/form/SbForm";
 import { IoMdArrowBack } from "react-icons/io";
 import ValidatePermissions from "@/components/permissions/ValidatePermissions";
+import { ServerType } from "@/types/auth";
 
 interface ServerFormData {
   serverName: string;
@@ -18,7 +19,13 @@ interface ServerFormData {
   isActive: boolean;
   isDefault: boolean;
   databaseLimit: number | null;
+  validity: Date | null;
 }
+type ServerResponseData = {
+  success: boolean;
+  message: string;
+  data: ServerType;
+};
 
 const UpdateServer: React.FC = () => {
   const [formData, setFormData] = useState<ServerFormData>({
@@ -29,9 +36,11 @@ const UpdateServer: React.FC = () => {
     isActive: true,
     isDefault: false,
     databaseLimit: null,
+    validity: null,
   });
   const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
   const trimmedPath = pathname.split("/").slice(0, -2).join("/") || "/";
   const formField =
     formFieldconfig[trimmedPath as keyof typeof formFieldconfig];
@@ -52,6 +61,7 @@ const UpdateServer: React.FC = () => {
       isActive: true,
       isDefault: false,
       databaseLimit: null,
+      validity: null,
     });
   };
   const handleSubmit = async (e: FormEvent) => {
@@ -67,7 +77,9 @@ const UpdateServer: React.FC = () => {
         !trimmedFormData?.serverName ||
         !trimmedFormData?.region ||
         !trimmedFormData?.ipAddress ||
-        !trimmedFormData?.databaseLimit
+        // !trimmedFormData?.databaseLimit ||
+        !trimmedFormData?.remarks ||
+        !trimmedFormData?.validity
       ) {
         return showToast({
           message: `Please fill required fields.`,
@@ -75,7 +87,7 @@ const UpdateServer: React.FC = () => {
         });
       }
 
-      const res = await api.post(`${formField?.submitUrl}`, trimmedFormData);
+      const res = await api.put(`${formField?.submitUrl}`, {...trimmedFormData, serverID: params?.["server-id"]});
       if (res?.status == 200) {
         showToast({
           message: `Server created successfully.`,
@@ -92,9 +104,37 @@ const UpdateServer: React.FC = () => {
       });
     }
   };
+  useEffect(() => {
+    const getGatewayDetails = async () => {
+      try {
+        const res = await api.get<ServerResponseData>(
+          `/api/v1/server/${params?.["server-id"]}`
+        );
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setFormData({
+            serverName: response?.serverName,
+            region: response?.region,
+            ipAddress: response?.ipAddress,
+            remarks: response?.remarks,
+            isActive: response?.isActive,
+            isDefault: response?.isDefault,
+            databaseLimit: response?.databaseLimit,
+            validity: response?.validity,
+          });
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch gateway details.`,
+          type: "error",
+        });
+      }
+    };
+    getGatewayDetails();
+  }, [params]);
 
   return (
-    <ValidatePermissions permissionType="canUpdate">
+    <ValidatePermissions permissionType="canCreate">
       <div>
         {formField?.Category && (
           <h2 className="font-semibold text-md mb-2">{formField?.Category}</h2>

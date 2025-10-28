@@ -21,7 +21,7 @@ export default function Invoices() {
     { header: "Amount", accessor: "amount" },
     { header: "Tax", accessor: "taxAmount" },
     { header: "Total", accessor: "total" },
-    { header: "Payment Id", accessor: "paymentID" },
+    { header: "Payment Id", accessor: "transactionRef" },
     { header: "Invoiced Date", accessor: "invoiceDate", specialName:"convertDateTime" },
   ];
   useEffect(() => {

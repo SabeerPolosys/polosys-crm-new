@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { showToast } from "@/components/common/ShowToast";
+import DownloadCsv from "@/components/common/DownloadCsv";
 
 export default function Deals() {
   const [deals, setDeals] = useState([]);
@@ -38,6 +39,13 @@ export default function Deals() {
     },
     // { header: "Convert To Purchase", accessor: "assignto2" },
   ];
+
+  const csvHeaders = [
+    { label: "Lead Id", key: "leadID" },
+    { label: "Customer Name", key: "fullName" },
+    { label: "Quoted Price", key: "quotedPrice" },
+    { label: "Currency", key: "currencyCode" },
+  ];
   useEffect(() => {
     const getAllLeads = async () => {
       try {
@@ -58,108 +66,6 @@ export default function Deals() {
     };
     getAllLeads();
   }, []);
-  //   const data = [
-  //   {
-  //     leadId: "L-1001",
-  //     productName: "Books",
-  //     versionName: "Books GCC",
-  //     quotedPrice: 1500,
-  //     currencySymbol: "₹",
-  //     assignto2: "",
-  //     createdBy: "Alice Johnson",
-  //     status: "Quote Sent",
-  //   },
-  //   {
-  //     leadId: "L-1002",
-  //     productName: "Analytics Pro",
-  //     versionName: "Analytics UAE",
-  //     quotedPrice: 3200,
-  //     currencySymbol: "د.إ",
-  //     assignto2: "",
-  //     createdBy: "Bob Smith",
-  //     status: "Confirmed Purchase",
-  //   },
-  //   {
-  //     leadId: "L-1003",
-  //     productName: "CRM Suite",
-  //     versionName: "CRM KSA",
-  //     quotedPrice: 2800,
-  //     currencySymbol: "﷼",
-  //     assignto2: "",
-  //     createdBy: "Charlie Davis",
-  //     status: "Quote Sent",
-  //   },
-  //   {
-  //     leadId: "L-1004",
-  //     productName: "HRM Pro",
-  //     versionName: "HRM Qatar",
-  //     quotedPrice: 3000,
-  //     currencySymbol: "﷼",
-  //     assignto2: "",
-  //     createdBy: "Diana Prince",
-  //     status: "Confirmed Purchase",
-  //   },
-  //   {
-  //     leadId: "L-1005",
-  //     productName: "Finance Tracker",
-  //     versionName: "Finance Oman",
-  //     quotedPrice: 2500.75,
-  //     currencySymbol: "﷼",
-  //     assignto2: "",
-  //     createdBy: "Ethan Hunt",
-  //     status: "Quote Sent",
-  //   },
-  //   {
-  //     leadId: "L-1006",
-  //     productName: "Books",
-  //     versionName: "Books India",
-  //     quotedPrice: 1200,
-  //     currencySymbol: "₹",
-  //     assignto2: "",
-  //     createdBy: "Fiona Gallagher",
-  //     status: "Confirmed Purchase",
-  //   },
-  //   {
-  //     leadId: "L-1007",
-  //     productName: "ERP Core",
-  //     versionName: "ERP ME",
-  //     quotedPrice: 4700.5,
-  //     currencySymbol: "د.إ",
-  //     assignto2: "",
-  //     createdBy: "George Martin",
-  //     status: "Quote Sent",
-  //   },
-  //   {
-  //     leadId: "L-1008",
-  //     productName: "Project Pro",
-  //     versionName: "Project SA",
-  //     quotedPrice: 3900,
-  //     currencySymbol: "﷼",
-  //     assignto2: "",
-  //     createdBy: "Hannah Davis",
-  //     status: "Confirmed Purchase",
-  //   },
-  //   {
-  //     leadId: "L-1009",
-  //     productName: "Books",
-  //     versionName: "Books SG",
-  //     quotedPrice: 1100,
-  //     currencySymbol: "S$",
-  //     assignto2: "",
-  //     createdBy: "Ian Curtis",
-  //     status: "Quote Sent",
-  //   },
-  //   {
-  //     leadId: "L-1010",
-  //     productName: "Marketing Plus",
-  //     versionName: "Marketing Global",
-  //     quotedPrice: 5100,
-  //     currencySymbol: "$",
-  //     assignto2: "",
-  //     createdBy: "Julia Roberts",
-  //     status: "Confirmed Purchase",
-  //   },
-  // ];
 
   const pathname = usePathname();
   const { permissions } = usePermissions();
@@ -178,10 +84,22 @@ export default function Deals() {
           <h2 className="text-lg font-bold px-6">All Deals</h2>
 
           <div className="flex flex-row gap-2 items-center">
-            <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
+            {/* <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
               {" "}
               <FaRegFileAlt /> Export details
-            </button>
+            </button> */}
+            <DownloadCsv
+              data={deals}
+              headers={csvHeaders}
+              styles={
+                "border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400 cursor-pointer"
+              }
+              docName={`leads_${new Date()
+                .toLocaleString("en-GB")
+                .replace(/[/,:\s]/g, "_")}`}
+            >
+              <FaRegFileAlt /> Export details
+            </DownloadCsv>
           </div>
         </div>
         <DynamicTable

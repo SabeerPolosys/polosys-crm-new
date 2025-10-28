@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiChevronDown } from "react-icons/fi";
@@ -13,7 +13,8 @@ export default function StatusUpdateModal({
   handleSubmit,
   submitData,
   updateKey,
-  canEdit
+  canEdit,
+  setUpdateStatus
 }: {
   status: string;
   colour: string;
@@ -22,6 +23,7 @@ export default function StatusUpdateModal({
   submitData: any;
   updateKey?: string;
   canEdit?: boolean;
+  setUpdateStatus?: Dispatch<SetStateAction<number>>
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(status);
@@ -36,6 +38,7 @@ export default function StatusUpdateModal({
   const handleSave = async () => {
     const result = (await (handleSubmit && handleSubmit({...submitData, [updateKey ?? ""]: selectedStatus}))) ?? false;
     result && closeModal();
+    result && setUpdateStatus && setUpdateStatus(prev=> prev+1);
   };
 
   return (

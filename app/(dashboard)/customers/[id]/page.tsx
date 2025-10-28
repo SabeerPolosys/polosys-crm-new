@@ -2,17 +2,49 @@
 import { IoPersonOutline } from "react-icons/io5";
 import { FiBox } from "react-icons/fi";
 import { HiOutlineHome } from "react-icons/hi2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PaymentTable from "@/components/customers/PaymentTable";
 import InvoiceTable from "@/components/customers/InvoiceTable";
 import ProductDetails from "@/components/customers/ProductDetails";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { IoMdArrowBack } from "react-icons/io";
+import { showToast } from "@/components/common/ShowToast";
+import { CustomerDetails } from "@/types/auth";
+import api from "@/lib/axios";
+type CustomerResponse = {
+  success: boolean;
+  message: string;
+  data: CustomerDetails;
+};
 
 export default function IndividualCustomer() {
   const [activeTab, setActiveTab] = useState("products");
+  const [isLoading, setIsLoading] = useState(false);
+  const [customer, setcustomer] = useState<CustomerDetails | null>(null);
   const router = useRouter();
-
+  const params = useParams();
+  useEffect(() => {
+    const getCustomerDetails = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get<CustomerResponse>(
+          `/api/v1/common/Clients/${params?.["id"]}`
+        );
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setcustomer(respose || null);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch customers details.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getCustomerDetails();
+  }, []);
   return (
     <div>
       <h2 className="text-sm font-semibold mb-2">Customer Details</h2>
@@ -33,7 +65,7 @@ export default function IndividualCustomer() {
                   </div>
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">
-                      KPM Hypermarket
+                      {customer?.organizationName}
                     </h2>
                     <p className="text-sm text-gray-500">Retail Store</p>
                   </div>
@@ -44,19 +76,18 @@ export default function IndividualCustomer() {
               <div>
                 <div>
                   <p className="text-gray-400 font-medium">Email</p>
-                  <p>contact@kpmhypermarket.com</p>
+                  <p>{customer?.email}</p>
                 </div>
                 <div>
                   <p className="text-gray-400 font-medium">Mobile</p>
-                  <p>+91 98765 43210</p>
+                  <p>{customer?.mobile}</p>
                 </div>
               </div>
               <div>
                 <p className="text-gray-400 font-medium">Address</p>
                 <p className="leading-relaxed">
-                  Pk Street, Thondayan Junction,
+                  {customer?.countryName}
                   <br />
-                  Kozhikode, 673002
                 </p>
               </div>
             </div>
@@ -80,8 +111,8 @@ export default function IndividualCustomer() {
             ))}
           </div>
           {activeTab === "products" && <ProductDetails />}
-          {activeTab === "payments" && <PaymentTable />}
-          {activeTab === "invoices" && <InvoiceTable />}
+          {activeTab === "payments" && <PaymentTable customerId={params?.["id"] as string}/>}
+          {activeTab === "invoices" && <InvoiceTable customerId={params?.["id"] as string}/>}
         </div>
       </div>
     </div>

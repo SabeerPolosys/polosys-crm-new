@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import styles from "./DynamicTable.module.css";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { usePathname } from "next/navigation";
@@ -39,6 +39,7 @@ interface DynamicTableProps<T> {
   onEditClick?: (rowData: T) => void;
   onDeleteClick?: (rowData: T) => void;
   isDataLoading?: boolean;
+  setUpdateStatus?: Dispatch<SetStateAction<number>>
 }
 
 const DynamicTable = <T extends Record<string, any>>({
@@ -51,6 +52,7 @@ const DynamicTable = <T extends Record<string, any>>({
   onEditClick,
   onDeleteClick,
   isDataLoading,
+  setUpdateStatus
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
@@ -170,6 +172,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                             submitData={(col?.isFor??"") === "leadStatus" ? {leadID: row?.leadID, userID: row?.userID, countryID: row?.countryID, fullName: row?.fullName, email: row?.email, mobile: row?.mobile, source: row?.source, priority: row?.priority, status: row?.status } : {}}
                             updateKey={col?.updateKey}
                             canEdit={canEdit}
+                            setUpdateStatus={setUpdateStatus}
                           />
                         );
                       }else if(col?.specialName?.toLowerCase() === "paymenttotal"){
@@ -328,41 +331,6 @@ const getStatusStringWithNumber = (status: string|number) => {
           </table>
         </div>
 
-        {/* Pagination and Rows per page */}
-        {/* <div className={styles.pagination}>
-          <div className={styles.rowsPerPage}>
-            <label htmlFor="rowsPerPage">Rows per page:</label>
-            <select
-              id="rowsPerPage"
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-            >
-              {[10, 20, 30, 40].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.pageControls}>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
-        </div> */}
         <div className="flex md:justify-between md:flex-row flex-col justify-start items-center p-4 text-sm">
           <div className="flex items-center gap-2">
             <label htmlFor="rowsPerPage">Rows per page:</label>

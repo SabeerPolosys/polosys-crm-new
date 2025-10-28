@@ -1,136 +1,62 @@
+"use client";
 import { BsCart3 } from "react-icons/bs";
 import DynamicTableType2 from "../table/DynamicTableType2";
+import { useEffect, useState } from "react";
+import { showToast } from "../common/ShowToast";
+import { PaymentDetails } from "@/types/auth";
+import api from "@/lib/axios";
+type GetPaymentsResponse = {
+  success: boolean;
+  message: string;
+  data: PaymentDetails[];
+};
 
-export default function PaymentTable() {
+export default function PaymentTable({
+  customerId,
+}: {
+  customerId: string | undefined;
+}) {
+  const [payments, setPayments] = useState<PaymentDetails[]>([]);
+  useEffect(() => {
+    const getCustomerPaymentDetails = async () => {
+      try {
+        if (!customerId) return;
+        const res = await api.get<GetPaymentsResponse>(
+          `/api/v1/payment/PaymentDetailsByClientID/${customerId}`
+        );
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setPayments(response);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch customer payments.`,
+          type: "error",
+        });
+      }
+    };
+    getCustomerPaymentDetails();
+  }, [customerId]);
   const columns = [
-    { header: "Invoice Number", accessor: "invoiceNumber" },
-    { header: "Date", accessor: "date" },
-    { header: "Amount", accessor: "amount" },
-    { header: "Tax", accessor: "tax" },
-    { header: "Total", accessor: "total" },
-    { header: "Status", accessor: "status" },
-    { header: "Payment Method", accessor: "paymentMethod" },
+    { header: "Payment Id", accessor: "paymentID" },
+    { header: "Date", accessor: "paidOn" },
+    { header: "Amount", accessor: "amountPaid" },
+    { header: "Tax", accessor: "taxAmount" },
+    { header: "Total", accessor: "total", specialName:"paymentTotal" },
+    {
+      header: "Status",
+      accessor: "status",
+      colour: {
+        Pending: "bg-blue-100 text-blue-700",
+        Paid: "bg-green-100 text-green-700",
+        Failed: "bg-red-100 text-red-700",
+      },
+    },
+    { header: "Payment Method", accessor: "paymentMode" },
+    // { header: "Is Invoiced", accessor: "isInvoiced" },
+    // { header: "Convert To Invoice", accessor: "converToInvoice" },
   ];
 
-  const data = [
-    {
-      invoiceNumber: "INV-1001",
-      date: "2025-08-01",
-      amount: 1200,
-      tax: 120,
-      total: 1320,
-      status: "Pending",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoiceNumber: "INV-1002",
-      date: "2025-08-03",
-      amount: 850,
-      tax: 85,
-      total: 935,
-      status: "Paid",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoiceNumber: "INV-1003",
-      date: "2025-08-05",
-      amount: 500,
-      tax: 50,
-      total: 550,
-      status: "Overdue",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoiceNumber: "INV-1004",
-      date: "2025-08-06",
-      amount: 960,
-      tax: 96,
-      total: 1056,
-      status: "Pending",
-      paymentMethod: "Cash",
-    },
-    {
-      invoiceNumber: "INV-1005",
-      date: "2025-08-07",
-      amount: 1430,
-      tax: 143,
-      total: 1573,
-      status: "Paid",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoiceNumber: "INV-1006",
-      date: "2025-08-08",
-      amount: 780,
-      tax: 78,
-      total: 858,
-      status: "Overdue",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoiceNumber: "INV-1007",
-      date: "2025-08-09",
-      amount: 1120,
-      tax: 112,
-      total: 1232,
-      status: "Paid",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoiceNumber: "INV-1008",
-      date: "2025-08-10",
-      amount: 430,
-      tax: 43,
-      total: 473,
-      status: "Pending",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoiceNumber: "INV-1009",
-      date: "2025-08-11",
-      amount: 1500,
-      tax: 150,
-      total: 1650,
-      status: "Paid",
-      paymentMethod: "UPI",
-    },
-    {
-      invoiceNumber: "INV-1010",
-      date: "2025-08-12",
-      amount: 920,
-      tax: 92,
-      total: 1012,
-      status: "Overdue",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoiceNumber: "INV-1011",
-      date: "2025-08-13",
-      amount: 670,
-      tax: 67,
-      total: 737,
-      status: "Paid",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoiceNumber: "INV-1012",
-      date: "2025-08-14",
-      amount: 810,
-      tax: 81,
-      total: 891,
-      status: "Pending",
-      paymentMethod: "Cash",
-    },
-    {
-      invoiceNumber: "INV-1013",
-      date: "2025-08-15",
-      amount: 1340,
-      tax: 134,
-      total: 1474,
-      status: "Overdue",
-      paymentMethod: "UPI",
-    },
-  ];
   return (
     <div className="bg-gray-50 p-4">
       <div className="flex flex-row gap-4 items-center">
@@ -139,7 +65,7 @@ export default function PaymentTable() {
         </div>
         <h2 className="text-xl font-bold">Payment History</h2>
       </div>
-      <DynamicTableType2 columns={columns} data={data} />
+      <DynamicTableType2 columns={columns} data={payments} />
     </div>
   );
 }

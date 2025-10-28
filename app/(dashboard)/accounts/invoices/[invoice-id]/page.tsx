@@ -29,6 +29,7 @@ interface Invoice {
   paymentID: string;
   invoiceDate: string;
   details: InvoiceDetail[];
+  transactionRef: string;
 }
 
 type GetInvoiceResponse = {
@@ -170,6 +171,10 @@ export default function InvoicePage() {
               <span className="font-semibold">Due Date:</span>{" "}
               {invoiceDetails?.dueDate &&
                 formatDateToDDMMYYYY(invoiceDetails?.dueDate)}
+            </p>
+            <p>
+              <span className="font-semibold">Payment ID:</span>{" "}
+              {invoiceDetails?.transactionRef}
             </p>
           </div>
         </section>

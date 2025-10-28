@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { showToast } from "@/components/common/ShowToast";
 import { LeadsType } from "@/types/auth";
+import DownloadCsv from "@/components/common/DownloadCsv";
 type GetLeadResponse = {
   success: boolean;
   message: string;
@@ -19,6 +20,7 @@ type GetLeadResponse = {
 export default function Leads() {
   const [leads, setLeads] = useState<LeadsType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState(1);
   useEffect(() => {
     const getAllLeads = async () => {
       try {
@@ -38,12 +40,12 @@ export default function Leads() {
       }
     };
     getAllLeads();
-  }, []);
+  }, [updateStatus]);
   const columns = [
     { header: "Full Name", accessor: "fullName" },
     { header: "Country", accessor: "countryName" },
     { header: "Email", accessor: "email" },
-    { header: "Phone", accessor: "phone" },
+    { header: "Phone", accessor: "mobile" },
     { header: "Source", accessor: "source" },
     {
       header: "Status",
@@ -53,11 +55,11 @@ export default function Leads() {
       isFor: "leadStatus",
       updateKey: "status",
       colour: {
-        New: "bg-gray-200 text-gray-700",
-        Contacted: "bg-blue-100 text-blue-700",
-        Quoted: "bg-green-100 text-green-700",
-        Lost: "bg-red-100 text-red-700",
-        Pending: "bg-orange-100 text-orange-700",
+        41: "bg-gray-200 text-gray-700",
+        42: "bg-blue-100 text-blue-700",
+        43: "bg-green-100 text-green-700",
+        44: "bg-red-100 text-red-700",
+        45: "bg-orange-100 text-orange-700",
       },
       options: [
         { key: "41", value: "New" },
@@ -85,7 +87,7 @@ export default function Leads() {
     },
     {
       header: "Priority Level",
-      accessor: "level",
+      accessor: "priority",
       specialName: "changeableStatus",
       defaultValue: "Warm",
       isFor: "leadStatus",
@@ -122,6 +124,14 @@ export default function Leads() {
     // { header: "Convert To Deal", accessor: "convertToDeal" },
   ];
 
+  const csvHeaders = [
+    { label: "Full Name", key: "fullName" },
+    { label: "Country", key: "countryName" },
+    { label: "Email", key: "email" },
+    { label: "Phone", key: "mobile" },
+    { label: "Source", key: "source" },
+  ];
+
   const pathname = usePathname();
   const { permissions } = usePermissions();
   const canCreate = validatePermission(
@@ -136,45 +146,48 @@ export default function Leads() {
           <h2 className="text-lg font-bold px-6">All Leads</h2>
           <div className="flex flex-row gap-2 items-center">
             <div className="flex items-center gap-2 border border-gray-400 rounded px-4 py-1 text-xs text-gray-400">
-              {/* Rounded dot */}
               <span className="w-2 h-2 rounded-full bg-red-500"></span>
 
-              {/* Text content */}
               <span>Hot level</span>
 
-              {/* Number */}
               <span className="text-lg text-gray-600">&nbsp;151</span>
             </div>
             <div className="flex items-center gap-2 border border-gray-400 rounded px-4 py-1 text-xs text-gray-400">
-              {/* Rounded dot */}
               <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
 
-              {/* Text content */}
               <span>Warm level</span>
 
-              {/* Number */}
               <span className="text-lg text-gray-600">&nbsp;283</span>
             </div>
             <div className="flex items-center gap-2 border border-gray-400 rounded px-4 py-1 text-xs text-gray-400">
-              {/* Rounded dot */}
               <span className="w-2 h-2 rounded-full bg-blue-500"></span>
 
-              {/* Text content */}
               <span>Cold level</span>
 
-              {/* Number */}
               <span className="text-lg text-gray-600">&nbsp;89</span>
             </div>
           </div>
           <div className="flex flex-row gap-2 items-center">
-            <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
+            {/* <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
               {" "}
               <SlCalender /> Monthly
-            </button>
-            <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
+            </button> */}
+            {/* <button className="border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400">
               {" "}
               <FaRegFileAlt /> Export details
-            </button>
+            </button> */}
+            <DownloadCsv
+              data={leads}
+              headers={csvHeaders}
+              styles={
+                "border-[1px] border-gray-400 px-2 py-1 rounded-md text-xs flex flex-row items-center gap-1 text-gray-400"
+              }
+              docName={`leads_${new Date()
+                .toLocaleString("en-GB")
+                .replace(/[/,:\s]/g, "_")}`}
+            >
+              <FaRegFileAlt /> Export details
+            </DownloadCsv>
             {/* {canCreate && (
               <button className="px-4 py-1 rounded-md bg-gray-700 text-white text-xs">
                 {" "}
@@ -183,7 +196,11 @@ export default function Leads() {
             )} */}
           </div>
         </div>
-        <DynamicTable columns={columns} data={leads} />
+        <DynamicTable
+          columns={columns}
+          data={leads}
+          setUpdateStatus={setUpdateStatus}
+        />
       </div>
     </ValidatePermissions>
   );

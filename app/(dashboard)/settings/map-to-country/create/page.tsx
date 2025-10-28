@@ -39,6 +39,20 @@ interface GetCountryCorrecnyMappingResponse {
   message: string;
   data: CountryCurrencyMapping[];
 }
+export interface GetPaymentGatewayMappingResponse {
+  success: boolean;
+  message: string;
+  data: PaymentGatewaySelected[];
+  errors: string[];
+}
+
+export interface PaymentGatewaySelected {
+  gatewayID: string;
+  providerName: string;
+  countryID: string;
+  countryName: string;
+  isDefault: boolean;
+}
 
 export default function MapGatewayToCountry() {
   const router = useRouter();
@@ -312,7 +326,7 @@ export default function MapGatewayToCountry() {
       try {
         if (!selectedCountry) return;
         const result = await api.get<GetCountryCorrecnyMappingResponse>(
-          `/api/v1/common/("Country-Curruncy Mapping")/${selectedCountry}`
+          `/api/v1/common/Country-Curruncy-Mapping/${selectedCountry}`
         );
         if (result?.status === 200) {
           setSelecteCurrencies(
@@ -331,7 +345,48 @@ export default function MapGatewayToCountry() {
         });
       }
     };
+    const getPaymentGatewayMapping = async () => {
+      try {
+        if (!selectedCountry) return;
+        const result = await api.get<GetPaymentGatewayMappingResponse>(
+          `/api/v1/payment-gateway/PaymentGateWay-Country/${selectedCountry}`
+        );
+        if (result?.status === 200) {
+          const response = result?.data?.data;
+          setPaymentGateways((prev) => {
+            if (!prev || !response) return prev;
+            const responseMap = new Map(
+              response.map((item) => [item.gatewayID, item])
+            );
 
+            return prev.map((gateway) => {
+              const details = responseMap.get(gateway.gatewayID);
+
+              if (details) {
+                return {
+                  ...gateway,
+                  isSelected: true,
+                  isDefault: details.isDefault,
+                };
+              }
+
+              return {
+                ...gateway,
+                isSelected: false,
+                isDefault: false,
+              };
+            });
+          });
+        }
+      } catch {
+        showToast({
+          message:
+            "Failed to fetch payment gateway mapping of selected country.",
+          type: "error",
+        });
+      }
+    };
+    getPaymentGatewayMapping();
     getCountryCurrencyMapping();
   }, [selectedCountry]);
   return (

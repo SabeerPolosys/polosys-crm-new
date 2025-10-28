@@ -17,80 +17,39 @@ type ServerResponseData = {
 };
 
 export default function Servers() {
-  const [servers, setServers] = useState<ServerType[]>([
-  {
-    serverName: "AlphaServer",
-    Region: "United States",
-    ip: "192.168.0.1",
-    remarks: "Primary server",
-    isActive: true,
-    databaseLimit: 10
-  },
-  {
-    serverName: "BetaNode",
-    Region: "Germany",
-    ip: "192.168.0.2",
-    remarks: "Backup server",
-    isActive: false,
-    databaseLimit: 8
-  },
-  {
-    serverName: "GammaCore",
-    Region: "Japan",
-    ip: "10.0.0.1",
-    remarks: "Testing environment",
-    isActive: true,
-    databaseLimit: 3
-  },
-  {
-    serverName: "DeltaProxy",
-    Region: "Canada",
-    ip: "172.16.0.10",
-    remarks: "Proxy server",
-    isActive: true,
-    databaseLimit: 6
-  },
-  {
-    serverName: "OmegaDB",
-    Region: "Brazil",
-    ip: "192.168.10.5",
-    remarks: "Database server",
-    isActive: false,
-    databaseLimit: 12
-  },
-]);
+  const [servers, setServers] = useState<ServerType[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const router = useRouter();
-//   useEffect(() => {
-//     const getAllAddons = async () => {
-//       try {
-//         if (isDeleteOpen) return;
-//         setIsLoading(true);
-//         const res = await api.get<PaymentGatewayResponse>(
-//           `/api/v1/payment-gateway`
-//         );
-//         if (res?.data?.success) {
-//           const respose = res?.data?.data;
-//           setPaymentGateways(respose);
-//         }
-//       } catch {
-//         showToast({
-//           message: `Failed to fetch addons.`,
-//           type: "error",
-//         });
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-//     getAllAddons();
-//   }, [isDeleteOpen]);
+  useEffect(() => {
+    const getAllServers = async () => {
+      try {
+        if (isDeleteOpen) return;
+        setIsLoading(true);
+        const res = await api.get<ServerResponseData>(
+          `/api/v1/server`
+        );
+        if (res?.data?.success) {
+          const respose = res?.data?.data;
+          setServers(respose);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch servers.`,
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAllServers();
+  }, [isDeleteOpen]);
   const columns = [
     { header: "Server Name", accessor: "serverName" },
     { header: "Region", accessor: "Region" },
-    { header: "IP", accessor: "ip" },
+    { header: "IP", accessor: "ipAddress" },
     { header: "Remarks", accessor: "remarks" },
     { header: "Status", accessor: "isActive" },
     { header: "Database Limit", accessor: "databaseLimit" }
@@ -104,11 +63,11 @@ export default function Servers() {
     permissions || []
   );
   const onEditClick = (row: any) => {
-    router.push(`/settings/servers/update/${row?.gatewayID}`);
+    router.push(`/settings/servers/update/${row?.serverID}`);
   };
   const onDeleteClick = (row: any) => {
     setIsDeleteOpen(true);
-    setDeleteId(row?.gatewayID);
+    setDeleteId(row?.serverID);
   };
   return (
     <ValidatePermissions>

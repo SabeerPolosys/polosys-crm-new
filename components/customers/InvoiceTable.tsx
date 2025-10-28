@@ -1,46 +1,47 @@
+"use client"
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 import DynamicTableType2 from "../table/DynamicTableType2";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios";
+import { showToast } from "../common/ShowToast";
+type GetInvoicesResponse = {
+  success: boolean;
+  message: string;
+  data: any[];
+};
 
-export default function InvoiceTable() {
+export default function InvoiceTable({customerId}: {customerId: string}) {
+  const [invoices, setInvoices] = useState<any[]>([]);
+  useEffect(() => {
+    const getCustomerInvoices = async () => {
+      try {
+        if (!customerId) return;
+        const res = await api.get<GetInvoicesResponse>(
+          `/api/v1/invoice/InvoiceDetailsByClient/${customerId}`
+        );
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setInvoices(response);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch customer invoices.`,
+          type: "error",
+        });
+      }
+    };
+    getCustomerInvoices();
+  }, [customerId]);
   const columns = [
-  { header: 'Invoice Number', accessor: 'invoiceNumber' },
-  { header: 'Date', accessor: 'date' },
-  { header: 'Amount', accessor: 'amount' },
-  { header: 'Tax', accessor: 'tax' },
-  { header: 'Total', accessor: 'total' },
-  { header: 'Payment Id', accessor: 'paymentId' },
-  { header: 'Invoiced Date', accessor: 'invoicedDate' },
-];
+    { header: "Invoice Number", accessor: "invoiceNumber" },
+    { header: "Date", accessor: "date",  specialName:"convertDateTime"},
+    { header: "Amount", accessor: "amount" },
+    { header: "Tax", accessor: "taxAmount" },
+    { header: "Total", accessor: "total" },
+    { header: "Payment Id", accessor: "paymentID" },
+    { header: "Invoiced Date", accessor: "invoiceDate", specialName:"convertDateTime" },
+  ];
 
-const data = [
-  {
-    invoiceNumber: 'INV-1001',
-    date: '2025-08-01',
-    amount: 1200,
-    tax: 120,
-    total: 1320,
-    paymentId: 'PAY-0001',
-    invoicedDate: '2025-08-01',
-  },
-  {
-    invoiceNumber: 'INV-1002',
-    date: '2025-08-03',
-    amount: 850,
-    tax: 85,
-    total: 935,
-    paymentId: 'PAY-0002',
-    invoicedDate: '2025-08-03',
-  },
-  {
-    invoiceNumber: 'INV-1003',
-    date: '2025-08-05',
-    amount: 500,
-    tax: 50,
-    total: 550,
-    paymentId: 'PAY-0003',
-    invoicedDate:'2025-08-05',
-  }
-];
   return (
     <div className="bg-gray-50 p-4">
       <div className="flex flex-row gap-4 items-center">
@@ -49,7 +50,7 @@ const data = [
         </div>
         <h2 className="text-xl font-bold">Invoice History</h2>
       </div>
-      <DynamicTableType2 columns={columns} data={data} />
+      <DynamicTableType2 columns={columns} data={invoices} />
     </div>
   );
 }
