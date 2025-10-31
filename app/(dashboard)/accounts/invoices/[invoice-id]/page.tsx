@@ -1,10 +1,10 @@
 "use client";
+import InvoiceDownloadSendButtons from "@/components/accounts/InvoiceDownloadSendButtons";
 import { showToast } from "@/components/common/ShowToast";
 import { formatDateToDDMMYYYY } from "@/helpers/helperFunction";
 import api from "@/lib/axios";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { FaDownload, FaPaperPlane } from "react-icons/fa";
 interface InvoiceDetail {
   description: string;
   quantity: number;
@@ -30,12 +30,13 @@ interface Invoice {
   invoiceDate: string;
   details: InvoiceDetail[];
   transactionRef: string;
+  clientID: string;
 }
 
 type GetInvoiceResponse = {
   success: boolean;
   message: string;
-  data: Invoice[];
+  data: Invoice;
 };
 
 export default function InvoicePage() {
@@ -50,7 +51,7 @@ export default function InvoicePage() {
         );
         if (res?.data?.success) {
           const response = res?.data?.data;
-          setInvoiceDetails(response?.[0] ?? null);
+          setInvoiceDetails(response ?? null);
         }
       } catch {
         showToast({
@@ -86,7 +87,7 @@ export default function InvoicePage() {
 
     const opt = {
       margin: 0,
-      filename: `invoice-${Date.now()}.pdf`,
+      filename: `invoice-${params?.["invoice-id"]}.pdf`,
       image: { type: "jpeg" as const, quality: 0.98 },
       html2canvas: {
         scale: 2,
@@ -113,19 +114,7 @@ export default function InvoicePage() {
   return (
     <div className="bg-gray-100 min-h-screen py-10 px-4">
       {/* Buttons */}
-      <div className="flex justify-end gap-3 mb-6 max-w-4xl mx-auto">
-        <button
-          onClick={handleDownload}
-          className="flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm shadow"
-        >
-          <FaDownload />
-          Download
-        </button>
-        <button className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-sm shadow">
-          <FaPaperPlane />
-          Send
-        </button>
-      </div>
+      <InvoiceDownloadSendButtons handleDownload={handleDownload} clientID={invoiceDetails?.clientID}/>
 
       {/* Invoice Container */}
       <div

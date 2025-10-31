@@ -1,6 +1,12 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   DndContext,
   closestCenter,
@@ -22,6 +28,8 @@ import { Addons } from "@/types/auth";
 import api from "@/lib/axios";
 import { showToast } from "../common/ShowToast";
 import CreateAddonModal from "./CreateAddonModal";
+import { IoIosRemoveCircleOutline } from "react-icons/io";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
 type AddonsResponse = {
   success: boolean;
@@ -41,7 +49,18 @@ type ProductDragableProps = {
 };
 
 /** Sortable card component */
-function SortableItem({ item }: { item: Addons }) {
+function SortableItem({
+  item,
+  changeAddonCategory,
+  id,
+}: {
+  item: Addons;
+  id: ContainerId;
+  changeAddonCategory: (
+    type: "available" | "selected",
+    addOnId: string
+  ) => void;
+}) {
   const { addonID, name, description, addonPrice, currencyCode } = item;
 
   const {
@@ -60,17 +79,34 @@ function SortableItem({ item }: { item: Addons }) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-white border border-gray-300 rounded-md p-3 mb-2 cursor-grab shadow-sm hover:bg-gray-50 select-none"
-    >
-      <div className="font-medium">{name}</div>
-      <div className="text-xs text-gray-600">{description}</div>
-      <div className="text-xs mt-1 text-gray-800">
-        {addonPrice.toFixed(2)} {currencyCode}
+    <div className="flex flex-row items-center">
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}
+        className="bg-white border border-gray-300 rounded-md p-3 mb-2 cursor-grab shadow-sm hover:bg-gray-50 select-none w-full"
+      >
+        <div className="font-medium">{name}</div>
+        <div className="text-xs text-gray-600">{description}</div>
+        <div className="text-xs mt-1 text-gray-800">
+          {addonPrice.toFixed(2)} {currencyCode}
+        </div>
+      </div>
+      <div className="mr-4">
+        {id === "available" ? (
+          <IoMdAddCircleOutline
+            className="w-6 h-6 cursor-pointer"
+            title="Add"
+            onClick={() => changeAddonCategory(id, addonID)}
+          />
+        ) : (
+          <IoIosRemoveCircleOutline
+            className="w-6 h-6 cursor-pointer"
+            title="Remove"
+            onClick={() => changeAddonCategory(id, addonID)}
+          />
+        )}
       </div>
     </div>
   );
@@ -82,13 +118,18 @@ function DroppableList({
   title,
   items,
   emptyText,
-  setRefetch
+  setRefetch,
+  changeAddonCategory,
 }: {
   id: ContainerId;
   title: string;
   items: Addons[];
   emptyText: string;
-  setRefetch: Dispatch<SetStateAction<number>>
+  setRefetch: Dispatch<SetStateAction<number>>;
+  changeAddonCategory: (
+    type: "available" | "selected",
+    addOnId: string
+  ) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
@@ -102,13 +143,13 @@ function DroppableList({
     >
       <div className="flex flex-row items-center justify-between">
         <h3
-        className={`text-lg font-semibold mb-3 ${
-          id === "available" ? "text-gray-700" : "text-blue-700"
-        }`}
-      >
-        {title}
-      </h3>
-      {id === "available" && <CreateAddonModal setRefetch={setRefetch}/> }
+          className={`text-lg font-semibold mb-3 ${
+            id === "available" ? "text-gray-700" : "text-blue-700"
+          }`}
+        >
+          {title}
+        </h3>
+        {id === "available" && <CreateAddonModal setRefetch={setRefetch} />}
       </div>
 
       <SortableContext
@@ -116,7 +157,14 @@ function DroppableList({
         strategy={rectSortingStrategy}
       >
         {items?.length > 0 ? (
-          items?.map((item) => <SortableItem key={item?.addonID} item={item} />)
+          items?.map((item) => (
+            <SortableItem
+              key={item?.addonID}
+              item={item}
+              changeAddonCategory={changeAddonCategory}
+              id={id}
+            />
+          ))
         ) : (
           <p
             className={`text-sm italic ${
@@ -292,6 +340,33 @@ export default function ProductDragableAdons({
     const selectedAddonIds = selected?.map((addOns) => addOns?.addonID);
     handleFormDataChange(field?.key, selectedAddonIds);
   }, [selected]);
+  const changeAddonCategory = (
+    type: "available" | "selected",
+    addOnId: string
+  ) => {
+    console.log("called", type, addOnId);
+    if (type === "selected") {
+      const clickedAddon = selected?.find(
+        (addon) => addon?.addonID === addOnId
+      );
+      if (clickedAddon) {
+        setSelected((prev) =>
+          prev?.filter((addon) => addon?.addonID !== addOnId)
+        );
+        setAvailable((prev) => [...prev, clickedAddon]);
+      }
+    } else {
+      const clickedAddon = available?.find(
+        (addon) => addon?.addonID === addOnId
+      );
+      if (clickedAddon) {
+        setAvailable((prev) =>
+          prev?.filter((addon) => addon?.addonID !== addOnId)
+        );
+        setSelected((prev) => [...prev, clickedAddon]);
+      }
+    }
+  };
 
   return (
     <div className="col-span-2 w-full">
@@ -307,6 +382,7 @@ export default function ProductDragableAdons({
             items={selected}
             emptyText="No add-ons selected"
             setRefetch={setRefetch}
+            changeAddonCategory={changeAddonCategory}
           />
           <DroppableList
             id="available"
@@ -314,6 +390,7 @@ export default function ProductDragableAdons({
             items={available}
             emptyText="No available add-ons"
             setRefetch={setRefetch}
+            changeAddonCategory={changeAddonCategory}
           />
         </div>
       </DndContext>

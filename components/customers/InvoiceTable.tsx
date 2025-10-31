@@ -4,6 +4,7 @@ import DynamicTableType2 from "../table/DynamicTableType2";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { showToast } from "../common/ShowToast";
+import { useRouter } from "next/navigation";
 type GetInvoicesResponse = {
   success: boolean;
   message: string;
@@ -12,6 +13,7 @@ type GetInvoicesResponse = {
 
 export default function InvoiceTable({customerId}: {customerId: string}) {
   const [invoices, setInvoices] = useState<any[]>([]);
+  const router = useRouter();
   useEffect(() => {
     const getCustomerInvoices = async () => {
       try {
@@ -38,9 +40,13 @@ export default function InvoiceTable({customerId}: {customerId: string}) {
     { header: "Amount", accessor: "amount" },
     { header: "Tax", accessor: "taxAmount" },
     { header: "Total", accessor: "total" },
-    { header: "Payment Id", accessor: "paymentID" },
+    { header: "Payment Id", accessor: "transactionRef" },
     { header: "Invoiced Date", accessor: "invoiceDate", specialName:"convertDateTime" },
   ];
+
+  const handleRowClick = (row) => {
+    router.push(`/accounts/invoices/${row?.invoiceID}`);
+  };
 
   return (
     <div className="bg-gray-50 p-4">
@@ -50,7 +56,7 @@ export default function InvoiceTable({customerId}: {customerId: string}) {
         </div>
         <h2 className="text-xl font-bold">Invoice History</h2>
       </div>
-      <DynamicTableType2 columns={columns} data={invoices} />
+      <DynamicTableType2 columns={columns} data={invoices} onRowClick={handleRowClick}/>
     </div>
   );
 }

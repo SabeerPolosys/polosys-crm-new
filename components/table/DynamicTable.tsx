@@ -179,7 +179,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                           value = <span>{(row?.amountPaid ?? 0)+(row?.taxAmount ?? 0)}</span>
                       }else if(col?.specialName?.toLowerCase() === "convertdatetime"){
                           value = <span>{formatDateTime(row[col.accessor])}</span>
-                      } else if (col.accessor.toLowerCase() === "status") {
+                      } else if (col.accessor.toLowerCase() === "status" || col?.specialName?.toLowerCase() === "status") {
                         value = (
                           <span
                             className={`${

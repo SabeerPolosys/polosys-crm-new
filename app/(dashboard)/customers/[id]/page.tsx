@@ -110,7 +110,7 @@ export default function IndividualCustomer() {
               </button>
             ))}
           </div>
-          {activeTab === "products" && <ProductDetails />}
+          {activeTab === "products" && <ProductDetails customerId={params?.["id"] as string}/>}
           {activeTab === "payments" && <PaymentTable customerId={params?.["id"] as string}/>}
           {activeTab === "invoices" && <InvoiceTable customerId={params?.["id"] as string}/>}
         </div>

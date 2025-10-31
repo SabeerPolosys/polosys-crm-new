@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./DynamicTable2.module.css";
+import { formatDateTime } from "@/helpers/helperFunction";
 
 interface Column {
   header: string;
@@ -13,12 +14,14 @@ interface DynamicTableProps<T> {
   columns: Column[];
   data: T[];
   initialRowsPerPage?: number;
+  onRowClick?: (rowData: T) => void;
 }
 
 const DynamicTableType2 = <T extends Record<string, any>>({
   columns,
   data,
   initialRowsPerPage = 10,
+  onRowClick,
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
@@ -57,7 +60,10 @@ const DynamicTableType2 = <T extends Record<string, any>>({
             {paginatedData.map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className={rowIndex % 2 === 0 ? styles.evenRow : styles.oddRow}
+                className={`${
+                  rowIndex % 2 === 0 ? styles.evenRow : styles.oddRow
+                } ${onRowClick ? "cursor-pointer" : ""}`}
+                onClick={() => onRowClick?.(row)}
               >
                 {columns.map((col) => {
                   let value = row[col.accessor];
@@ -84,6 +90,10 @@ const DynamicTableType2 = <T extends Record<string, any>>({
                         {(row?.amountPaid ?? 0) + (row?.taxAmount ?? 0)}
                       </span>
                     );
+                  } else if (
+                    col?.specialName?.toLowerCase() === "convertdatetime"
+                  ) {
+                    value = <span>{formatDateTime(row[col.accessor])}</span>;
                   }
 
                   return <td key={col.accessor}>{value}</td>;
