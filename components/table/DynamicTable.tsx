@@ -27,6 +27,7 @@ interface Column {
   onUpdate?: (data: any) => Promise<boolean>;
   isFor?: string;
   updateKey?: string;
+  onValueClick?: (e:any, row:any)=>void;
 }
 
 interface DynamicTableProps<T> {
@@ -155,7 +156,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                     onClick={() => onRowClick?.(row)}
                   >
                     {columns.map((col) => {
-                      let value = row[col.accessor];
+                      let value:any = <span className={col?.onValueClick ? "text-blue-500 cursor-pointer" : ""}>{row[col.accessor]}</span>;
                       if (col.accessor.toLowerCase() === "slno") {
                         value = rowIndex + 1;
                       } else if (
@@ -284,7 +285,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                           );
                       }
 
-                      return <td key={col.accessor}>{value}</td>;
+                      return <td key={col.accessor} onClick={(e)=>col?.onValueClick ? col?.onValueClick(e, row) : null} >{value}</td>;
                     })}
                     {isEditAllowed && canEdit && (
                       <td>

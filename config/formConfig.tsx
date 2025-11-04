@@ -88,6 +88,13 @@ export const formFieldconfig = {
         optionKey: "countryName",
         getListUrl: "/api/v1/common/countries",
       },
+      {
+        label: "Mobile",
+        key: "mobile",
+        type: "number",
+        required: true,
+        placeholder: "Mobile",
+      },
     ],
     hasSubmitButton: true,
     submitButtonLabel: "User",
@@ -285,6 +292,14 @@ export const formFieldconfig = {
       {
         key: "features",
         type: "features",
+      },
+      {
+        label: "Description",
+        key: "description",
+        type: "textArea",
+        required: true,
+        placeholder: "Description",
+        class: "w-32",
       },
     ],
     hasSubmitButton: true,

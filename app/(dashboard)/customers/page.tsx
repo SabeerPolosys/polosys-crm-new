@@ -30,10 +30,6 @@ export default function Customer() {
     { header: "Organization Name", accessor: "organizationName" },
     { header: "Mobile", accessor: "mobile" },
     { header: "Email", accessor: "email" },
-    // { header: "Server Name", accessor: "serverName" },
-    // { header: "Database Name", accessor: "databaseName" },
-    // { header: "Product", accessor: "product" },
-    // { header: "Alias", accessor: "alias" },
     { header: "Country", accessor: "countryName" },
     { header: "Status", accessor: "statusName" },
     {

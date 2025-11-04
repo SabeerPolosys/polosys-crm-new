@@ -37,6 +37,7 @@ export default function Payments() {
     getAllPayments();
   }, []);
   const columns = [
+    { header: "Customer Name", accessor: "organizationName", onValueClick:(e:any, row:any)=>{e.stopPropagation();router.push(`/customers/${row?.clientID}`);}},
     { header: "Order Id", accessor: "transactionOrderID"},
     { header: "Payment Id", accessor: "transactionRef" },
     { header: "Date", accessor: "paidOn" },

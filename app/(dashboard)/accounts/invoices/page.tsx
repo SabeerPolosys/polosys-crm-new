@@ -16,6 +16,7 @@ export default function Invoices() {
   const [invoiceDetails, setInvoiceDetails] = useState<InvoiceDetails[]>([]);
   const router = useRouter();
   const columns = [
+    { header: "Customer Name", accessor: "organizationName", onValueClick:(e:any, row:any)=>{e.stopPropagation();router.push(`/customers/${row?.clientID}`);}},
     { header: "Invoice Number", accessor: "invoiceNumber" },
     { header: "Date", accessor: "date",  specialName:"convertDateTime"},
     { header: "Amount", accessor: "amount" },
