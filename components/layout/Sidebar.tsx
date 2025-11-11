@@ -34,6 +34,7 @@ import { usePermissions } from "@/context/PermissionsContext";
 import useIsMobile from "@/helpers/useIsMobile";
 import { BiBarChart } from "react-icons/bi";
 import { useLogout } from "@/helpers/useLogout";
+import Image from "next/image";
 // type MenuType = {
 //   label: string;
 //   icon: JSX.Element;
@@ -216,7 +217,16 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
           <div className="p-4 text-2xl flex items-center justify-between">
             <div className="flex items-center gap-2">
               Polosys
-              <span className="text-gray-800 rounded-full p-1">🌳</span>
+              <div className="text-gray-800 rounded-full">
+                <Image
+                  src="/images/polosys.png"
+                  alt="polosys"
+                  className="rounded-full p-1"
+                  width={50}
+                  height={50}
+                  priority
+                />
+              </div>
             </div>
             <button
               onClick={() => setCollapsed(true)}
@@ -332,7 +342,9 @@ export default function Sidebar({ collapsed, setCollapsed }: SidebarPropsType) {
                       <Link
                         href={subItem?.link ?? ""}
                         key={subItem.label}
-                        className={`text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded ${pathname === subItem?.link ? "bg-gray-400" : ""}`}
+                        className={`text-left px-2 py-2 text-sm text-gray-300 hover:bg-gray-600 rounded ${
+                          pathname === subItem?.link ? "bg-gray-400" : ""
+                        }`}
                       >
                         {subItem.label}
                       </Link>

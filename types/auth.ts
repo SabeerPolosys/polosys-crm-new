@@ -64,6 +64,7 @@ export interface ProductTypes {
   isActive: boolean;
   createdAt: Date;
   modifiedAt: Date;
+  pcode: string;
 }
 
 export interface CustomerDetails {
@@ -196,6 +197,21 @@ export interface ProductVersion {
   addons: Addons[];
   plans: PlanType[];
 }
+
+export interface ProductEdition {
+  editionId: string;
+  productId: string;
+  eCode: string;
+  eName: string;
+  pcode: string;
+  productName: string;
+  noOfUsers: number;
+  description: string;
+  isActive: boolean;
+  createdAt: string;  
+  modifiedAt: string;
+}
+
 
 export interface LeadsType {
   leadID: string;

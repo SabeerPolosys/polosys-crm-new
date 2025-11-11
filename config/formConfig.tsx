@@ -176,6 +176,13 @@ export const formFieldconfig = {
         placeholder: "Product Name",
       },
       {
+        label: "Product Code",
+        key: "pcode",
+        type: "input",
+        required: true,
+        placeholder: "Product Code",
+      },
+      {
         label: "Product Type",
         key: "productTypeID",
         type: "select",
@@ -369,6 +376,61 @@ export const formFieldconfig = {
     hasClearButton: true,
     submitUrl: "/api/v1/product-version",
   },
+
+  "/products/editions": {
+    Category: "Product Edition",
+    title: "Edition",
+    formLabel: "",
+    // icon: <FaUserCog className="text-blue-600 text-xl" />,
+    fields: [
+      {
+        label: "Edition Name",
+        key: "eName",
+        type: "input",
+        required: true,
+        placeholder: "Edition Name",
+      },
+      {
+        label: "Edition Code",
+        key: "eCode",
+        type: "input",
+        required: true,
+        placeholder: "Edition Code",
+      },
+      {
+        label: "Number Of Users",
+        key: "noOfUsers",
+        type: "number",
+        required: true,
+        placeholder: "Number Of Users",
+      },
+      {
+        label: "Status",
+        key: "isActive",
+        type: "select",
+        required: true,
+        placeholder: "Status",
+        defaultList: [
+          { value: true, option: "Active" },
+          { value: false, option: "Invative" },
+        ],
+        valueKey: "value",
+        optionKey: "option",
+      },
+      {
+        label: "Description",
+        key: "description",
+        type: "textArea",
+        required: true,
+        placeholder: "Description",
+      },
+    ],
+    hasSubmitButton: true,
+    submitButtonLabel: "Edition",
+    hasClearButton: true,
+    submitUrl: "/api/v1/edition",
+  },
+
   "/products/addons": {
     Category: "Add-ons",
     title: "Add-ons",

@@ -1,7 +1,7 @@
 "use client";
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import { ProductTypes, ProductVersion } from "@/types/auth";
+import { ProductEdition, ProductTypes, ProductVersion } from "@/types/auth";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TiTick } from "react-icons/ti";
@@ -19,20 +19,26 @@ type GetProductResponse = {
   message: string;
   data: ProductTypes;
 };
-type GetProductVersionResponse = {
+// type GetProductVersionResponse = {
+//   success: boolean;
+//   message: string;
+//   data: ProductVersion[];
+// };
+type GetProductEditionResponse = {
   success: boolean;
   message: string;
-  data: ProductVersion[];
-};
+  data: ProductEdition[];
+}
 
 export default function IndividualProduct() {
   const [productDetails, setProductDetails] = useState<ProductTypes | null>(
     null
   );
-  const [productVersions, setProductVersions] = useState<ProductVersion[]>([]);
+  // const [productVersions, setProductVersions] = useState<ProductVersion[]>([]);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(
     null
   );
+  const [productEditions, setProductEditions] = useState<any[]>([]);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<any>();
   const router = useRouter();
@@ -59,25 +65,45 @@ export default function IndividualProduct() {
     };
     getProductDetails();
   }, [params]);
+  // useEffect(() => {
+  //   const getProductVersions = async () => {
+  //     try {
+  //       const res = await api.get<GetProductVersionResponse>(
+  //         `/api/v1/product-version/ByProductID/${params?.productId}`
+  //       );
+  //       if (res?.data?.success) {
+  //         const respose = res?.data?.data;
+  //         setProductVersions(respose);
+  //       }
+  //     } catch {
+  //       showToast({
+  //         message: `Failed to fetch product versions.`,
+  //         type: "error",
+  //       });
+  //     }
+  //   };
+  //   getProductVersions();
+  // }, [params]);
   useEffect(() => {
-    const getProductVersions = async () => {
+    const getProductEditions = async () => {
       try {
-        const res = await api.get<GetProductVersionResponse>(
-          `/api/v1/product-version/ByProductID/${params?.productId}`
+        if(!productDetails) return;
+        const res = await api.get<GetProductEditionResponse>(
+          `/api/v1/edition/by-pcode/${productDetails?.pcode}`
         );
         if (res?.data?.success) {
           const respose = res?.data?.data;
-          setProductVersions(respose);
+          setProductEditions(respose);
         }
       } catch {
         showToast({
-          message: `Failed to fetch product versions.`,
+          message: `Failed to fetch product editions.`,
           type: "error",
         });
       }
     };
-    getProductVersions();
-  }, [params]);
+    getProductEditions();
+  }, [productDetails]);
   const { permissions } = usePermissions();
   const canCreatePlan = validatePermission(
     "/products/plan",
@@ -172,7 +198,7 @@ export default function IndividualProduct() {
               </div>
               <div className="bg-white m-4 p-6 min-h-screen">
                 <p>{productDetails?.description}</p>
-                <ValidatePermissions path="/products/version">
+                {/* <ValidatePermissions path="/products/version">
                   <>
                     <div className="flex flex-row items-center justify-between">
                       <h3 className="my-6 text-xl font-semibold">
@@ -202,7 +228,59 @@ export default function IndividualProduct() {
                       })}
                     </div>
                   </>
+                </ValidatePermissions> */}
+                <ValidatePermissions path="/products/version">
+                  <>
+                    <div className="flex flex-row items-center justify-between">
+                      <h3 className="my-6 text-xl font-semibold">
+                        Editions Of Product
+                      </h3>
+                      {canCreateVersion && (
+                        <Link
+                          href={`/products/editions/create?productId=${params?.productId}`}
+                          className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer"
+                        >
+                          + &nbsp;Create Edition
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* <div className="flex felx-row gap-4 flex-wrap justify-self-auto">
+                      {productVersions?.map((version) => {
+                        return (
+                          <Link
+                            href={`/products/version/${version?.versionID}`}
+                            className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium"
+                            key={version?.versionID}
+                          >
+                            {version?.versionNumber}
+                          </Link>
+                        );
+                      })}
+                    </div> */}
+                    <div className="flex felx-row gap-4 flex-wrap justify-self-auto">
+                      {productEditions?.map((edition) => {
+                        return (
+                          <Link
+                            href={`/products/editions/${edition?.editionId}`}
+                            className="px-12 py-2 border-1 rounded-lg border-gray-200 bg-white font-medium text-center"
+                            key={edition?.editionId}
+                          >
+                            {edition?.eName} <br/>
+                            {edition?.eCode}<br/>
+                            <p className={`${edition?.isActive ? "py-0.5 text-green-500 bg-green-100 rounded-full mt-2" : "py-0.5 text-red-500 bg-red-100 rounded-full mt-2"}`}>{edition?.isActive ? "Active" : "Inactive"}</p>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </>
                 </ValidatePermissions>
+                <div className="flex flex-row items-center justify-between">
+                  <h3 className="my-6 text-xl font-semibold">
+                    Plans Of The Edition
+                  </h3>
+                  <Link href={`/products/editions/create-plans?productCode=${productDetails?.pcode}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">+ Create Plans</Link>
+                </div>
               </div>
             </div>
             <AddonsList />

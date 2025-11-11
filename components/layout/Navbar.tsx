@@ -165,6 +165,7 @@ import { useState, useRef, useEffect } from "react";
 import validatePermission from "../permissions/PermissionCheckerNew";
 import { usePermissions } from "@/context/PermissionsContext";
 import { useLogout } from "@/helpers/useLogout";
+import Image from "next/image";
 
 type MenuType = {
   label: string;
@@ -289,9 +290,16 @@ export default function Navbar() {
       {/* Left - Logo */}
       <div className="flex items-center gap-2 font-bold text-2xl text-gray-800">
         <span>Polosys</span>
-        <span role="img" aria-label="tree">
-          🌳
-        </span>
+        <div>
+          <Image
+            src="/images/polosys.png"
+            alt="polosys"
+            className="rounded-full p-1"
+            width={50}
+            height={50}
+            priority
+          />
+        </div>
       </div>
 
       {/* Center - Menu (Desktop) */}

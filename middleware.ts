@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 // 1. Public routes
-const publicRoutes = ["/login", "/signup", "/reset-password"];
+const publicRoutes = ["/login", "/signup", "/reset-password", "/confirm-purchase"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
