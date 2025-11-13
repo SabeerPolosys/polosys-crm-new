@@ -14,6 +14,7 @@ import ValidatePermissions from "@/components/permissions/ValidatePermissions";
 import { usePermissions } from "@/context/PermissionsContext";
 import validatePermission from "@/components/permissions/PermissionCheckerNew";
 import { IoMdArrowBack } from "react-icons/io";
+import ProductPlanList from "@/components/product/ProductPlanList";
 type GetProductResponse = {
   success: boolean;
   message: string;
@@ -148,7 +149,7 @@ export default function IndividualProduct() {
                     <IoMdArrowBack className="w-6 h-6" />
                   </div>
                   <h2 className="font-semibold text-xl">
-                    {productDetails?.name}
+                    {productDetails?.name} ({productDetails?.pcode})
                   </h2>
                 </div>
                 <div className="relative">
@@ -275,12 +276,7 @@ export default function IndividualProduct() {
                     </div>
                   </>
                 </ValidatePermissions>
-                <div className="flex flex-row items-center justify-between">
-                  <h3 className="my-6 text-xl font-semibold">
-                    Plans Of The Edition
-                  </h3>
-                  <Link href={`/products/editions/create-plans?productCode=${productDetails?.pcode}`} className="px-2 py-1 rounded bg-gray-800 text-white text-sm cursor-pointer">+ Create Plans</Link>
-                </div>
+                <ProductPlanList pcode={productDetails?.pcode} name={productDetails?.name} productID={productDetails?.productID}/>
               </div>
             </div>
             <AddonsList />
