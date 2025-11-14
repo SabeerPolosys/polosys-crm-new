@@ -457,12 +457,10 @@ export default function CreatePlan() {
             ...(plan.monthlyPlans || []),
             ...(plan.yearlyPlans || []),
           ])
-          .filter((p) => p?.code && !p?.isCodeVerified && !p?.isChecked)
-          .map((p) => p.code);
+          .filter((p) => p?.code?.trim() && !p?.isCodeVerified && !p?.isChecked)
+          .map((p) => p.code?.trim());
 
         if (allUnverifiedCodes.length === 0) return;
-
-        console.log("Codes to verify:", allUnverifiedCodes);
 
         const res = await api.post(
           "/api/v1/product-plan/check-plancodes",
@@ -476,7 +474,7 @@ export default function CreatePlan() {
           prev.map((plan) => ({
             ...plan,
             monthlyPlans: plan.monthlyPlans?.map((p) => {
-              const existsInApi = results.hasOwnProperty(p.code);
+              const existsInApi = results.hasOwnProperty(p.code?.trim());
               return {
                 ...p,
                 isCodeVerified: !existsInApi,
@@ -495,9 +493,9 @@ export default function CreatePlan() {
         );
       } catch (err: any) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") {
-          console.log("Previous verification request canceled");
+          // console.log("Previous verification request canceled");
         } else {
-          console.error("Error verifying plan codes:", err);
+          // console.error("Error verifying plan codes:", err);
         }
       }
     }, debounceDelay);

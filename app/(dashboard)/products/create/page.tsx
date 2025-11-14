@@ -2,7 +2,7 @@
 
 import { showToast } from "@/components/common/ShowToast";
 import api from "@/lib/axios";
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formFieldconfig } from "@/config/formConfig";
 import { usePathname } from "next/navigation";
@@ -15,6 +15,7 @@ interface ProductFormData {
   description: string;
   productTypeID: number;
   isActive: boolean;
+  pcode: string;
 }
 
 const CreateProduct: React.FC = () => {
@@ -23,7 +24,9 @@ const CreateProduct: React.FC = () => {
     description: "",
     productTypeID: 1,
     isActive: true,
+    pcode: "",
   });
+  const [isCodeExist, setIsCodeExist] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const trimmedPath = pathname.split("/").slice(0, -1).join("/") || "/";
@@ -43,11 +46,18 @@ const CreateProduct: React.FC = () => {
       description: "",
       productTypeID: 1,
       isActive: true,
+      pcode: "",
     });
   };
   const handleSubmit = async (e: FormEvent) => {
     try {
       e.preventDefault();
+      if (isCodeExist) {
+        return showToast({
+          message: `Product code exist already, select a different one.`,
+          type: "error",
+        });
+      }
       const trimmedFormData = Object.fromEntries(
         Object.entries(formData).map(([key, value]) => [
           key,
@@ -82,6 +92,43 @@ const CreateProduct: React.FC = () => {
       });
     }
   };
+  useEffect(() => {
+    const controller = new AbortController();
+    const debounceTimer = setTimeout(() => {
+      const checkCodeExistOrNot = async () => {
+        try {
+          const res = await api.get<any>(
+            `/api/v1/product/check-pcode/${formData?.pcode?.trim()}`,
+            { signal: controller.signal }
+          );
+          if (res?.data?.success && res?.data?.data?.codeExists === false) {
+            setIsCodeExist(false);
+          } else {
+            setIsCodeExist(true);
+          }
+        } catch (error: any) {
+          if (error.name === "CanceledError" || error.name === "AbortError") {
+            // Request was canceled
+          } else {
+            setIsCodeExist(true);
+            showToast({
+              message: `Failed to check code`,
+              type: "error",
+            });
+          }
+        }
+      };
+
+      if (formData?.pcode) {
+        checkCodeExistOrNot();
+      }
+    }, 500);
+
+    return () => {
+      controller.abort();
+      clearTimeout(debounceTimer);
+    };
+  }, [formData?.pcode]);
 
   return (
     <ValidatePermissions permissionType="canCreate">
@@ -118,6 +165,7 @@ const CreateProduct: React.FC = () => {
             formData={formData}
             handleFormDataChange={handleFormDataChange}
             submitType="Create"
+            isCodeExist={isCodeExist}
           />
         </div>
       </div>

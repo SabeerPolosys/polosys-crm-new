@@ -35,6 +35,7 @@ const CreateEdition: React.FC = () => {
   const [productDetails, setProductDetails] = useState<ProductTypes | null>(
     null
   );
+  const [isCodeExist, setIsCodeExist] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -119,6 +120,43 @@ const CreateEdition: React.FC = () => {
       });
     }
   };
+  useEffect(() => {
+    const controller = new AbortController();
+    const debounceTimer = setTimeout(() => {
+      const checkCodeExistOrNot = async () => {
+        try {
+          const res = await api.get<any>(
+            `/api/v1/edition/check-ecode/${formData?.eCode?.trim()}`,
+            { signal: controller.signal }
+          );
+          if (res?.data?.success && res?.data?.data?.codeExists === false) {
+            setIsCodeExist(false);
+          } else {
+            setIsCodeExist(true);
+          }
+        } catch (error: any) {
+          if (error.name === "CanceledError" || error.name === "AbortError") {
+            // Request was canceled
+          } else {
+            setIsCodeExist(true);
+            showToast({
+              message: `Failed to check code`,
+              type: "error",
+            });
+          }
+        }
+      };
+
+      if (formData?.eCode) {
+        checkCodeExistOrNot();
+      }
+    }, 500);
+
+    return () => {
+      controller.abort();
+      clearTimeout(debounceTimer);
+    };
+  }, [formData?.eCode]);
 
   return (
     <ValidatePermissions permissionType="canCreate">
@@ -156,6 +194,7 @@ const CreateEdition: React.FC = () => {
             handleFormDataChange={handleFormDataChange}
             submitType="Create"
             productDetails={productDetails}
+            isCodeExist={isCodeExist}
           />
         </div>
       </div>

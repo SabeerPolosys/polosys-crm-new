@@ -133,7 +133,7 @@ const CreatePlan: React.FC = () => {
       const checkCodeExistOrNot = async () => {
         try {
           const res = await api.get<CheckCodeResponse>(
-            `/api/v1/product-plan/check-code/${formData?.code}`,
+            `/api/v1/product-plan/check-code/${formData?.code?.trim()}`,
             { signal: controller.signal }
           );
           if (res?.data?.success && res?.data?.data?.codeExists === false) {

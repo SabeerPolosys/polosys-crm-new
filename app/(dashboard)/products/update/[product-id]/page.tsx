@@ -16,6 +16,7 @@ interface ProductFormData {
   description: string;
   productTypeID: number;
   isActive: boolean;
+  pcode: string;
 }
 type GetProductResponse = {
   success: boolean;
@@ -29,6 +30,7 @@ const UpdateProduct: React.FC = () => {
     description: "",
     productTypeID: 1,
     isActive: true,
+    pcode: ""
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -50,6 +52,7 @@ const UpdateProduct: React.FC = () => {
       description: "",
       productTypeID: 1,
       isActive: true,
+      pcode: ""
     });
   };
   useEffect(() => {
@@ -65,6 +68,7 @@ const UpdateProduct: React.FC = () => {
             description: response?.description,
             productTypeID: response?.productTypeID,
             isActive: response?.isActive,
+            pcode: response?.pcode
           });
         }
       } catch {

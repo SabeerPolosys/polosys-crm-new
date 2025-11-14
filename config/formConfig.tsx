@@ -181,6 +181,7 @@ export const formFieldconfig = {
         type: "input",
         required: true,
         placeholder: "Product Code",
+        isExistCheck: true,
       },
       {
         label: "Product Type",
@@ -396,6 +397,7 @@ export const formFieldconfig = {
         type: "input",
         required: true,
         placeholder: "Edition Code",
+        isExistCheck: true,
       },
       {
         label: "Number Of Users",
