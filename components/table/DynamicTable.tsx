@@ -12,7 +12,7 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import StatusUpdateModal from "./StatusUpdateModal";
-import { formatDateTime, getBillingCycle } from "@/helpers/helperFunction";
+import { daysRemaining, formatDate, formatDateTime, getBillingCycle } from "@/helpers/helperFunction";
 
 interface Column {
   header: string;
@@ -124,8 +124,8 @@ const getStatusStringWithNumber = (status: string|number) => {
           <table className={styles.table}>
             <thead>
               <tr>
-                {columns.map((col) => (
-                  <th key={col.accessor}>{col.header}</th>
+                {columns.map((col, newIndex) => (
+                  <th key={newIndex}>{col.header}</th>
                 ))}
                 {isEditAllowed && canEdit && <th></th>}
                 {isDeleteAllowed && canDelete && <th></th>}
@@ -155,7 +155,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                     } ${onRowClick ? "cursor-pointer" : ""}`}
                     onClick={() => onRowClick?.(row)}
                   >
-                    {columns.map((col) => {
+                    {columns.map((col, columnIndex) => {
                       let value:any = <span className={col?.onValueClick ? "text-blue-500 cursor-pointer" : ""}>{row[col.accessor]}</span>;
                       if (col.accessor.toLowerCase() === "slno") {
                         value = rowIndex + 1;
@@ -180,6 +180,10 @@ const getStatusStringWithNumber = (status: string|number) => {
                           value = <span>{(row?.amountPaid ?? 0)+(row?.taxAmount ?? 0)}</span>
                       }else if(col?.specialName?.toLowerCase() === "convertdatetime"){
                           value = <span>{formatDateTime(row[col.accessor])}</span>
+                      }else if(col?.specialName?.toLowerCase() === "convertdate"){
+                          value = <span>{formatDate(row[col.accessor])}</span>
+                      }else if(col?.specialName?.toLowerCase() === "showremaindate"){
+                          value = <span>{daysRemaining(row[col.accessor])}</span>
                       } else if (col.accessor.toLowerCase() === "status" || col?.specialName?.toLowerCase() === "status") {
                         value = (
                           <span
@@ -285,7 +289,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                           );
                       }
 
-                      return <td key={col.accessor} onClick={(e)=>col?.onValueClick ? col?.onValueClick(e, row) : null} >{value}</td>;
+                      return <td key={columnIndex} onClick={(e)=>col?.onValueClick ? col?.onValueClick(e, row) : null} >{value}</td>;
                     })}
                     {isEditAllowed && canEdit && (
                       <td>

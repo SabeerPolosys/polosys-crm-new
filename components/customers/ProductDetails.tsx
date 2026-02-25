@@ -21,14 +21,15 @@ interface ProductDetail {
   productName: string;
   versionNumber: string;
   status?: "Active" | "Inactive" | string;
-  purchaseDate: Date;
-  expiryDate: Date;
+  startDate: Date;
+  endDate: Date;
   planName?: string;
   currencyCode: string;
   itemPrice: number | string;
   productType: "Version" | "Addon" | "License" | string;
   planCode?: string;
   addons?: AddonDetail[];
+  totaPrice?: number;
 }
 
 type GroupedProducts = Record<string, ProductDetail[]>;
@@ -75,7 +76,7 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
     const getAllProducts = async () => {
       try {
         const res = await api.get<{ success: boolean; data: ProductDetail[] }>(
-          `/api/v1/common/Clients-ProductList/${customerId}`
+          `/api/v1/subscription/${customerId}`
         );
 
         if (res?.data?.success && Array.isArray(res.data.data)) {
@@ -105,9 +106,9 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
             ([purchaseOrderID, items], index) => (
               <div key={purchaseOrderID} className="mb-10">
                 <h3 className="text-lg font-semibold text-gray-500 mb-4">
-                  Purchase Order {index + 1}:{" "}
-                  {items?.[0]?.purchaseDate
-                    ? formatDateToDDMMYYYY(items?.[0]?.purchaseDate)
+                  {/* Purchase Order {index + 1}:{" "} */}
+                  {items?.[0]?.startDate
+                    ? formatDateToDDMMYYYY(items?.[0]?.startDate)
                     : ""}
                 </h3>
 
@@ -136,7 +137,7 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
                               </p>
                               <p className="text-xs text-gray-500 mt-0.5">
                                 From:{" "}
-                                {formatDateToDDMMYYYY(product.purchaseDate)}
+                                {formatDateToDDMMYYYY(product?.startDate)}
                               </p>
                             </div>
                           </div>
@@ -162,13 +163,13 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
                             <div>
                               <p className="text-gray-500">Expiry Date</p>
                               <p className="font-medium">
-                                {formatDateToDDMMYYYY(product.expiryDate)}
+                                {formatDateToDDMMYYYY(product.endDate)}
                               </p>
                             </div>
                             <div>
                               <p className="text-gray-500">Price</p>
                               <p className="font-medium">
-                                {product.currencyCode} {product.itemPrice}
+                                {product.currencyCode} {product.totaPrice}
                               </p>
                             </div>
                           </div>

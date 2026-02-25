@@ -32,6 +32,11 @@ export default function Customer() {
     { header: "Email", accessor: "email" },
     { header: "Country", accessor: "countryName" },
     { header: "Status", accessor: "statusName" },
+    { header: "Product Name", accessor: "name" },
+    { header: "Plan Name", accessor: "planName" },
+    { header: "Start Date", accessor: "startDate", specialName: "convertdatetime", },
+    { header: "End Date", accessor: "endDate", specialName: "convertdatetime", },
+    { header: "Type", accessor: "typeName" },
     {
       header: "Change Status",
       accessor: "deactivate",

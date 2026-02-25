@@ -40,7 +40,7 @@ export default function Payments() {
     { header: "Customer Name", accessor: "organizationName", onValueClick:(e:any, row:any)=>{e.stopPropagation();router.push(`/customers/${row?.clientID}`);}},
     { header: "Order Id", accessor: "transactionOrderID"},
     { header: "Payment Id", accessor: "transactionRef" },
-    { header: "Date", accessor: "paidOn" },
+    { header: "Date", accessor: "paidOn", specialName: "convertdatetime", },
     { header: "Amount", accessor: "amountPaid" },
     { header: "Tax", accessor: "taxAmount" },
     { header: "Total", accessor: "total", specialName:"paymentTotal" },
