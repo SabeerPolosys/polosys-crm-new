@@ -11,6 +11,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { showToast } from "@/components/common/ShowToast";
 import { CustomerDetails } from "@/types/auth";
 import api from "@/lib/axios";
+import { HiOutlineLocationMarker, HiOutlineMail } from "react-icons/hi";
 type CustomerResponse = {
   success: boolean;
   message: string;
@@ -28,7 +29,7 @@ export default function IndividualCustomer() {
       try {
         setIsLoading(true);
         const res = await api.get<CustomerResponse>(
-          `/api/v1/common/Clients/${params?.["id"]}`
+          `/api/v1/common/Clients/${params?.["id"]}`,
         );
         if (res?.data?.success) {
           const respose = res?.data?.data;
@@ -50,45 +51,60 @@ export default function IndividualCustomer() {
       <h2 className="text-sm font-semibold mb-2">Customer Details</h2>
       <div className="border-[1px] border-gray-300 rounded-lg min-w-full min-h-[200px] p-4">
         <div className="grid grid-cols-1 gap-4 mb-6">
-          <div className="bg-gray-50 rounded-xl shadow-md p-6">
-            <div className="flex flex-row items-center mb-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+            {/* Header */}
+            <div className="flex items-center mb-6">
               <div
-                className="bg-gray-200 rounded-full p-2 hover:bg-gray-300 cursor-pointer"
+                className="bg-gray-100 rounded-full p-2 hover:bg-gray-200 cursor-pointer transition"
                 onClick={() => router.push("/customers")}
               >
-                <IoMdArrowBack className="w-6 h-6" />
+                <IoMdArrowBack className="w-5 h-5 text-gray-600" />
               </div>
-              <div className="flex w-full items-center justify-center">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border border-gray-300 shadow-sm">
-                    <HiOutlineHome className="w-8 h-8 text-gray-700" />
+
+              <div className="flex w-full justify-center">
+                <div className="flex items-center gap-4">
+                  {/* Avatar / Icon */}
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
+                    <HiOutlineHome className="w-7 h-7 text-white" />
                   </div>
+
+                  {/* Title */}
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-gray-900">
                       {customer?.organizationName}
                     </h2>
-                    <p className="text-sm text-gray-500">Retail Store</p>
+                    <p className="text-sm text-gray-500">Organization</p>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Info Section */}
             <div className="flex flex-row items-center justify-between">
-              <div>
-                <div>
-                  <p className="text-gray-400 font-medium">Email</p>
-                  <p>{customer?.email}</p>
+              {/* Email */}
+              <div className="flex items-start gap-3">
+                <div className="bg-indigo-50 p-2 rounded-lg">
+                  <HiOutlineMail className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div>
-                  <p className="text-gray-400 font-medium">Mobile</p>
-                  <p>{customer?.mobile}</p>
+                  <p className="text-sm text-gray-400">Email</p>
+                  <p className="text-gray-800 font-medium break-all">
+                    {customer?.email}
+                  </p>
                 </div>
               </div>
-              <div>
-                <p className="text-gray-400 font-medium">Address</p>
-                <p className="leading-relaxed">
-                  {customer?.countryName}
-                  <br />
-                </p>
+
+              {/* Country */}
+              <div className="flex items-start gap-3">
+                <div className="bg-purple-50 p-2 rounded-lg">
+                  <HiOutlineLocationMarker className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Country</p>
+                  <p className="text-gray-800 font-medium">
+                    {customer?.countryName}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -110,9 +126,15 @@ export default function IndividualCustomer() {
               </button>
             ))}
           </div>
-          {activeTab === "products" && <ProductDetails customerId={params?.["id"] as string}/>}
-          {activeTab === "payments" && <PaymentTable customerId={params?.["id"] as string}/>}
-          {activeTab === "invoices" && <InvoiceTable customerId={params?.["id"] as string}/>}
+          {activeTab === "products" && (
+            <ProductDetails customerId={params?.["id"] as string} />
+          )}
+          {activeTab === "payments" && (
+            <PaymentTable customerId={params?.["id"] as string} />
+          )}
+          {activeTab === "invoices" && (
+            <InvoiceTable customerId={params?.["id"] as string} />
+          )}
         </div>
       </div>
     </div>

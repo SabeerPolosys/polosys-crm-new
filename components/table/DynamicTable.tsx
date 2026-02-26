@@ -184,6 +184,8 @@ const getStatusStringWithNumber = (status: string|number) => {
                           value = <span>{formatDate(row[col.accessor])}</span>
                       }else if(col?.specialName?.toLowerCase() === "showremaindate"){
                           value = <span>{daysRemaining(row[col.accessor])}</span>
+                      }else if(col?.specialName?.toLowerCase() === "combilecurrency"){
+                          value = <span>{row[col.accessor?.split(".")[1]]+" "+row[col.accessor?.split(".")[0]]}</span>
                       } else if (col.accessor.toLowerCase() === "status" || col?.specialName?.toLowerCase() === "status") {
                         value = (
                           <span
@@ -207,7 +209,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                           </span>
                         ) : (
                           <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full">
-                            Incactive
+                            Inactive
                           </span>
                         );
                       } else if (col.accessor.toLowerCase() === "statusname") {
@@ -218,7 +220,7 @@ const getStatusStringWithNumber = (status: string|number) => {
                             </span>
                           ) : row[col.accessor] === "Inactive" ? (
                             <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full">
-                              Incactive
+                              Inactive
                             </span>
                           ) : (
                             <span>{row[col.accessor]}</span>
