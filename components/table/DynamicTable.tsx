@@ -12,7 +12,12 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import Link from "next/link";
 import StatusUpdateModal from "./StatusUpdateModal";
-import { daysRemaining, formatDate, formatDateTime, getBillingCycle } from "@/helpers/helperFunction";
+import {
+  daysRemaining,
+  formatDate,
+  formatDateTime,
+  getBillingCycle,
+} from "@/helpers/helperFunction";
 
 interface Column {
   header: string;
@@ -27,7 +32,7 @@ interface Column {
   onUpdate?: (data: any) => Promise<boolean>;
   isFor?: string;
   updateKey?: string;
-  onValueClick?: (e:any, row:any)=>void;
+  onValueClick?: (e: any, row: any) => void;
 }
 
 interface DynamicTableProps<T> {
@@ -40,7 +45,7 @@ interface DynamicTableProps<T> {
   onEditClick?: (rowData: T) => void;
   onDeleteClick?: (rowData: T) => void;
   isDataLoading?: boolean;
-  setUpdateStatus?: Dispatch<SetStateAction<number>>
+  setUpdateStatus?: Dispatch<SetStateAction<number>>;
 }
 
 const DynamicTable = <T extends Record<string, any>>({
@@ -53,7 +58,7 @@ const DynamicTable = <T extends Record<string, any>>({
   onEditClick,
   onDeleteClick,
   isDataLoading,
-  setUpdateStatus
+  setUpdateStatus,
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
@@ -63,7 +68,7 @@ const DynamicTable = <T extends Record<string, any>>({
 
   const paginatedData = data.slice(
     (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
+    currentPage * rowsPerPage,
   );
 
   const handlePageChange = (page: number) => {
@@ -82,41 +87,41 @@ const DynamicTable = <T extends Record<string, any>>({
   const canDelete = validatePermission(
     pathname,
     "canDelete",
-    permissions || []
+    permissions || [],
   );
-const getStatusStringWithNumber = (status: string|number) => {
-  switch(status){
-    case 41:
-    case "41":
-      return "New";
-    case 42:
-    case "42":
-      return "Contacted";
-    case 43:
-    case "43":
-      return "Qualified";
-    case 44:
-    case "44":
-      return "Lost";
-    case 45:
-    case "45":
-      return "Pending";
-    case 51:
-    case "51":
-      return "Open";
-    case 52:
-    case "52":
-      return "Won";
-    case 53:
-    case "53":
-      return "Lost";
-    case 54:
-    case "54":
-      return "OnHold";
-    default:
-      return "Other";
-  }
-}
+  const getStatusStringWithNumber = (status: string | number) => {
+    switch (status) {
+      case 41:
+      case "41":
+        return "New";
+      case 42:
+      case "42":
+        return "Contacted";
+      case 43:
+      case "43":
+        return "Qualified";
+      case 44:
+      case "44":
+        return "Lost";
+      case 45:
+      case "45":
+        return "Pending";
+      case 51:
+      case "51":
+        return "Open";
+      case 52:
+      case "52":
+        return "Won";
+      case 53:
+      case "53":
+        return "Lost";
+      case 54:
+      case "54":
+        return "OnHold";
+      default:
+        return "Other";
+    }
+  };
   return (
     <div className="px-4 py-6">
       <div className={pathname?.includes("/users") ? "" : styles.tableWrapper}>
@@ -156,7 +161,17 @@ const getStatusStringWithNumber = (status: string|number) => {
                     onClick={() => onRowClick?.(row)}
                   >
                     {columns.map((col, columnIndex) => {
-                      let value:any = <span className={col?.onValueClick ? "text-blue-500 cursor-pointer" : ""}>{row[col.accessor]}</span>;
+                      let value: any = (
+                        <span
+                          className={
+                            col?.onValueClick
+                              ? "text-blue-500 cursor-pointer"
+                              : ""
+                          }
+                        >
+                          {row[col.accessor]}
+                        </span>
+                      );
                       if (col.accessor.toLowerCase() === "slno") {
                         value = rowIndex + 1;
                       } else if (
@@ -164,29 +179,86 @@ const getStatusStringWithNumber = (status: string|number) => {
                       ) {
                         value = (
                           <StatusUpdateModal
-                            status={col?.isConvert ? getStatusStringWithNumber(row[col.accessor]) : row[col.accessor] || col?.defaultValue}
+                            status={
+                              col?.isConvert
+                                ? getStatusStringWithNumber(row[col.accessor])
+                                : row[col.accessor] || col?.defaultValue
+                            }
                             colour={
-                              col?.colour?.[row[col.accessor] || col?.defaultValue] ?? "bg-blue-500"
+                              col?.colour?.[
+                                row[col.accessor] || col?.defaultValue
+                              ] ?? "bg-blue-500"
                             }
                             options={col?.options ?? []}
                             handleSubmit={col?.onUpdate}
-                            submitData={(col?.isFor??"") === "leadStatus" ? {leadID: row?.leadID, userID: row?.userID, countryID: row?.countryID, fullName: row?.fullName, email: row?.email, mobile: row?.mobile, source: row?.source, priority: row?.priority, status: row?.status } : {}}
+                            submitData={
+                              (col?.isFor ?? "") === "leadStatus"
+                                ? {
+                                    leadID: row?.leadID,
+                                    userID: row?.userID,
+                                    countryID: row?.countryID,
+                                    fullName: row?.fullName,
+                                    email: row?.email,
+                                    mobile: row?.mobile,
+                                    source: row?.source,
+                                    priority: row?.priority,
+                                    status: row?.status,
+                                  }
+                                : {}
+                            }
                             updateKey={col?.updateKey}
                             canEdit={canEdit}
                             setUpdateStatus={setUpdateStatus}
                           />
                         );
-                      }else if(col?.specialName?.toLowerCase() === "paymenttotal"){
-                          value = <span>{(row?.amountPaid ?? 0)+(row?.taxAmount ?? 0)}</span>
-                      }else if(col?.specialName?.toLowerCase() === "convertdatetime"){
-                          value = <span>{formatDateTime(row[col.accessor])}</span>
-                      }else if(col?.specialName?.toLowerCase() === "convertdate"){
-                          value = <span>{formatDate(row[col.accessor])}</span>
-                      }else if(col?.specialName?.toLowerCase() === "showremaindate"){
-                          value = <span>{daysRemaining(row[col.accessor])}</span>
-                      }else if(col?.specialName?.toLowerCase() === "combilecurrency"){
-                          value = <span>{row[col.accessor?.split(".")[1]]+" "+row[col.accessor?.split(".")[0]]}</span>
-                      } else if (col.accessor.toLowerCase() === "status" || col?.specialName?.toLowerCase() === "status") {
+                      } else if (
+                        col?.specialName?.toLowerCase() === "paymenttotal"
+                      ) {
+                        value = (
+                          <span>
+                            {(row?.amountPaid ?? 0) + (row?.taxAmount ?? 0)}
+                          </span>
+                        );
+                      } else if (
+                        col?.specialName?.toLowerCase() === "convertdatetime"
+                      ) {
+                        value = (
+                          <span>{formatDateTime(row[col.accessor])}</span>
+                        );
+                      } else if (
+                        col?.specialName?.toLowerCase() === "convertdate"
+                      ) {
+                        value = <span>{formatDate(row[col.accessor])}</span>;
+                      } else if (
+                        col?.specialName?.toLowerCase() === "showremaindate"
+                      ) {
+                        value = <span>{daysRemaining(row[col.accessor])}</span>;
+                      } else if (
+                        col?.specialName?.toLowerCase() === "combilecurrency"
+                      ) {
+                        value = (
+                          <span>
+                            {row[col.accessor?.split(".")[1]] +
+                              " " +
+                              row[col.accessor?.split(".")[0]]}
+                          </span>
+                        );
+                      } else if (
+                        col?.specialName?.toLowerCase() === "booleanstatus"
+                      ) {
+                        value = row[col.accessor] ? (
+                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                            Inactive
+                          </span>
+                        );
+                      } else if (
+                        col.accessor.toLowerCase() === "status" ||
+                        col?.specialName?.toLowerCase() === "status"
+                      ) {
                         value = (
                           <span
                             className={`${
@@ -263,35 +335,43 @@ const getStatusStringWithNumber = (status: string|number) => {
                           </Link>
                         );
                       } else if (col.accessor.toLowerCase() === "deactivate") {
-                        value =
-                          row?.statusID === 11 ? (
-                            <button
-                              className="text-xs px-2 py-1 rounded bg-red-400 text-white cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                col?.onClick && col?.onClick();
-                                col?.setUpdateDetails &&
-                                  col?.setUpdateDetails(row);
-                              }}
-                            >
-                              Deactivate
-                            </button>
-                          ) : (
-                            <button
-                              className="text-xs px-2 py-1 rounded bg-green-400 text-white cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                col?.onClick && col?.onClick();
-                                col?.setUpdateDetails &&
-                                  col?.setUpdateDetails(row);
-                              }}
-                            >
-                              Activate
-                            </button>
-                          );
+                        value = row?.isActive ? (
+                          <button
+                            className="text-xs px-2 py-1 rounded bg-red-400 text-white cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              col?.onClick && col?.onClick();
+                              col?.setUpdateDetails &&
+                                col?.setUpdateDetails(row);
+                            }}
+                          >
+                            Deactivate
+                          </button>
+                        ) : (
+                          <button
+                            className="text-xs px-2 py-1 rounded bg-green-400 text-white cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              col?.onClick && col?.onClick();
+                              col?.setUpdateDetails &&
+                                col?.setUpdateDetails(row);
+                            }}
+                          >
+                            Activate
+                          </button>
+                        );
                       }
 
-                      return <td key={columnIndex} onClick={(e)=>col?.onValueClick ? col?.onValueClick(e, row) : null} >{value}</td>;
+                      return (
+                        <td
+                          key={columnIndex}
+                          onClick={(e) =>
+                            col?.onValueClick ? col?.onValueClick(e, row) : null
+                          }
+                        >
+                          {value}
+                        </td>
+                      );
                     })}
                     {isEditAllowed && canEdit && (
                       <td>

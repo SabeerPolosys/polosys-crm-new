@@ -12,36 +12,36 @@ export default function PhonepeResponse() {
   useEffect(() => {
     return;
 
-    const { transactionId, merchantTransactionId, code } = router.query;
+    // const { transactionId, merchantTransactionId, code } = router.query;
     
 
-    const verifyPayment = async () => {
-      try {
-        const res = await api.get("/api/v1/pay/verify", {
-          params: { orderId: merchantTransactionId,
-                paymentId: transactionId,
-                // signature: response?.razorpay_signature,
-                gatewayType: "PhonePe"},
-        });
+    // const verifyPayment = async () => {
+    //   try {
+    //     const res = await api.get("/api/v1/pay/verify", {
+    //       params: { orderId: merchantTransactionId,
+    //             paymentId: transactionId,
+    //             // signature: response?.razorpay_signature,
+    //             gatewayType: "PhonePe"},
+    //     });
 
-        if (res.data?.status === "SUCCESS") {
-          setStatus("success");
-          setMessage("Payment successful 🎉");
-        } else if (res.data?.status === "PENDING") {
-          setStatus("pending");
-          setMessage("Payment pending ⏳");
-        } else {
-          setStatus("failed");
-          setMessage("Payment failed ❌");
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus("failed");
-        setMessage("Unable to verify payment");
-      }
-    };
+    //     if (res.data?.status === "SUCCESS") {
+    //       setStatus("success");
+    //       setMessage("Payment successful 🎉");
+    //     } else if (res.data?.status === "PENDING") {
+    //       setStatus("pending");
+    //       setMessage("Payment pending ⏳");
+    //     } else {
+    //       setStatus("failed");
+    //       setMessage("Payment failed ❌");
+    //     }
+    //   } catch (err) {
+    //     console.error(err);
+    //     setStatus("failed");
+    //     setMessage("Unable to verify payment");
+    //   }
+    // };
 
-    verifyPayment();
+    // verifyPayment();
   }, [router]);
 
   const getStatusColor = () => {
@@ -79,7 +79,7 @@ export default function PhonepeResponse() {
     } else if (status === "pending") {
       return (
         <button
-          onClick={() => router.reload()}
+          // onClick={() => router.reload()}
           className="mt-6 px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
         >
           Refresh Status

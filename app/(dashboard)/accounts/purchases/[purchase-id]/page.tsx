@@ -162,9 +162,9 @@
 //                 >
 //                   Convert to Invoice
 //                 </button>)}
-             
+
 //                 {(searchParams?.get("is_convert") && purchaseDetails?.statusname === "Confirm") && <ConvertInvoiceForm handleClick={handleClick} purchaseDetails={purchaseDetails}/>}
-              
+
 //             </div>
 //           </div>
 
@@ -323,7 +323,6 @@
 //   );
 // }
 
-
 "use client";
 
 import ConvertInvoiceForm from "@/components/accounts/ConvertInvoiceForm";
@@ -352,7 +351,7 @@ export default function ProductDetailsPage() {
       try {
         setIsLoading(true);
         const res = await api.get(
-          `/api/v1/purchase/PurchaseDetails/${params?.["purchase-id"]}`
+          `/api/v1/purchase/PurchaseDetails/${params?.["purchase-id"]}`,
         );
         if (res?.data?.success) {
           const response = res?.data?.data;
@@ -371,7 +370,7 @@ export default function ProductDetailsPage() {
       try {
         setIsLoading(true);
         const res = await api.get(
-          `/api/v1/purchase/${params?.["purchase-id"]}`
+          `/api/v1/purchase/${params?.["purchase-id"]}`,
         );
         if (res?.data?.success) {
           const response = res?.data?.data;
@@ -389,134 +388,140 @@ export default function ProductDetailsPage() {
     getPurchaseProducts();
     getPurchaDetails();
   }, []);
-  console.log("purchaseDetails", purchaseProducts)
+  function daysRemaining(expiryDate: string): any {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+
+    today.setHours(0, 0, 0, 0);
+    expiry.setHours(0, 0, 0, 0);
+
+    const diffTime = expiry.getTime() - today.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      return <span className="text-red-500">Expired</span>;
+    }
+
+    if (diffDays === 0) {
+      return <span className="text-blue-500">Expires Today</span>;
+    }
+
+    return (
+      <span className="text-green-500">
+        {`${diffDays} Day${diffDays !== 1 ? "s" : ""} Remaining`}
+      </span>
+    );
+  }
   return (
-  <div className="min-h-screen bg-gray-50 p-6">
-  <div className="w-full mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="w-full mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 tracking-tight">
+          Product Details
+        </h1>
 
-    <h1 className="text-2xl font-semibold mb-6">Product Details</h1>
+        {purchaseProducts ? (
+          <div className="bg-white/80 backdrop-blur-lg border-gray-200 rounded-2xl shadow-lg p-8 transition hover:shadow-xl">
+            {/* ---------- HEADER ---------- */}
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
+                  <FiBox className="text-white text-2xl" />
+                </div>
 
-    {purchaseProducts ? (
-      <div className="bg-white rounded-xl shadow-sm p-6">
+                <div>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {purchaseProducts.productName}
+                  </p>
 
-        {/* ---------- HEADER ---------- */}
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex gap-3">
-            <div className="w-11 h-11 rounded-lg bg-indigo-100 flex items-center justify-center">
-              <FiBox className="text-indigo-600 text-xl" />
+                  <p className="text-sm text-gray-500">Product Subscription</p>
+
+                  <p className="text-xs text-gray-400 mt-1">
+                    Purchased on{" "}
+                    {formatDateToDDMMYYYY(purchaseProducts.purchaseDate)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Badge */}
+              <span className="px-4 py-1.5 text-xs font-semibold rounded-full bg-green-50 text-green-600 border border-green-200 shadow-sm">
+                ✓ Registered
+              </span>
             </div>
 
-            <div>
-              <p className="font-semibold text-gray-900">
-                {purchaseProducts.productName}
-              </p>
+            {/* ---------- INFO GRID ---------- */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-300 rounded-xl p-5 hover:shadow-md transition">
+                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+                  Plan
+                </p>
+                <p className="text-base font-semibold text-gray-900">
+                  {purchaseProducts.planName || "-"}
+                </p>
+              </div>
 
-              <p className="text-sm text-gray-500">
-                Product
-              </p>
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-300 rounded-xl p-5 hover:shadow-md transition">
+                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+                  Plan Code
+                </p>
+                <p className="text-base font-semibold text-gray-900">
+                  {purchaseProducts.planCode || "-"}
+                </p>
+              </div>
 
-              <p className="text-xs text-gray-400">
-                Purchased on:{" "}
-                {formatDateToDDMMYYYY(purchaseProducts.purchaseDate)}
-              </p>
-            </div>
-          </div>
-
-          {/* Status Badge */}
-          <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-600">
-            Registered
-          </span>
-        </div>
-
-        {/* ---------- INFO GRID ---------- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-xs text-gray-500 mb-1">Plan</p>
-            <p className="text-sm font-medium text-gray-900">
-              {purchaseProducts.planName || "-"}
-            </p>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-xs text-gray-500 mb-1">Plan Code</p>
-            <p className="text-sm font-medium text-gray-900">
-              {purchaseProducts.planCode || "-"}
-            </p>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-xs text-gray-500 mb-1">Billing</p>
-            <p className="text-sm font-medium text-indigo-600">
-              Monthly
-            </p>
-          </div>
-        </div>
-
-        {/* ---------- FOOTER ---------- */}
-        <div className="flex flex-col md:flex-row justify-between pt-4">
-
-          <div>
-            <p className="text-xs text-gray-500">Expiry Date</p>
-            <p className="text-sm font-medium text-gray-900">
-              {purchaseProducts.expiryDate
-                ? formatDateToDDMMYYYY(purchaseProducts.expiryDate)
-                : "—"}
-            </p>
-
-            <p className="text-xs text-green-600 mt-1">
-              Active Subscription
-            </p>
-          </div>
-
-          <div className="mt-3 md:mt-0">
-            <p className="text-xs text-gray-500">Plan Price</p>
-            <p className="text-lg font-semibold text-gray-900">
-              {purchaseProducts.currencyCode}{" "}
-              {purchaseProducts.planPrice}
-            </p>
-          </div>
-        </div>
-
-        {/* ---------- EDITION DETAILS ---------- */}
-        <div className="mt-5 bg-gray-50 rounded-lg p-4">
-          <p className="text-sm font-semibold text-gray-800 mb-2">
-            Edition Details
-          </p>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-
-            <div>
-              <p className="text-xs text-gray-500">Product</p>
-              <p className="font-medium text-gray-900">
-                {purchaseProducts.name}
-              </p>
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-5 hover:shadow-md transition">
+                <p className="text-xs text-indigo-500 uppercase tracking-wide mb-2">
+                  Billing
+                </p>
+                <p className="text-base font-semibold text-indigo-700">
+                  Monthly
+                </p>
+              </div>
             </div>
 
-            <div>
-              <p className="text-xs text-gray-500">Quantity</p>
-              <p className="font-medium text-gray-900">
-                {purchaseProducts.quantity}
-              </p>
-            </div>
+            {/* ---------- FOOTER ---------- */}
+            <div className="flex flex-col md:flex-row justify-between items-center border-t pt-6 gap-6">
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Start Date
+                </p>
+                <p className="text-sm font-medium text-gray-900 mt-1">
+                  {purchaseProducts.startDate
+                    ? formatDateToDDMMYYYY(purchaseProducts.startDate)
+                    : "—"}
+                </p>
+              </div>
 
-            <div>
-              <p className="text-xs text-gray-500">Item Price</p>
-              <p className="font-medium text-gray-900">
-                {purchaseProducts.currencyCode}{" "}
-                {purchaseProducts.itemPrice}
-              </p>
-            </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Expiry Date
+                </p>
+                <p className="text-sm font-medium text-gray-900 mt-1">
+                  {purchaseProducts.endDate
+                    ? formatDateToDDMMYYYY(purchaseProducts.endDate)
+                    : "—"}
+                </p>
 
+                <p className="text-xs text-green-600 mt-1 font-medium">
+                  {daysRemaining(purchaseProducts.endDate)}
+                </p>
+              </div>
+
+              <div className="text-center md:text-right">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Plan Price
+                </p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mt-1">
+                  {purchaseProducts.currencyCode} {purchaseProducts.planPrice}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-
+        ) : (
+          <div className="text-center py-20 text-gray-500">
+            No product details found.
+          </div>
+        )}
       </div>
-    ) : (
-      <p className="text-gray-500">No product details found.</p>
-    )}
-
-  </div>
-</div>
-);
+    </div>
+  );
 }

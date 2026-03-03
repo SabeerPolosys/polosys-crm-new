@@ -34,7 +34,7 @@ export default function Customer() {
     { header: "Mobile", accessor: "mobile" },
     { header: "Email", accessor: "email" },
     { header: "Country", accessor: "countryName" },
-    { header: "Status", accessor: "statusName" },
+    { header: "Status", accessor: "isActive", specialName: "booleanStatus" },
     { header: "Product Name", accessor: "name" },
     { header: "Plan Name", accessor: "planName" },
     {
@@ -239,8 +239,8 @@ export default function Customer() {
           if (updateCustomer?.clientID) {
             await api.put("/api/v1/common/Client", {
               clientID: updateCustomer?.clientID,
-              statusID: updateCustomer?.statusID === 11 ? 4 : 11,
-              isActive: true,
+              // statusID: updateCustomer?.statusID === 11 ? 4 : 11,
+              isActive: !updateCustomer?.isActive,
             });
             showToast({ message: "Status changed", type: "success" });
             setUpdateFlag((prev) => prev + 1);
