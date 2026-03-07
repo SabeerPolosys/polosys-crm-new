@@ -31,7 +31,7 @@ export default function ConfirmPurchaseClient() {
   let redirectTimer;
 
   const getPlanDetails = async () => {
-    const result = await api.get(`/api/v1/subscription/${clientId}`);
+    const result = await api.get(`/api/v1/auth/subscription/${clientId}`);
 
     if (result?.data?.success && result?.data?.data?.length > 0) {
       setPlanDetails(result?.data?.data[0]);
