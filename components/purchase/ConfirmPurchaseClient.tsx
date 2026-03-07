@@ -156,7 +156,7 @@ export default function ConfirmPurchaseClient() {
       if(!planDetails?.countryID || status === "demo") return;
       const getAvailableGateways = async () => {
         try{
-          const result = await api.get(`/api/v1/payment-gateway/country-mappingfilter/?countryId=${planDetails?.countryID}`);
+          const result = await api.get(`/api/v1/auth/country-mappingfilter/?countryId=${planDetails?.countryID}`);
           setSelectedPayment((result?.data?.data?.find((method)=>method?.isDefault)?.gatewayName) ?? null)
           setAvailableGateways(result?.data?.data ?? []);
         }catch{
@@ -169,7 +169,7 @@ export default function ConfirmPurchaseClient() {
       if(!planDetails?.clientID || status === "demo") return;
       const getClientDetails = async () => {
         try{
-          const result = await api.get(`/api/v1/common/Clients/${planDetails?.clientID}`);
+          const result = await api.get(`/api/v1/auth/Clients/${planDetails?.clientID}`);
           setClientDetails(result?.data?.data);
         }catch{
 
