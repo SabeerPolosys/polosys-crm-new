@@ -33,7 +33,7 @@ export default function Login() {
 
     try {
       const res = await api.post<LoginResponse>(
-        `/api/v1/auth?username=${payload?.username}&pass=${payload.password}`
+        `/api/v1/auth`, {username: payload?.username , pass: payload.password }
       );
       if (res?.status == 200 && res?.data?.message === "Login successful" && res?.data?.usertypeid) {
         // ✅ Backend should set auth cookie via Set-Cookie
