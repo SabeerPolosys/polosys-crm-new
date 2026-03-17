@@ -92,10 +92,29 @@ export interface CustomerDetails {
   userID: string;
   userName: string;
   isActive: boolean;
-  createdAt: string;     
-  modifiedAt: string;   
+  createdAt: string;
+  modifiedAt: string;
   statusID: number;
   statusName: string;
+  startDate: string;
+  endDate: string;
+  planName: string;
+  planCode: string;
+  eName: string;
+  eCode: string;
+  name: string;
+  pcode: string;
+  typeName: string;
+  paymentID: string;
+  purchaseOrderID: string;
+  paymentMode: string | null;
+  amountPaid: string | null;
+  totalPrice: string | null;
+  itemPrice: string | null;
+  paidOn: string;
+  purchaseDate: string;
+  databaseName: string;
+  serverName: string;
 }
 
 export interface Addons {
@@ -133,11 +152,11 @@ export interface ServerType {
   serverID: string;
   serverName: string;
   region: string;
-  createdAt: string;    
-  modifiedAt: string;    
+  createdAt: string;
+  modifiedAt: string;
   isActive: boolean;
   ipAddress: string;
-  validity: Date;    
+  validity: Date;
   isDefault: boolean;
   remarks: string;
   databaseLimit: number;
@@ -208,10 +227,9 @@ export interface ProductEdition {
   noOfUsers: number;
   description: string;
   isActive: boolean;
-  createdAt: string;  
+  createdAt: string;
   modifiedAt: string;
 }
-
 
 export interface LeadsType {
   leadID: string;
@@ -245,10 +263,10 @@ export interface PaymentDetails {
 export interface InvoiceDetails {
   invoiceID: string;
   invoiceNumber: string;
-  date: string;        
+  date: string;
   amount: number;
   taxAmount: number;
   total: number;
   paymentID: string;
-  invoiceDate: string; 
+  invoiceDate: string;
 }

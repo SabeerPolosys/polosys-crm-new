@@ -9,7 +9,9 @@ import { CustomerDetails } from "@/types/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
-import { FiChevronDown } from "react-icons/fi";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import CustomSelect from "@/components/customers/CustomSelect";
 type CustomerResponse = {
   success: boolean;
   message: string;
@@ -28,6 +30,67 @@ export default function Customer() {
   );
   const [searchStatus, setSearchStatus] = useState("");
   const [updateFlag, setUpdateFlag] = useState(1);
+
+  const [planStatus, setPlanStatus] = useState("");
+  const [customerStatus, setCustomerStatus] = useState("");
+  const [productName, setProductName] = useState("");
+  const [planName, setPlanName] = useState("");
+  const [country, setCountry] = useState("");
+  const [allContries, setAllContries] = useState<any>([]);
+  const [allProducts, setAllProducts] = useState<any>([]);
+  const [organiztionName, setOrganizationName] = useState("");
+  const [startDate, setStartDate] = useState<any>(null);
+  const [endDate, setEndDate] = useState<any>(null);
+  const [startFilterType, setStartFilterType] = useState("eq");
+  const [endFilterType, setEndFilterType] = useState("eq");
+  const resetFilters = () => {
+    setPlanStatus("");
+    setCustomerStatus("");
+    setSearchKey("organizationName");
+    setSearchValue("");
+    setCountry("");
+    setStartDate(null);
+    setEndDate(null);
+    setProductName("");
+    setPlanName("");
+    setOrganizationName("");
+    setStartFilterType("eq");
+    setEndFilterType("eq");
+  };
+  useEffect(() => {
+    const getAllCountries = async () => {
+      try {
+        const res = await api.get(`/api/v1/common/countries`);
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setAllContries(response);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch countries.`,
+          type: "error",
+        });
+      }
+    };
+    getAllCountries();
+  }, []);
+  useEffect(() => {
+    const getAllProducts = async () => {
+      try {
+        const res = await api.get(`/api/v1/product`);
+        if (res?.data?.success) {
+          const response = res?.data?.data;
+          setAllProducts(response);
+        }
+      } catch {
+        showToast({
+          message: `Failed to fetch products.`,
+          type: "error",
+        });
+      }
+    };
+    getAllProducts();
+  }, []);
   const router = useRouter();
   const columns = [
     { header: "Organization Name", accessor: "organizationName" },
@@ -40,10 +103,11 @@ export default function Customer() {
     {
       header: "Start Date",
       accessor: "startDate",
-      specialName: "convertdatetime",
+      specialName: "convertdate",
     },
-    { header: "End Date", accessor: "endDate", specialName: "convertdatetime" },
+    { header: "End Date", accessor: "endDate", specialName: "convertdate" },
     { header: "Type", accessor: "typeName" },
+    // { header: "Is Paid", accessor: "statusName" },
     {
       header: "Change Status",
       accessor: "deactivate",
@@ -70,9 +134,7 @@ export default function Customer() {
           const respose = res?.data?.data;
           setCustomerDetails(respose || []);
           setAllCustomers(respose || []);
-          if (searchStatus || (searchKey && searchValue.trim())) {
-            searchDeals(respose || []);
-          }
+          searchCustomer(respose || []);
         }
         // }
       } catch {
@@ -107,118 +169,302 @@ export default function Customer() {
     if (diffDays < 0) return "expired";
     return "active";
   };
-  const searchDeals = (customers?: any) => {
-    let filtered = [...allCustomers];
-    if (customers) {
-      filtered = [...customers];
+  const normalizeDate = (date: Date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const applyDateFilter = (
+    data: CustomerDetails[],
+    field: "startDate" | "endDate",
+    operator: string,
+    value: Date | null,
+  ) => {
+    if (!value) return data;
+
+    const selected = normalizeDate(value);
+
+    return data.filter((item) => {
+      if (!item[field]) return false;
+
+      const itemDate = normalizeDate(new Date(item[field]));
+
+      switch (operator) {
+        case "eq":
+          return itemDate.getTime() === selected.getTime();
+
+        case "gt":
+          return itemDate > selected;
+
+        case "gte":
+          return itemDate >= selected;
+
+        case "lt":
+          return itemDate < selected;
+
+        case "lte":
+          return itemDate <= selected;
+
+        default:
+          return true;
+      }
+    });
+  };
+
+  const searchCustomer = (respose?:CustomerDetails[]) => {
+    let filtered = respose ? [...respose] : [...allCustomers];
+
+    /** ✅ Plan Status */
+    if (planStatus) {
+      filtered = filtered.filter((c) =>
+        planStatus === "Expired"
+          ? getExpiryStatus(c.endDate) === "expired"
+          : c.typeName === planStatus,
+      );
     }
 
-    /** ✅ Plan Status Filter */
-    if (searchStatus) {
-      filtered = filtered.filter((customer: any) => {
-        if (searchStatus === "expired") {
-          return getExpiryStatus(customer.endDate) === "expired";
-        }
-
-        if (searchStatus === "Active" || searchStatus === "Inactive") {
-          return customer.statusName === searchStatus;
-        }
-
-        // Demo / Registered
-        return customer.typeName === searchStatus;
-      });
+    /** ✅ Customer Status */
+    if (customerStatus) {
+      filtered = filtered.filter((c) =>
+        customerStatus === "Active" ? c.isActive : !c.isActive,
+      );
     }
 
-    /** ✅ Field Search */
-    if (searchKey && searchValue.trim()) {
-      const value = searchValue.toLowerCase();
-
-      filtered = filtered.filter((customer: any) => {
-        const fieldValue = customer?.[searchKey];
-
-        if (!fieldValue) return false;
-
-        return String(fieldValue).toLowerCase().includes(value);
-      });
+    /** ✅ Country */
+    if (country) {
+      filtered = filtered.filter((c) => c.countryID === country);
     }
+
+    /** ✅ Product */
+    if (productName) {
+      filtered = filtered.filter((c) => c.name === productName);
+    }
+
+    /** ✅ Plan Name */
+    if (planName.trim()) {
+      filtered = filtered.filter((c) =>
+        c.planName?.toLowerCase().includes(planName.toLowerCase()),
+      );
+    }
+
+    /** ✅ Organization / Email */
+    if (organiztionName.trim()) {
+      const value = organiztionName.toLowerCase();
+
+      filtered = filtered.filter(
+        (c) =>
+          c.organizationName?.toLowerCase().includes(value) ||
+          c.email?.toLowerCase().includes(value),
+      );
+    }
+
+    /** ✅ Start Date */
+    filtered = applyDateFilter(
+      filtered,
+      "startDate",
+      startFilterType,
+      startDate,
+    );
+
+    /** ✅ End Date */
+    filtered = applyDateFilter(filtered, "endDate", endFilterType, endDate);
 
     setCustomerDetails(filtered);
   };
 
   return (
     <ValidatePermissions>
-      <div className="rounded-lg py-10 bg-white">
-        <div className="px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="rounded-lg py-6 bg-white">
+        <div className="px-6 mb-2 flex flex-row justify-between items-center">
           <h2 className="text-lg font-bold">Customers</h2>
+          {/* Export Button */}
+          <DownloadCsv
+            data={[]}
+            headers={[]}
+            styles="h-10 px-3 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white shadow-sm hover:bg-slate-50 flex items-center gap-2"
+            docName={`leads_${new Date()
+              .toLocaleString("en-GB")
+              .replace(/[/,:\s]/g, "_")}`}
+          >
+            <FaRegFileAlt className="text-slate-400" />
+            Export
+          </DownloadCsv>
+        </div>
+        <div className="px-6">
+          <div className="p-6 rounded-xl shadow-sm border border-slate-200">
+            <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-8 gap-4 items-end">
+              {/* Plan Status */}
+              <div className="flex flex-col">
+                <label className="text-xs text-slate-500 mb-1">
+                  Plan Status
+                </label>
+                <CustomSelect
+                  value={planStatus}
+                  onChange={setPlanStatus}
+                  placeholder="All"
+                  options={[
+                    { label: "All", value: "" },
+                    { label: "Demo", value: "Demo" },
+                    { label: "Registered", value: "Registered" },
+                    { label: "Expired", value: "Expired" },
+                  ]}
+                  width="w-full"
+                />
+              </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Demo Status Filter */}
-            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 h-10 shadow-sm">
-              <label className="text-sm text-slate-500">Plan Status</label>
+              {/* User Status */}
+              <div className="flex flex-col">
+                <label className="text-xs text-slate-500 mb-1">
+                  User Status
+                </label>
+                <CustomSelect
+                  value={customerStatus}
+                  onChange={setCustomerStatus}
+                  placeholder="All"
+                  options={[
+                    { label: "All", value: "" },
+                    { label: "Active", value: "Active" },
+                    { label: "Inactive", value: "Inactive" },
+                  ]}
+                  width="w-full"
+                />
+              </div>
 
-              <div className="relative ml-4">
-                <select
-                  value={searchStatus}
-                  onChange={(e) => setSearchStatus(e.target.value)}
-                  className="text-sm bg-transparent pr-6 focus:outline-none appearance-none p-2"
+              {/* Country */}
+              <div className="flex flex-col col-span-2">
+                <label className="text-xs text-slate-500 mb-1">Country</label>
+                <CustomSelect
+                  value={country}
+                  onChange={setCountry}
+                  placeholder="Select Country"
+                  options={[
+                    { label: "All", value: "" },
+                    ...allContries?.map((country: any) => ({
+                      label: country?.countryName,
+                      value: country?.countryId,
+                    })),
+                  ]}
+                  width="w-full"
+                />
+              </div>
+              <div className="flex flex-col col-span-2">
+                <label className="text-xs text-slate-500 mb-1">
+                  Product Name
+                </label>
+                <CustomSelect
+                  value={productName}
+                  onChange={setProductName}
+                  placeholder="Select Country"
+                  options={[
+                    { label: "All", value: "" },
+                    ...allProducts?.map((product: any) => ({
+                      label: product?.name,
+                      value: product?.name,
+                    })),
+                  ]}
+                  width="w-full"
+                />
+              </div>
+              <div className="flex flex-col col-span-2">
+                <label className="text-xs text-slate-500 mb-1">Plan Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter plan name..."
+                  value={planName}
+                  onChange={(e) => setPlanName(e.target.value)}
+                  className="h-10 w-full px-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col col-span-2">
+                <label className="text-xs text-slate-500 mb-1">
+                  Organization Name or Email
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter organization name..."
+                  value={organiztionName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                  className="h-10 w-full px-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Start Date */}
+              <div className="flex flex-col col-span-2">
+                <label className="text-xs text-slate-500 mb-1">
+                  Start Date
+                </label>
+                <div className="flex flex-row border-[1px] rounded-lg">
+                  <CustomSelect
+                    value={startFilterType}
+                    onChange={setStartFilterType}
+                    options={[
+                      { label: "Equal (=)", value: "eq" },
+                      { label: "Greater than (>)", value: "gt" },
+                      { label: "Greater than or equal (>=)", value: "gte" },
+                      { label: "Less than (<)", value: "lt" },
+                      { label: "Less than or equal (<=)", value: "lte" },
+                    ]}
+                    width={"w-28"}
+                    isLeftOnlyRonded={true}
+                  />
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    // className="h-10 px-3 border rounded-r-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 w-full"
+                    className="h-10 px-3 text-sm w-full focus:outline-none"
+                    placeholderText="Select start date"
+                    dateFormat="dd-MM-yyyy"
+                  />
+                </div>
+              </div>
+
+              {/* End Date */}
+              <div className="flex flex-col col-span-2">
+                <label className="text-xs text-slate-500 mb-1">End Date</label>
+                <div className="flex flex-row border-[1px] rounded-lg">
+                  <CustomSelect
+                    value={endFilterType}
+                    onChange={setEndFilterType}
+                    options={[
+                      { label: "Equal (=)", value: "eq" },
+                      { label: "Greater than (>)", value: "gt" },
+                      { label: "Greater than or equal (>=)", value: "gte" },
+                      { label: "Less than (<)", value: "lt" },
+                      { label: "Less than or equal (<=)", value: "lte" },
+                    ]}
+                    width={"w-28"}
+                    isLeftOnlyRonded={true}
+                  />
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    // className="h-10 px-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500"
+                    className="h-10 px-3 text-sm w-full focus:outline-none"
+                    placeholderText="Select end date"
+                    dateFormat="yyyy-MM-dd"
+                    minDate={startDate}
+                  />
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={()=>searchCustomer()}
+                  className="h-10 px-5 bg-gray-800 text-white rounded-lg text-sm font-medium shadow hover:bg-gray-900 transition cursor-pointer"
                 >
-                  <option value="">All</option>
-                  <option value="Demo">Demo</option>
-                  <option value="Registered">Registered</option>
-                  <option value="expired">Expired</option>
-                  <option value="Active">Active User</option>
-                  <option value="Inactive">Inactive User</option>
-                </select>
+                  Search
+                </button>
 
-                <FiChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
+                <button
+                  onClick={resetFilters}
+                  className="h-10 px-5 bg-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-300 transition"
+                >
+                  Reset
+                </button>
               </div>
             </div>
-
-            {/* Search Type */}
-            <div className="relative">
-              <select
-                value={searchKey}
-                onChange={(e) => setSearchKey(e.target.value)}
-                className="h-10 px-3 pr-8 border border-slate-200 rounded-lg text-sm shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-              >
-                <option value="organizationName">Organization Name</option>
-                <option value="email">Email</option>
-                <option value="name">Product Name</option>
-                <option value="planCode">Plan Code</option>
-              </select>
-
-              <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none" />
-            </div>
-
-            {/* Search Input */}
-            <input
-              type="text"
-              placeholder="Search leads..."
-              className="h-10 w-64 lg:w-80 px-3 border border-slate-200 rounded-lg text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-
-            {/* Search Button */}
-            <button
-              onClick={() => searchDeals()}
-              className="h-10 px-4 bg-gray-700 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-gray-900 transition cursor-pointer"
-            >
-              Search
-            </button>
-
-            {/* Export Button */}
-            <DownloadCsv
-              data={[]}
-              headers={[]}
-              styles="h-10 px-3 border border-slate-200 rounded-lg text-sm text-slate-600 bg-white shadow-sm hover:bg-slate-50 flex items-center gap-2"
-              docName={`leads_${new Date()
-                .toLocaleString("en-GB")
-                .replace(/[/,:\s]/g, "_")}`}
-            >
-              <FaRegFileAlt className="text-slate-400" />
-              Export
-            </DownloadCsv>
           </div>
         </div>
 
