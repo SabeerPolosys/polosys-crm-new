@@ -56,6 +56,7 @@ export default function Customer() {
     setOrganizationName("");
     setStartFilterType("eq");
     setEndFilterType("eq");
+    setCustomerDetails(allCustomers);
   };
   useEffect(() => {
     const getAllCountries = async () => {
