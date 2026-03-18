@@ -258,8 +258,9 @@ export interface LeadsType {
 
 export interface PaymentDetails {
   paymentID: string;
-  subscriptionID: string;
   purchaseOrderID: string;
+  transactionOrderID: string;
+  transactionRef: string;
   paidOn: string;
   amountPaid: number;
   taxAmount: number;
@@ -267,9 +268,15 @@ export interface PaymentDetails {
   currencyCode: string;
   paymentStatus: number;
   status: string;
-  paymentMode: string;
+  paymentMode: string | null;
   remarks: string;
   isInvoiced: string;
+  clientID: string;
+  organizationName: string;
+  email: string;
+  mobile: string;
+  planName: string;
+  planCode: string;
 }
 export interface InvoiceDetails {
   invoiceID: string;

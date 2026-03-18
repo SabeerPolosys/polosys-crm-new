@@ -316,6 +316,18 @@ export default function Leads() {
     setIsResetPage(prev=>prev+1);
     setLeads(filtered);
   };
+  const resetFilters = () => {
+    setPlanStatus("");
+    setCountry("");
+    setStartDate(null);
+    setEndDate(null);
+    setProductName("");
+    setPlanName("");
+    setOrganizationName("");
+    setStartFilterType("eq");
+    setEndFilterType("eq");
+    setLeads(allLeads);
+  };
   return (
     <ValidatePermissions>
       <div className="rounded-lg py-10 bg-white">
@@ -479,7 +491,7 @@ export default function Leads() {
                 </button>
 
                 <button
-                  // onClick={resetFilters}
+                  onClick={resetFilters}
                   className="h-10 px-5 bg-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-300 transition"
                 >
                   Reset
