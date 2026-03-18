@@ -11,6 +11,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { HiMiniXMark } from "react-icons/hi2";
 import { IoMdArrowBack } from "react-icons/io";
+import CustomSelect from "@/components/customers/CustomSelect";
 type GetProductEditionResponse = {
   success: boolean;
   message: string;
@@ -19,6 +20,7 @@ type GetProductEditionResponse = {
 
 export default function CreatePlan() {
   const [countries, setCountries] = useState<any[]>([]);
+  const [countryOptions, setCountryOptions] = useState<any[]>([]);
   const [isCountryLoading, setIsCountryLoading] = useState(false);
   const [editionDetails, setEditionDetails] = useState<ProductEdition[]>([]);
   const [productPlans, setProductPlans] = useState<any[]>([]);
@@ -37,11 +39,11 @@ export default function CreatePlan() {
         countryCode: "",
         monthlyPlans: editionDetails?.map((edition) => ({
           planName: "",
-          planPrice: null,
+          planPrice: edition?.monthlyPrice ?? null,
           billingCycle: "Monthly",
           isActive: true,
           code: "",
-          offerPrice: null,
+          offerPrice: edition?.monthlyPrice ?? null,
           description: "",
           editionID: edition?.editionId,
           editionName: edition?.eName,
@@ -50,11 +52,11 @@ export default function CreatePlan() {
         })),
         yearlyPlans: editionDetails?.map((edition) => ({
           planName: "",
-          planPrice: null,
+          planPrice: edition?.yearlyPrice ?? null,
           billingCycle: "Yearly",
           isActive: true,
           code: "",
-          offerPrice: null,
+          offerPrice: edition?.yearlyPrice ?? null,
           description: "",
           editionID: edition?.editionId,
           editionName: edition?.eName,
@@ -72,6 +74,17 @@ export default function CreatePlan() {
         if (res?.data?.success) {
           const response = res?.data?.data;
           setCountries(response);
+          setCountryOptions(
+            response?.map((country) => ({
+              label: country?.countryName,
+              value:
+                country?.countryId +
+                "__" +
+                country?.countryName +
+                "__" +
+                country?.countryCode,
+            })),
+          );
         }
       } catch {
         showToast({
@@ -89,7 +102,7 @@ export default function CreatePlan() {
       try {
         if (!productCode) return;
         const res = await api.get<GetProductEditionResponse>(
-          `/api/v1/edition/by-pcode/${productCode}`
+          `/api/v1/edition/by-pcode/${productCode}`,
         );
         if (res?.data?.success) {
           const respose = res?.data?.data;
@@ -107,8 +120,8 @@ export default function CreatePlan() {
   const setCollapse = (planId: number, status: boolean) => {
     setProductPlans((prev) =>
       prev?.map((plan) =>
-        plan?.id === planId ? { ...plan, isCollapsed: status } : plan
-      )
+        plan?.id === planId ? { ...plan, isCollapsed: status } : plan,
+      ),
     );
   };
   const AddNewRow = () => {
@@ -127,11 +140,11 @@ export default function CreatePlan() {
         countryCode: "",
         monthlyPlans: editionDetails?.map((edition) => ({
           planName: "",
-          planPrice: null,
+          planPrice: edition?.monthlyPrice ?? null,
           billingCycle: "Monthly",
           isActive: true,
           code: "",
-          offerPrice: null,
+          offerPrice: edition?.monthlyPrice ?? null,
           description: "",
           editionID: edition?.editionId,
           editionName: edition?.eName,
@@ -140,11 +153,11 @@ export default function CreatePlan() {
         })),
         yearlyPlans: editionDetails?.map((edition) => ({
           planName: "",
-          planPrice: null,
+          planPrice: edition?.yearlyPrice ?? null,
           billingCycle: "Yearly",
           isActive: true,
           code: "",
-          offerPrice: null,
+          offerPrice: edition?.yearlyPrice ?? null,
           description: "",
           editionID: edition?.editionId,
           editionName: edition?.eName,
@@ -173,7 +186,7 @@ export default function CreatePlan() {
       countryDetails?.split("__") ?? [];
     if (!countryId || !countryName || !countryCode) return;
     const isDuplicate = productPlans.some(
-      (plan) => plan.countryId === countryId && plan.id !== planId
+      (plan) => plan.countryId === countryId && plan.id !== planId,
     );
 
     if (isDuplicate) {
@@ -184,7 +197,7 @@ export default function CreatePlan() {
       return;
     }
     const existingCountryPlans = await api.get(
-      `/api/v1/product-plan/plan-pcode-country?pcode=${productCode}&countryid=${countryId}`
+      `/api/v1/product-plan/plan-pcode-country?pcode=${productCode}&countryid=${countryId}`,
     );
     if (
       existingCountryPlans?.data?.success &&
@@ -202,7 +215,7 @@ export default function CreatePlan() {
                 monthlyPlans: plan?.monthlyPlans?.map((edition) => {
                   const existing =
                     existingCountryPlans?.data?.data?.monthlyPlans?.find(
-                      (e) => e?.editionID === edition?.editionID
+                      (e) => e?.editionID === edition?.editionID,
                     );
                   if (existing) {
                     return {
@@ -232,7 +245,7 @@ export default function CreatePlan() {
                 yearlyPlans: plan?.yearlyPlans?.map((edition) => {
                   const existing =
                     existingCountryPlans?.data?.data?.yearlyPlans?.find(
-                      (e) => e?.editionID === edition?.editionID
+                      (e) => e?.editionID === edition?.editionID,
                     );
 
                   if (existing) {
@@ -261,7 +274,7 @@ export default function CreatePlan() {
                   }
                 }),
               }
-            : plan
+            : plan,
         );
       });
       return;
@@ -295,7 +308,7 @@ export default function CreatePlan() {
                 isChecked: false,
               })),
             }
-          : plan
+          : plan,
       );
     });
   };
@@ -305,7 +318,7 @@ export default function CreatePlan() {
     value: string | number,
     id: string,
     type: "Monthly" | "Yearly",
-    editionID: string
+    editionID: string,
   ) => {
     setProductPlans((prev) =>
       prev?.map((plan) =>
@@ -326,7 +339,7 @@ export default function CreatePlan() {
                             isChecked:
                               field === "code" ? false : edition?.isChecked,
                           }
-                        : edition
+                        : edition,
                     )
                   : plan?.monthlyPlans,
               yearlyPlans:
@@ -343,12 +356,12 @@ export default function CreatePlan() {
                             isChecked:
                               field === "code" ? false : edition?.isChecked,
                           }
-                        : edition
+                        : edition,
                     )
                   : plan?.yearlyPlans,
             }
-          : plan
-      )
+          : plan,
+      ),
     );
   };
   const handleSubmit = async () => {
@@ -425,7 +438,7 @@ export default function CreatePlan() {
             description: edition?.description ?? "",
             countryID: plan?.countryId ?? "",
             editionID: edition?.editionID ?? null,
-          }))
+          })),
       );
       const res = await api.post(`/api/v1/product-plan`, sendData);
       if (res?.status == 200) {
@@ -465,7 +478,7 @@ export default function CreatePlan() {
         const res = await api.post(
           "/api/v1/product-plan/check-plancodes",
           [...new Set(allUnverifiedCodes)],
-          { signal: controller.signal }
+          { signal: controller.signal },
         );
 
         const results = res?.data?.data || {};
@@ -489,7 +502,7 @@ export default function CreatePlan() {
                 isChecked: true,
               };
             }),
-          }))
+          })),
         );
       } catch (err: any) {
         if (err?.name === "CanceledError" || err?.name === "AbortError") {
@@ -572,7 +585,7 @@ export default function CreatePlan() {
                       Country
                     </label>
                     <div className="relative w-full">
-                      <select
+                      {/* <select
                         id="country"
                         value={
                           productPlan?.countryId +
@@ -603,7 +616,22 @@ export default function CreatePlan() {
                             {country?.countryName}
                           </option>
                         ))}
-                      </select>
+                      </select>  */}
+                      <CustomSelect
+                        options={countryOptions || []}
+                        value={
+                          productPlan?.countryId
+                            ? productPlan?.countryId +
+                              "__" +
+                              productPlan?.countryName +
+                              "__" +
+                              productPlan?.countryCode
+                            : ""
+                        }
+                        onChange={(val) => changeCountry(productPlan?.id, val)}
+                        placeholder={isCountryLoading ? "Loading..." : "Select"}
+                        width="w-full"
+                      />
 
                       <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                         <FiChevronDown className="text-gray-600" />
@@ -661,7 +689,7 @@ export default function CreatePlan() {
                                             e.target.value,
                                             productPlan?.id,
                                             "Monthly",
-                                            monthlyPlan?.editionID
+                                            monthlyPlan?.editionID,
                                           )
                                         }
                                         className={`w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
@@ -690,7 +718,7 @@ export default function CreatePlan() {
                                           e.target.value,
                                           productPlan?.id,
                                           "Monthly",
-                                          monthlyPlan?.editionID
+                                          monthlyPlan?.editionID,
                                         )
                                       }
                                       className="w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -706,7 +734,7 @@ export default function CreatePlan() {
                                           e.target.value,
                                           productPlan?.id,
                                           "Monthly",
-                                          monthlyPlan?.editionID
+                                          monthlyPlan?.editionID,
                                         )
                                       }
                                       className="w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -722,14 +750,14 @@ export default function CreatePlan() {
                                           e.target.value,
                                           productPlan?.id,
                                           "Monthly",
-                                          monthlyPlan?.editionID
+                                          monthlyPlan?.editionID,
                                         )
                                       }
                                       className="w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                     />
                                   </td>
                                 </tr>
-                              )
+                              ),
                             )}
                           </tbody>
                         </table>
@@ -784,7 +812,7 @@ export default function CreatePlan() {
                                             e.target.value,
                                             productPlan?.id,
                                             "Yearly",
-                                            yearlyPlan?.editionID
+                                            yearlyPlan?.editionID,
                                           )
                                         }
                                         className={`w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
@@ -813,7 +841,7 @@ export default function CreatePlan() {
                                           e.target.value,
                                           productPlan?.id,
                                           "Yearly",
-                                          yearlyPlan?.editionID
+                                          yearlyPlan?.editionID,
                                         )
                                       }
                                       className="w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -829,7 +857,7 @@ export default function CreatePlan() {
                                           e.target.value,
                                           productPlan?.id,
                                           "Yearly",
-                                          yearlyPlan?.editionID
+                                          yearlyPlan?.editionID,
                                         )
                                       }
                                       className="w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -845,14 +873,14 @@ export default function CreatePlan() {
                                           e.target.value,
                                           productPlan?.id,
                                           "Yearly",
-                                          yearlyPlan?.editionID
+                                          yearlyPlan?.editionID,
                                         )
                                       }
                                       className="w-full border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                     />
                                   </td>
                                 </tr>
-                              )
+                              ),
                             )}
                           </tbody>
                         </table>

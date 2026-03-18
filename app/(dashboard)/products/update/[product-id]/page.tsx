@@ -17,6 +17,7 @@ interface ProductFormData {
   productTypeID: number;
   isActive: boolean;
   pcode: string;
+  iscommon: boolean
 }
 type GetProductResponse = {
   success: boolean;
@@ -30,7 +31,8 @@ const UpdateProduct: React.FC = () => {
     description: "",
     productTypeID: 1,
     isActive: true,
-    pcode: ""
+    pcode: "",
+    iscommon: false,
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -52,7 +54,8 @@ const UpdateProduct: React.FC = () => {
       description: "",
       productTypeID: 1,
       isActive: true,
-      pcode: ""
+      pcode: "",
+      iscommon: false
     });
   };
   useEffect(() => {
@@ -68,7 +71,8 @@ const UpdateProduct: React.FC = () => {
             description: response?.description,
             productTypeID: response?.productTypeID,
             isActive: response?.isActive,
-            pcode: response?.pcode
+            pcode: response?.pcode,
+            iscommon: response?.iscommon
           });
         }
       } catch {

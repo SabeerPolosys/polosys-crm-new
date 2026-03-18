@@ -216,6 +216,11 @@ export const formFieldconfig = {
         placeholder: "Description",
         class: "w-32",
       },
+      {
+        label: "Is Common",
+        key: "iscommon",
+        type: "checkbox",
+      },
     ],
     hasSubmitButton: true,
     submitButtonLabel: "Product",
@@ -418,6 +423,20 @@ export const formFieldconfig = {
         ],
         valueKey: "value",
         optionKey: "option",
+      },
+      {
+        label: "Monthly Price",
+        key: "monthlyPrice",
+        type: "number",
+        required: true,
+        placeholder: "Monthly Price",
+      },
+      {
+        label: "Yearly Price",
+        key: "yearlyPrice",
+        type: "number",
+        required: true,
+        placeholder: "Yearly Price",
       },
       {
         label: "Description",

@@ -11,6 +11,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { showToast } from "@/components/common/ShowToast";
 import { CustomerDetails } from "@/types/auth";
 import api from "@/lib/axios";
+import { useSearchParams } from "next/navigation";
 import { HiOutlineLocationMarker, HiOutlineMail } from "react-icons/hi";
 type CustomerResponse = {
   success: boolean;
@@ -46,6 +47,11 @@ export default function IndividualCustomer() {
     };
     getCustomerDetails();
   }, []);
+  const searchParams = useSearchParams();
+  const handleBackClick = () => {
+    const params = searchParams.toString();
+    router.push(`/customers?${params}`);
+  };
   return (
     <div>
       <h2 className="text-sm font-semibold mb-2">Customer Details</h2>
@@ -56,7 +62,7 @@ export default function IndividualCustomer() {
             <div className="flex items-center mb-6">
               <div
                 className="bg-gray-100 rounded-full p-2 hover:bg-gray-200 cursor-pointer transition"
-                onClick={() => router.push("/customers")}
+                onClick={handleBackClick}
               >
                 <IoMdArrowBack className="w-5 h-5 text-gray-600" />
               </div>

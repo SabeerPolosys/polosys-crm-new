@@ -177,6 +177,14 @@ export default function EditionDetails() {
                       Number Of Users:
                     </div>
                     <div>{editionDetails?.noOfUsers}</div>
+                     <div className="font-medium text-gray-600">
+                      Monthly Price:
+                    </div>
+                    <div>{editionDetails?.monthlyPrice}</div>
+                     <div className="font-medium text-gray-600">
+                      Yearly Price:
+                    </div>
+                    <div>{editionDetails?.yearlyPrice}</div>
                     <div className="font-medium text-gray-600">
                       Status:
                     </div>

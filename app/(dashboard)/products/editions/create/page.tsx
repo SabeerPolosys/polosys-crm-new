@@ -17,6 +17,8 @@ interface EditionFormData {
   noOfUsers: number | null;
   description: string;
   isActive: boolean;
+  monthlyPrice: number | null;
+  yearlyPrice: number | null;
 }
 type GetProductResponse = {
   success: boolean;
@@ -31,6 +33,8 @@ const CreateEdition: React.FC = () => {
     noOfUsers: null,
     description: "",
     isActive: true,
+    monthlyPrice: null,
+    yearlyPrice: null
   });
   const [productDetails, setProductDetails] = useState<ProductTypes | null>(
     null
@@ -58,6 +62,8 @@ const CreateEdition: React.FC = () => {
       noOfUsers: null,
       description: "",
       isActive: true,
+      monthlyPrice: null,
+      yearlyPrice: null,
     });
   };
   useEffect(() => {

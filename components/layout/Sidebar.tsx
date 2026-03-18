@@ -75,7 +75,7 @@ const allMenuItems = [
     icon: <BiBarChart />,
     children: [
       { label: "Leads", link: "/sales/leads" },
-      { label: "Deals", link: "/sales/deals" },
+      // { label: "Deals", link: "/sales/deals" },
     ],
   },
   { label: "Products suite", icon: <FaBoxOpen />, link: "/products" },
@@ -98,7 +98,7 @@ const settingsItems = [
     icon: <FaCog />,
     children: [
       { label: "Add-ons", link: "/products/addons" },
-      { label: "Plans", link: "/products/plan" },
+      // { label: "Plans", link: "/products/plan" },
       { label: "Payment Gateways", link: "/settings/payment-gateways" },
       // { label: "Currency", link: "/settings/currency" },
       { label: "Mapping", link: "/settings/map-to-country" },

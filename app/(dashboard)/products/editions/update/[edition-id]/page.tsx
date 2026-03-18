@@ -18,6 +18,8 @@ interface EditionFormData {
   description: string;
   isActive: boolean;
   productID?: string;
+  monthlyPrice: number | null,
+  yearlyPrice: number | null
 }
 type GetProductResponse = {
   success: boolean;
@@ -37,6 +39,8 @@ const UpdateEdition: React.FC = () => {
     noOfUsers: null,
     description: "",
     isActive: true,
+    monthlyPrice: null,
+    yearlyPrice: null
   });
   const [productDetails, setProductDetails] = useState<ProductTypes | null>(
     null
@@ -63,6 +67,8 @@ const UpdateEdition: React.FC = () => {
       noOfUsers: null,
       description: "",
       isActive: true,
+      monthlyPrice: null,
+      yearlyPrice: null
     });
   };
   useEffect(() => {
@@ -100,6 +106,8 @@ const UpdateEdition: React.FC = () => {
             description: response?.description,
             isActive: response?.isActive,
             productID: response?.productId,
+            monthlyPrice: response?.monthlyPrice,
+            yearlyPrice: response?.yearlyPrice
           });
         }
       } catch {

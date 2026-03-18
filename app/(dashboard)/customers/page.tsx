@@ -12,6 +12,7 @@ import { FaRegFileAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import CustomSelect from "@/components/customers/CustomSelect";
+import { useSearchParams } from "next/navigation";
 type CustomerResponse = {
   success: boolean;
   message: string;
@@ -43,6 +44,44 @@ export default function Customer() {
   const [endDate, setEndDate] = useState<any>(null);
   const [startFilterType, setStartFilterType] = useState("eq");
   const [endFilterType, setEndFilterType] = useState("eq");
+  const [pageDetails, setPageDetails] = useState({ limit: 10, page: 1 });
+  const [isResetPage, setIsResetPage] = useState(1);
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const planStatusParam = searchParams.get("planStatus") || "";
+    const customerStatusParam = searchParams.get("customerStatus") || "";
+    const countryParam = searchParams.get("country") || "";
+    const productParam = searchParams.get("productName") || "";
+    const planNameParam = searchParams.get("planName") || "";
+    const searchParam = searchParams.get("search") || "";
+
+    const startDateParam = searchParams.get("startDate");
+    const startTypeParam = searchParams.get("startType") || "eq";
+
+    const endDateParam = searchParams.get("endDate");
+    const endTypeParam = searchParams.get("endType") || "eq";
+
+    setPlanStatus(planStatusParam);
+    setCustomerStatus(customerStatusParam);
+    setCountry(countryParam);
+    setProductName(productParam);
+    setPlanName(planNameParam);
+    setOrganizationName(searchParam);
+
+    if (startDateParam) setStartDate(new Date(startDateParam));
+    if (endDateParam) setEndDate(new Date(endDateParam));
+
+    setStartFilterType(startTypeParam);
+    setEndFilterType(endTypeParam);
+  }, []);
+  useEffect(() => {
+    if (allCustomers.length) {
+      searchCustomer();
+    }
+  }, [allCustomers]);
+  const updatePageDetails = (limit: number, page: number) => {
+    setPageDetails({ limit, page });
+  };
   const resetFilters = () => {
     setPlanStatus("");
     setCustomerStatus("");
@@ -57,6 +96,7 @@ export default function Customer() {
     setStartFilterType("eq");
     setEndFilterType("eq");
     setCustomerDetails(allCustomers);
+    router.push("/customers");
   };
   useEffect(() => {
     const getAllCountries = async () => {
@@ -149,10 +189,23 @@ export default function Customer() {
     };
     getCustomerDetails();
   }, [updateFlag]);
-  // searchKey, searchValue,
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (pageDetails?.limit) {
+      params.set("limit", pageDetails.limit.toString());
+    }
+
+    if (pageDetails?.page) {
+      params.set("page", pageDetails.page.toString());
+    }
+    router.push(`?${params.toString()}`);
+  }, [pageDetails]);
 
   const handleRowClick = (rowData: any) => {
-    router.push(`/customers/${rowData.clientID}`);
+    const params = searchParams.toString();
+
+    router.push(`/customers/${rowData.clientID}?${params.toString()}`);
   };
   const getExpiryStatus = (endDate: string) => {
     if (!endDate) return "expired";
@@ -213,9 +266,33 @@ export default function Customer() {
     });
   };
 
-  const searchCustomer = (respose?:CustomerDetails[]) => {
-    let filtered = respose ? [...respose] : [...allCustomers];
+  const handleSearch = () => {
+    const params = new URLSearchParams();
 
+    if (planStatus) params.set("planStatus", planStatus);
+    if (customerStatus) params.set("customerStatus", customerStatus);
+    if (country) params.set("country", country);
+    if (productName) params.set("productName", productName);
+    if (planName.trim()) params.set("planName", planName);
+    if (organiztionName.trim()) params.set("search", organiztionName);
+
+    if (startDate) {
+      params.set("startDate", startDate.toISOString());
+      params.set("startType", startFilterType);
+    }
+
+    if (endDate) {
+      params.set("endDate", endDate.toISOString());
+      params.set("endType", endFilterType);
+    }
+
+    router.push(`?${params.toString()}`);
+    setIsResetPage(prev=>prev+1);
+    searchCustomer();
+  };
+
+  const searchCustomer = (respose?: CustomerDetails[]) => {
+    let filtered = respose ? [...respose] : [...allCustomers];
     /** ✅ Plan Status */
     if (planStatus) {
       filtered = filtered.filter((c) =>
@@ -452,7 +529,7 @@ export default function Customer() {
               {/* Buttons */}
               <div className="flex gap-2">
                 <button
-                  onClick={()=>searchCustomer()}
+                  onClick={handleSearch}
                   className="h-10 px-5 bg-gray-800 text-white rounded-lg text-sm font-medium shadow hover:bg-gray-900 transition cursor-pointer"
                 >
                   Search
@@ -473,6 +550,10 @@ export default function Customer() {
           columns={columns}
           data={customerDetails}
           onRowClick={handleRowClick}
+          updatePageDetails={updatePageDetails}
+          page={searchParams.get("page")}
+          limit={searchParams.get("limit")}
+          isResetPage={isResetPage}
         />
       </div>
       <ActionConfirmationModal

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "./DynamicTable.module.css";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { usePathname } from "next/navigation";
@@ -46,6 +46,10 @@ interface DynamicTableProps<T> {
   onDeleteClick?: (rowData: T) => void;
   isDataLoading?: boolean;
   setUpdateStatus?: Dispatch<SetStateAction<number>>;
+  updatePageDetails?:(limit: number, page: number) => void;
+  page?: string|null;
+  limit?: string|null;
+  isResetPage?: number
 }
 
 const DynamicTable = <T extends Record<string, any>>({
@@ -59,10 +63,28 @@ const DynamicTable = <T extends Record<string, any>>({
   onDeleteClick,
   isDataLoading,
   setUpdateStatus,
+  updatePageDetails,
+  page,
+  limit,
+  isResetPage
 }: DynamicTableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
   const pathname = usePathname();
+
+  useEffect(()=>{
+    if(isResetPage && isResetPage > 1){
+      setCurrentPage(1);
+    }
+  },[isResetPage])
+  useEffect(()=>{
+    if(page){
+      setCurrentPage(Number(page));
+    }
+    if(limit){
+      setRowsPerPage(Number(limit));
+    }
+  }, [page, limit])
 
   const totalPages = Math.ceil(data?.length / rowsPerPage);
 
@@ -76,6 +98,11 @@ const DynamicTable = <T extends Record<string, any>>({
       setCurrentPage(page);
     }
   };
+  useEffect(()=>{
+    if(updatePageDetails){
+      updatePageDetails(rowsPerPage, currentPage)
+    }
+  }, [currentPage, rowsPerPage])
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLimit = parseInt(e.target.value);

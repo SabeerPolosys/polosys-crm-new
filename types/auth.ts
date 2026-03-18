@@ -65,6 +65,7 @@ export interface ProductTypes {
   createdAt: Date;
   modifiedAt: Date;
   pcode: string;
+  iscommon: boolean;
 }
 
 export interface CustomerDetails {
@@ -229,6 +230,8 @@ export interface ProductEdition {
   isActive: boolean;
   createdAt: string;
   modifiedAt: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
 }
 
 export interface LeadsType {
@@ -240,9 +243,17 @@ export interface LeadsType {
   userName: string;
   email: string;
   mobile: string | null;
-  source: string;
+  source: string | null;
   status: number;
   priority: string | null;
+  clientID: string;
+  startDate: string;
+  endDate: string;
+  planID: string;
+  planName: string;
+  planCode: string;
+  productName: string | null;
+  productCode: string | null;
 }
 
 export interface PaymentDetails {

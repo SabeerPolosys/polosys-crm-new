@@ -16,6 +16,7 @@ interface ProductFormData {
   productTypeID: number;
   isActive: boolean;
   pcode: string;
+  iscommon: boolean;
 }
 
 const CreateProduct: React.FC = () => {
@@ -25,6 +26,7 @@ const CreateProduct: React.FC = () => {
     productTypeID: 1,
     isActive: true,
     pcode: "",
+    iscommon: false
   });
   const [isCodeExist, setIsCodeExist] = useState(true);
   const router = useRouter();
@@ -47,6 +49,7 @@ const CreateProduct: React.FC = () => {
       productTypeID: 1,
       isActive: true,
       pcode: "",
+      iscommon: false
     });
   };
   const handleSubmit = async (e: FormEvent) => {
