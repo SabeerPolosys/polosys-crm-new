@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { showToast } from "../common/ShowToast";
 import { formatDateToDDMMYYYY } from "@/helpers/helperFunction";
 import { FiBox, FiKey, FiPlusCircle } from "react-icons/fi";
+import ActionConfirmationModal from "../common/ActionConfirmationModal";
 
 interface AddonDetail {
   orderDetailsID?: string;
@@ -32,6 +33,8 @@ interface ProductDetail {
   totaPrice?: number;
   planType?: string;
   billingCycle?: string;
+  clientID?: string;
+  subscriptionID?: string;
 }
 
 type GroupedProducts = Record<string, ProductDetail[]>;
@@ -76,6 +79,7 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
   const [productDetails, setProductDetails] = useState<GroupedProducts | null>(
     null,
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const getAllProducts = async () => {
@@ -210,7 +214,7 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
 
                         {/* Bottom Section */}
                         <div className="pt-4 border-t border-gray-100">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="grid grid-cols-3 gap-4 text-sm">
                             <div>
                               <p className="text-gray-500 text-xs">
                                 Expiry Date
@@ -231,6 +235,46 @@ export default function ProductDetails({ customerId }: ProductDetailsProps) {
                               <p className="font-semibold text-gray-900">
                                 {product.currencyCode} {product.totaPrice}
                               </p>
+                            </div>
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-4 rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer"
+                              >
+                                Renew Plan
+                              </button>
+                              <ActionConfirmationModal
+                                isOpen={isModalOpen}
+                                onClose={() => setIsModalOpen(false)}
+                                title="Renew plan manually"
+                                message="Are you sure you want to renew plan manually?"
+                                confirmLabel="Yes, Renew"
+                                cancelLabel="Cancel"
+                                onConfirm={async () => {
+                                  if (
+                                    product?.clientID &&
+                                    product?.subscriptionID
+                                  ) {
+                                    await api.put(
+                                      "/api/v1/subscription/renew",
+                                      {
+                                        clientid: product?.clientID,
+                                        subscriptionid: product?.subscriptionID,
+                                      },
+                                    );
+                                    showToast({
+                                      message: "Status changed",
+                                      type: "success",
+                                    });
+                                    // setUpdateFlag((prev) => prev + 1);
+                                  } else {
+                                    showToast({
+                                      message: "Failed to renew plan.",
+                                      type: "error",
+                                    });
+                                  }
+                                }}
+                              />
                             </div>
                           </div>
                         </div>

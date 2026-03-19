@@ -164,12 +164,20 @@ export interface ServerType {
 }
 
 export interface DatabaseType {
+  databaseID: string;
+  serverID: string;
+  serverName: string;
+  productID: string;
+  productName: string;
+  versionID: string;
+  versionNumber: string;
   databaseName: string;
   userLimit: number;
   isActive: boolean;
-  product: string;
-  version: string;
-  server: string;
+  createdAt: string;
+  modifiedAt: string;
+  isDefault: boolean;
+  remarks: string | null;
 }
 
 export interface PlanType {
